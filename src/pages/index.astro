@@ -1,16 +1,25 @@
 ---
-
+import Layout from "../layouts/Layout.astro";
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout title="Home - oscarama.dev">
+  <main class="flex-1 container mx-auto px-4 py-8">
+    <div class="max-w-3xl mx-auto space-y-8">
+      <section class="space-y-4">
+        <h1 class="text-4xl font-bold">Welcome</h1>
+        <p class="text-lg text-muted-foreground">
+          This is a basic Astro site with Svelte, Tailwind CSS, and shadcn.
+        </p>
+      </section>
+
+      <section class="space-y-4">
+        <h2 class="text-2xl font-semibold">Getting Started</h2>
+        <div class="rounded-lg border border-border bg-card p-6">
+          <p class="text-card-foreground">
+            Start building your site by editing the components and pages.
+          </p>
+        </div>
+      </section>
+    </div>
+  </main>
+</Layout>
