@@ -1,0 +1,43 @@
+---
+interface Props {
+  logoSrc?: string;
+  logoAlt?: string;
+}
+
+const { logoSrc = "/oscarama.png", logoAlt = "oscarama" } = Astro.props;
+
+const socialLinks = [
+  { href: "https://github.com", icon: "/socials/github.svg", label: "GitHub" },
+  { href: "https://linkedin.com", icon: "/socials/linkedin.svg", label: "LinkedIn" },
+  { href: "https://x.com", icon: "/socials/x.svg", label: "X" },
+  // { href: "mailto:hello@oscarama.dev", icon: "/socials/email.svg", label: "Email" },
+];
+---
+
+<header class="sticky top-0 z-50">
+  <div class="flex justify-center pt-8 pb-8">
+    <div class="flex items-center justify-between w-3xl">
+      <!-- Logo -->
+      <a href="/" class="flex items-center gap-2 hover:opacity-80 transition-opacity">
+        <img src={logoSrc} alt={logoAlt} class="h-8 w-8 rounded-sm" />
+      </a>
+
+      <!-- Social Links -->
+      <nav class="flex items-center gap-6">
+        {
+          socialLinks.map((link) => (
+            <a
+              href={link.href}
+              aria-label={link.label}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="hover:opacity-70 transition-opacity duration-200"
+            >
+              <img src={link.icon} alt={link.label} class="h-5 w-auto" />
+            </a>
+          ))
+        }
+      </nav>
+    </div>
+  </div>
+</header>
