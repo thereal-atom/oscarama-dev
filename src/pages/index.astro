@@ -1,6 +1,17 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import IconLink from "../components/IconLink.svelte";
+
+const techStack = [
+  { name: "TypeScript", icon: "/techs/typescript.svg" },
+  { name: "Bun", icon: "/techs/bun.svg" },
+  { name: "Next.js", icon: "/techs/nextjs.svg" },
+  { name: "SvelteKit", icon: "/techs/svelte.svg" },
+  { name: "Rust", icon: "/techs/rust.svg" },
+  { name: "Tailwind", icon: "/techs/tailwindcss.svg" },
+  { name: "Python", icon: "/techs/python.svg" },
+  { name: "AWS", icon: "/techs/aws.svg" },
+];
 ---
 
 <Layout title="Home - oscarama.dev">
@@ -10,7 +21,7 @@ import IconLink from "../components/IconLink.svelte";
   >
   </div>
   <div class="flex flex-col items-center">
-    <div class="flex flex-col w-3xl pt-32">
+    <div class="flex flex-col w-2xl pt-16">
       <h1 class="text-3xl font-bold">oscar falemara</h1>
       <div class="flex flex-col mt-8">
         <p class="text-sm text-white/70">
@@ -25,7 +36,8 @@ import IconLink from "../components/IconLink.svelte";
           />
         </p>
       </div>
-      <h2 class="text-xl mt-8">some other things I'm working on</h2>
+
+      <h2 class="text-xl mt-16">some other things I'm working on</h2>
       <ul class="list-['*'] ml-2.5 list-outside text-sm text-white/70 mt-8">
         <li class="pl-2">
           running bouldering events in London @
@@ -48,6 +60,17 @@ import IconLink from "../components/IconLink.svelte";
           />
         </li>
       </ul>
+
+      <h2 class="text-xl mt-16">tech that I use</h2>
+      <div class="mt-8 grid w-full grid-cols-4 border-l border-t border-white">
+        {
+          techStack.map((tech) => (
+            <div class="group relative flex py-8 items-center justify-center overflow-hidden border-b border-r border-white transition-colors duration-300">
+              <img src={tech.icon} alt={tech.name} class="h-10 w-10" />
+            </div>
+          ))
+        }
+      </div>
     </div>
   </div>
 </Layout>
