@@ -1,5 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import IconLink from "../components/IconLink.svelte";
 ---
 
 <Layout title="Home - oscarama.dev">
@@ -15,39 +16,36 @@ import Layout from "../layouts/Layout.astro";
         <p class="text-sm text-white/70">
           i'm a self-taught full stack software engineer from 📍London, currently working as a
           full-stack software engineer at
-          <a
+          <IconLink
             href="https://coloop.ai"
-            target="_blank"
-            class="inline-flex items-center gap-1 align-middle text-white/70 hover:underline dark:text-white"
-          >
-            <img class="h-4 w-4 rounded-xs mb-0.5" src="/coloop.jpeg" alt="coloop ai" />
-            <span>coloop ai</span>
-          </a>
+            src="/coloop.jpeg"
+            alt="coloop ai"
+            text="coloop ai"
+            client:load
+          />
         </p>
       </div>
-      <h2 class="text-xl mt-8">some things I'm working on</h2>
-      <ul class="list-['*'] ml-2.5 list-outside text-sm text-white/70 mt-4">
+      <h2 class="text-xl mt-8">some other things I'm working on</h2>
+      <ul class="list-['*'] ml-2.5 list-outside text-sm text-white/70 mt-8">
         <li class="pl-2">
           running bouldering events in London @
-          <a
+          <IconLink
             href="https://luma.com/outventuring"
-            target="_blank"
-            class="inline-flex items-center gap-1 align-middle text-white/70 hover:underline dark:text-white"
-          >
-            <img class="h-4 w-4 rounded-xs mb-0.5" src="/out-buildering.avif" alt="outventuring" />
-            <span>out venturing</span>
-          </a>
+            src="/out-buildering.avif"
+            alt="outventuring"
+            text="out venturing"
+            client:load
+          />
         </li>
         <li class="pl-2">
           helping build better community-brand matching @
-          <a
+          <IconLink
             href="https://luma.com/outventuring"
-            target="_blank"
-            class="inline-flex items-center gap-1 align-middle text-white/70 hover:underline dark:text-white"
-          >
-            <img class="h-4 w-4 rounded-xs mb-0.5" src="/fanks.png" alt="fanks" />
-            <span>fanks</span>
-          </a>
+            src="/fanks.png"
+            alt="fanks"
+            text="fanks"
+            client:load
+          />
         </li>
       </ul>
     </div>
