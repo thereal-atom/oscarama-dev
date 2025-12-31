@@ -21,7 +21,7 @@ const techStack = [
   >
   </div>
   <div class="flex flex-col items-center">
-    <div class="flex flex-col w-2xl pt-16">
+    <div class="flex flex-col w-[95%] sm:w-2xl md:w-3xl sm:px-4 pt-16">
       <h1 class="text-3xl font-bold">oscar falemara</h1>
       <div class="flex flex-col mt-8">
         <p class="text-sm text-white/70">
@@ -37,7 +37,7 @@ const techStack = [
         </p>
       </div>
 
-      <h2 class="text-xl mt-16">some other things I'm working on</h2>
+      <h2 class="text-xl mt-8 sm:mt-12 md:mt-16">some other things I'm working on</h2>
       <ul class="list-['*'] ml-2.5 list-outside text-sm text-white/70 mt-8">
         <li class="pl-2">
           running bouldering events in London @
@@ -61,12 +61,12 @@ const techStack = [
         </li>
       </ul>
 
-      <h2 class="text-xl mt-16">tech that I use</h2>
+      <h2 class="text-xl mt-8 sm:mt-12 md:mt-16">tech that I use</h2>
       <div class="mt-8 grid w-full grid-cols-4 border-l border-t border-white">
         {
           techStack.map((tech) => (
             <div class="group relative flex py-8 items-center justify-center overflow-hidden border-b border-r border-white transition-colors duration-300">
-              <img src={tech.icon} alt={tech.name} class="h-10 w-10" />
+              <img src={tech.icon} alt={tech.name} class="h-8 sm:w-10 w-8 sm:h-10" />
             </div>
           ))
         }
