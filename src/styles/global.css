@@ -121,4 +121,10 @@
     @apply bg-[#101010] text-white;
     font-family: "Inter Mono", monospace;
   }
+  ul {
+    @apply list-['*'] ml-2.5 list-outside;
+  }
+  ul li {
+    @apply pl-2;
+  }
 }
