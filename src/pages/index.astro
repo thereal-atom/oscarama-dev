@@ -14,48 +14,120 @@ const techStack = [
 ];
 ---
 
-<Layout title="Home - oscarama.dev">
+<Layout title="oscarama | software eng">
   <div
     class="pointer-events-none fixed z-10 h-screen w-screen"
     style="background-size: 64px; background-repeat: repeat; background-image: url('/background-texture.png'); opacity: 0.06;"
   >
   </div>
   <div class="flex flex-col items-center">
-    <div class="flex flex-col w-full sm:w-2xl md:w-3xl px-6 pt-16 pb-16">
+    <div class="flex flex-col w-full sm:w-2xl md:w-3xl px-6 pt-18 pb-32">
       <h1 class="text-3xl font-bold">oscar falemara</h1>
       <div class="flex flex-col mt-8">
         <p class="text-sm text-white/70">
-          i'm a self-taught full stack software engineer from 📍London, currently working as a
-          full-stack software engineer at
+          i'm a self-taught software engineer from 📍 London, currently working as a full-stack web
+          dev at
           <IconLink
             href="https://coloop.ai"
-            src="/coloop.jpeg"
+            src="/logos/coloop.jpeg"
             alt="coloop ai"
             text="coloop ai"
             client:load
           />
+          (yc s21)
         </p>
       </div>
 
       <h2 class="text-xl mt-8 sm:mt-12 md:mt-16">some other things I'm working on</h2>
       <ul class="list-['*'] ml-2.5 list-outside text-sm text-white/70 mt-8">
         <li class="pl-2">
+          helping build better community-brand matching @
+          <IconLink
+            href="https://fanks.co"
+            src="/logos/fanks.png"
+            alt="fanks"
+            text="fanks"
+            client:load
+          />
+        </li>
+        <li class="pl-2">
           running bouldering events in London @
           <IconLink
             href="https://luma.com/outventuring"
-            src="/out-buildering.avif"
+            src="/logos/out-buildering.avif"
             alt="outventuring"
             text="out venturing"
             client:load
           />
         </li>
+      </ul>
+      <h3 class="mt-4">past</h3>
+      <ul class="list-['*'] ml-2.5 list-outside text-sm text-white/70 mt-4">
         <li class="pl-2">
-          helping build better community-brand matching @
+          built bot systems from the ground up @
           <IconLink
-            href="https://luma.com/outventuring"
-            src="/fanks.png"
-            alt="fanks"
-            text="fanks"
+            href="https://discord.gg/exp"
+            src="/logos/exp.webp"
+            alt="EXP"
+            text="EXP"
+            client:load
+          />, with bank systems handling $100,000s of in game value, helping it grow from 2k to 35k+
+          members
+        </li>
+        <li class="pl-2">
+          spent a few months freelancing @ a crypto payments startup, <IconLink
+            href="https://hel.io"
+            src="/logos/helio.jpeg"
+            alt="helio"
+            text="helio"
+            client:load
+          />
+        </li>
+      </ul>
+
+      <h2 class="text-xl mt-8 sm:mt-12 md:mt-16">fun facts about me</h2>
+      <ul class="list-['*'] ml-2.5 list-outside text-sm text-white/70 mt-8">
+        <li class="pl-2">
+          at age 18, before I even finished high school, I joined a <IconLink
+            href="https://coloop.ai"
+            src="/logos/yc.svg"
+            alt="YC Startup"
+            text="YC Startup"
+            client:load
+          /> as a full time software engineer
+        </li>
+        <li class="pl-2">
+          my passion is aerospace 🚀, and I wanna start an <IconLink
+            href="https://spacex.com"
+            src="/logos/spacex.jpeg"
+            alt="spacex"
+            text="aerospace company"
+            client:load
+          /> some day
+        </li>
+        <li class="pl-2">
+          in my time off, I like to climb 🏔️ mountains , 🥾 hike, 🧗 boulder and rock climb
+        </li>
+        <li class="pl-2">
+          at age 17, I spent a few months freelancing @ a crypto payments startup, <IconLink
+            href="https://hel.io"
+            src="/logos/helio.jpeg"
+            alt="helio"
+            text="helio"
+            client:load
+          /> (which later <a
+            href="https://www.moonpay.com/en-gb/newsroom/helio-acquisition"
+            target="_blank"
+            class="underline">sold for $175m</a
+          >)
+        </li>
+        <li class="pl-2">
+          I love photography/videography, so at age 16, I started a drone business with a friend as
+          an economic excuse to buy a drone @ <IconLink
+            href="https://capturedabove.vercel.app"
+            src="/logos/capturedabove.png"
+            alt="captured above"
+            text="captured above"
             client:load
           />
         </li>
@@ -70,6 +142,21 @@ const techStack = [
             </div>
           ))
         }
+      </div>
+
+      <h2 class="text-xl mt-16 sm:mt-24 md:mt-32">let's chat</h2>
+      <div class="flex flex-col mt-8">
+        <p class="text-sm text-white/70">
+          in 2026 I'm trying to meet as many new people as possible
+        </p>
+        <p class="text-sm text-white/70 mt-4">
+          I'd love to chat about anything, over coffee or video call :)
+        </p>
+        <a
+          class="text-sm text-[#E56717] mt-4 underline"
+          target="_blank"
+          href="https://cal.com/oscarama/lets-chat">let's chat!</a
+        >
       </div>
     </div>
   </div>

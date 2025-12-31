@@ -12,7 +12,7 @@
 <a
   {href}
   target="_blank"
-  class="group inline-flex items-center gap-1 align-middle text-white/70 hover:underline dark:text-white transition-all duration-200"
+  class="group inline-flex items-center gap-1 align-middle text-white/70 underline dark:text-white transition-all duration-200"
 >
   <img
     class="h-4 w-4 rounded-xs mb-0.5"
