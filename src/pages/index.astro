@@ -3,23 +3,37 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout title="Home - oscarama.dev">
-  <main class="flex-1 container mx-auto px-4 py-8">
-    <div class="max-w-3xl mx-auto space-y-8">
-      <section class="space-y-4">
-        <h1 class="text-4xl font-bold">Welcome</h1>
-        <p class="text-lg text-muted-foreground">
-          This is a basic Astro site with Svelte, Tailwind CSS, and shadcn.
+  <div
+    class="pointer-events-none absolute z-10 h-full w-screen"
+    style="background-size: 64px; background-repeat: repeat; background-image: url('/background-texture.png'); opacity: 0.06;"
+  >
+  </div>
+  <div class="flex flex-col items-center">
+    <div class="flex flex-col w-3xl pt-32">
+      <h1 class="text-3xl font-bold">oscar falemara</h1>
+      <div class="flex flex-col mt-8">
+        <p class="text-sm text-white/70">
+          i'm a self-taught full stack software engineer from 📍London
         </p>
-      </section>
-
-      <section class="space-y-4">
-        <h2 class="text-2xl font-semibold">Getting Started</h2>
-        <div class="rounded-lg border border-border bg-card p-6">
-          <p class="text-card-foreground">
-            Start building your site by editing the components and pages.
-          </p>
-        </div>
-      </section>
+        <p class="mt-4 text-sm text-white/70">
+          i'm currently working as a full-stack software engineer at
+          <a
+            href="https://coloop.ai"
+            target="_blank"
+            class="inline-flex items-center gap-1 align-middle text-white/70 hover:underline dark:text-white"
+          >
+            <img class="h-4 w-4 rounded-xs mb-0.5" src="/coloop.jpeg" alt="coloop ai" />
+            <span>coloop ai</span>
+          </a>
+        </p>
+      </div>
+      <h2 class="text-xl mt-8">some things I'm working on</h2>
+      <!-- <ul class="list-['*'] ml-2.5 list-outside text-sm text-white/70 mt-4">
+        <li class="pl-2">hi</li>
+        <li class="pl-2">
+          this is a longer list item to show how wrapping text stays aligned properly
+        </li>
+      </ul> -->
     </div>
-  </main>
+  </div>
 </Layout>
