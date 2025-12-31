@@ -19,12 +19,19 @@ const socialLinks = [
 ---
 
 <header class="sticky top-0 z-50">
-  <div class="flex justify-center pt-8 pb-8">
-    <div class="flex items-center justify-between w-full sm:w-2xl md:w-3xl px-6">
-      <a href="/" class="flex items-center gap-2 hover:opacity-80 transition-opacity">
+  <div class="flex justify-center pb-4">
+    <div
+      class="relative flex items-center justify-between w-full sm:w-2xl md:w-3xl px-6 pt-8 pb-4 bg-[#101010]"
+    >
+      <div
+        class="pointer-events-none absolute inset-0"
+        style="background-size: 64px; background-repeat: repeat; background-image: url('/background-texture.png'); opacity: 0.06;"
+      >
+      </div>
+      <a href="/" class="relative flex items-center gap-2 hover:opacity-80 transition-opacity">
         <img src={logoSrc} alt={logoAlt} class="h-8 w-8 rounded-sm" />
       </a>
-      <nav class="flex items-center gap-6">
+      <nav class="relative flex items-center gap-6">
         {
           socialLinks.map((link) => (
             <a
