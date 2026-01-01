@@ -1,23 +1,47 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import IconLink from "../components/IconLink.svelte";
+import { Image } from "astro:assets";
+
+// Import logos
+import coolopLogo from "@/assets/logos/coloop.png";
+import fanksLogo from "@/assets/logos/fanks.png";
+import outBoulderingLogo from "@/assets/logos/out-buildering.png";
+import expLogo from "@/assets/logos/exp.png";
+import helioLogo from "@/assets/logos/helio.png";
+import ycLogo from "@/assets/logos/yc.png";
+import spacexLogo from "@/assets/logos/spacex.png";
+import capturedAboveLogo from "@/assets/logos/capturedabove.png";
+
+// Import tech icons
+import typescriptIcon from "@/assets/techs/typescript.svg";
+import bunIcon from "@/assets/techs/bun.svg";
+import nextjsIcon from "@/assets/techs/nextjs.svg";
+import svelteIcon from "@/assets/techs/svelte.svg";
+import rustIcon from "@/assets/techs/rust.svg";
+import tailwindIcon from "@/assets/techs/tailwindcss.svg";
+import pythonIcon from "@/assets/techs/python.svg";
+import awsIcon from "@/assets/techs/aws.svg";
+
+// Import background texture
+import backgroundTexture from "@/assets/background-texture.png";
 
 const techStack = [
-  { name: "TypeScript", icon: "/techs/typescript.svg" },
-  { name: "Bun", icon: "/techs/bun.svg" },
-  { name: "Next.js", icon: "/techs/nextjs.svg" },
-  { name: "SvelteKit", icon: "/techs/svelte.svg" },
-  { name: "Rust", icon: "/techs/rust.svg" },
-  { name: "Tailwind", icon: "/techs/tailwindcss.svg" },
-  { name: "Python", icon: "/techs/python.svg" },
-  { name: "AWS", icon: "/techs/aws.svg" },
+  { name: "TypeScript", icon: typescriptIcon },
+  { name: "Bun", icon: bunIcon },
+  { name: "Next.js", icon: nextjsIcon },
+  { name: "SvelteKit", icon: svelteIcon },
+  { name: "Rust", icon: rustIcon },
+  { name: "Tailwind", icon: tailwindIcon },
+  { name: "Python", icon: pythonIcon },
+  { name: "AWS", icon: awsIcon },
 ];
 ---
 
 <Layout title="oscarama | software eng">
   <div
     class="pointer-events-none fixed z-10 h-screen w-screen"
-    style="background-size: 64px; background-repeat: repeat; background-image: url('/background-texture.png'); opacity: 0.06;"
+    style={`background-size: 64px; background-repeat: repeat; background-image: url(${backgroundTexture.src}); opacity: 0.06;`}
   >
   </div>
   <div class="flex flex-col items-center">
@@ -29,7 +53,7 @@ const techStack = [
           dev at
           <IconLink
             href="https://coloop.ai"
-            src="/logos/coloop.jpeg"
+            src={coolopLogo.src}
             alt="coloop ai"
             text="coloop ai"
             client:load
@@ -44,7 +68,7 @@ const techStack = [
           helping build better community-brand matching @
           <IconLink
             href="https://fanks.co"
-            src="/logos/fanks.png"
+            src={fanksLogo.src}
             alt="fanks"
             text="fanks"
             client:load
@@ -54,7 +78,7 @@ const techStack = [
           running bouldering events in London @
           <IconLink
             href="https://luma.com/outventuring"
-            src="/logos/out-buildering.avif"
+            src={outBoulderingLogo.src}
             alt="outventuring"
             text="out venturing"
             client:load
@@ -67,7 +91,7 @@ const techStack = [
           built bot systems from the ground up @
           <IconLink
             href="https://discord.gg/exp"
-            src="/logos/exp.webp"
+            src={expLogo.src}
             alt="EXP"
             text="EXP"
             client:load
@@ -77,7 +101,7 @@ const techStack = [
         <li>
           spent a few months freelancing @ a crypto payments startup, <IconLink
             href="https://hel.io"
-            src="/logos/helio.jpeg"
+            src={helioLogo.src}
             alt="helio"
             text="helio"
             client:load
@@ -90,7 +114,7 @@ const techStack = [
         <li>
           at age 18, before I even finished high school, I joined a <IconLink
             href="https://coloop.ai"
-            src="/logos/yc.jpeg"
+            src={ycLogo.src}
             alt="YC Startup"
             text="YC Startup"
             client:load
@@ -99,7 +123,7 @@ const techStack = [
         <li>
           my passion is aerospace 🚀, and I wanna start an <IconLink
             href="https://spacex.com"
-            src="/logos/spacex.jpeg"
+            src={spacexLogo.src}
             alt="spacex"
             text="aerospace company"
             client:load
@@ -109,7 +133,7 @@ const techStack = [
         <li>
           at age 17, I spent a few months freelancing @ a crypto payments startup, <IconLink
             href="https://hel.io"
-            src="/logos/helio.jpeg"
+            src={helioLogo.src}
             alt="helio"
             text="helio"
             client:load
@@ -123,7 +147,7 @@ const techStack = [
           I love photography/videography, so at age 16, I started a drone business with a friend as
           an economic excuse to buy a drone @ <IconLink
             href="https://capturedabove.vercel.app"
-            src="/logos/capturedabove.png"
+            src={capturedAboveLogo.src}
             alt="captured above"
             text="captured above"
             client:load
@@ -136,7 +160,7 @@ const techStack = [
         {
           techStack.map((tech) => (
             <div class="group relative flex py-8 items-center justify-center overflow-hidden border-b border-r border-white transition-colors duration-300">
-              <img src={tech.icon} alt={tech.name} class="h-8 sm:w-10 w-8 sm:h-10" />
+              <Image src={tech.icon} alt={tech.name} class="h-8 sm:w-10 w-8 sm:h-10" />
             </div>
           ))
         }

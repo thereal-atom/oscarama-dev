@@ -1,20 +1,21 @@
 ---
-interface Props {
-  logoSrc?: string;
-  logoAlt?: string;
-}
-
-const { logoSrc = "/oscarama.png", logoAlt = "oscarama" } = Astro.props;
+import { Image } from "astro:assets";
+import oscaramaLogo from "@/assets/oscarama.png";
+import backgroundTexture from "@/assets/background-texture.png";
+import githubIcon from "@/assets/socials/github.svg";
+import linkedinIcon from "@/assets/socials/linkedin.svg";
+import xIcon from "@/assets/socials/x.svg";
+import emailIcon from "@/assets/socials/email.svg";
 
 const socialLinks = [
-  { href: "https://github.com/thereal-atom", icon: "/socials/github.svg", label: "GitHub" },
+  { href: "https://github.com/thereal-atom", icon: githubIcon, label: "GitHub" },
   {
     href: "https://linkedin.com/in/oscarfalemara",
-    icon: "/socials/linkedin.svg",
+    icon: linkedinIcon,
     label: "LinkedIn",
   },
-  { href: "https://x.com/oscarfalll", icon: "/socials/x.svg", label: "X" },
-  // { href: "mailto:hello@oscarama.dev", icon: "/socials/email.svg", label: "Email" },
+  { href: "https://x.com/oscarfalll", icon: xIcon, label: "X" },
+  // { href: "mailto:hello@oscarama.dev", icon: emailIcon, label: "Email" },
 ];
 ---
 
@@ -25,11 +26,11 @@ const socialLinks = [
     >
       <div
         class="pointer-events-none absolute inset-0"
-        style="background-size: 64px; background-repeat: repeat; background-image: url('/background-texture.png'); opacity: 0.06;"
+        style={`background-size: 64px; background-repeat: repeat; background-image: url(${backgroundTexture.src}); opacity: 0.06;`}
       >
       </div>
       <a href="/" class="relative flex items-center gap-2 hover:opacity-80 transition-opacity">
-        <img src={logoSrc} alt={logoAlt} class="h-8 w-8 rounded-sm" />
+        <Image src={oscaramaLogo} alt="oscarama" class="w-8 h-8 rounded-sm" />
       </a>
       <nav class="relative flex items-center gap-6">
         {
@@ -41,7 +42,7 @@ const socialLinks = [
               rel="noopener noreferrer"
               class="hover:opacity-70 transition-opacity duration-200"
             >
-              <img src={link.icon} alt={link.label} class="h-5 w-auto" />
+              <Image src={link.icon} alt={link.label} class="h-5 w-auto" width={24} height={24} />
             </a>
           ))
         }
