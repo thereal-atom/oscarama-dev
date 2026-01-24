@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import IconLink from "../components/IconLink.svelte";
+import BackgroundTexture from "../components/BackgroundTexture.astro";
 import { Image } from "astro:assets";
 
 // Import logos
@@ -23,9 +24,6 @@ import tailwindIcon from "@/assets/techs/tailwindcss.svg";
 import pythonIcon from "@/assets/techs/python.svg";
 import awsIcon from "@/assets/techs/aws.svg";
 
-// Import background texture
-import backgroundTexture from "@/assets/background-texture.png";
-
 const techStack = [
   { name: "TypeScript", icon: typescriptIcon },
   { name: "Bun", icon: bunIcon },
@@ -39,11 +37,7 @@ const techStack = [
 ---
 
 <Layout title="oscarama | software eng">
-  <div
-    class="pointer-events-none fixed z-10 h-screen w-screen"
-    style={`background-size: 64px; background-repeat: repeat; background-image: url(${backgroundTexture.src}); opacity: 0.06;`}
-  >
-  </div>
+  <BackgroundTexture />
   <div class="flex flex-col items-center">
     <div class="flex flex-col w-full sm:w-2xl md:w-3xl px-6 pt-18 pb-32">
       <h1 class="text-3xl font-bold">oscar falemara</h1>
