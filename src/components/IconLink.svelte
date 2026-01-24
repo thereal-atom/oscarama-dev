@@ -13,6 +13,7 @@
   {href}
   target="_blank"
   class="group inline-flex items-center gap-1 align-middle text-white/70 underline dark:text-white transition-all duration-200"
+  onclick={() => window.posthog?.capture('icon_link_clicked', { text, href })}
 >
   <img
     class="h-4 w-4 rounded-xs mb-0.5"

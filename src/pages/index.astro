@@ -147,6 +147,10 @@ const techStack = [
             client:load
           />
         </li>
+        <li>
+          I got my first freelance client less than 5 months after I started code, when I was still
+          14.
+        </li>
       </ul>
 
       <h2 class="text-xl mt-8 sm:mt-12 md:mt-16">tech that I use</h2>
@@ -171,7 +175,8 @@ const techStack = [
         <a
           class="text-sm text-[#E56717] mt-4 underline"
           target="_blank"
-          href="https://cal.com/oscarama/lets-chat">let's chat!</a
+          href="https://cal.com/oscarama/lets-chat"
+          onclick="window.posthog?.capture('lets_chat_clicked')">let's chat!</a
         >
         <p class="text-sm text-white/70 mt-8">some topics I find interesting:</p>
         <ul class="text-sm text-white/70 mt-4">

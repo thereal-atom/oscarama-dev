@@ -5,7 +5,7 @@ import backgroundTexture from "@/assets/background-texture.png";
 import githubIcon from "@/assets/socials/github.svg";
 import linkedinIcon from "@/assets/socials/linkedin.svg";
 import xIcon from "@/assets/socials/x.svg";
-import emailIcon from "@/assets/socials/email.svg";
+// import emailIcon from "@/assets/socials/email.svg";
 
 const socialLinks = [
   { href: "https://github.com/thereal-atom", icon: githubIcon, label: "GitHub" },
@@ -29,9 +29,14 @@ const socialLinks = [
         style={`background-size: 64px; background-repeat: repeat; background-image: url(${backgroundTexture.src}); opacity: 0.06;`}
       >
       </div>
-      <a href="/" class="relative flex items-center gap-2 hover:opacity-80 transition-opacity">
-        <Image src={oscaramaLogo} alt="oscarama" class="w-8 h-8 rounded-sm" />
-      </a>
+      <div class="flex flex-row items-center">
+        <a href="/" class="gap-2 hover:opacity-80 transition-opacity">
+          <Image src={oscaramaLogo} alt="oscarama" class="w-8 h-8 rounded-sm" />
+        </a>
+        <div class="flex flex-row items-center ml-8">
+          <!-- <a href="/blog">blog</a> -->
+        </div>
+      </div>
       <nav class="relative flex items-center gap-6">
         {
           socialLinks.map((link) => (
@@ -41,6 +46,7 @@ const socialLinks = [
               target="_blank"
               rel="noopener noreferrer"
               class="hover:opacity-70 transition-opacity duration-200"
+              onclick={`window.posthog?.capture('social_link_clicked', { platform: '${link.label}' })`}
             >
               <Image src={link.icon} alt={link.label} class="h-5 w-auto" width={24} height={24} />
             </a>
