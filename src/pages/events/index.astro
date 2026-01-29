@@ -1,0 +1,64 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import BackgroundTexture from "../../components/BackgroundTexture.astro";
+import { Image } from "astro:assets";
+
+import outventuringLogo from "@/assets/logos/out-buildering.png";
+import coloopLogo from "@/assets/logos/coloop-new.png";
+
+const eventSeries = [
+  {
+    name: "Out Venturing",
+    slug: "outventuring",
+    logo: outventuringLogo,
+    description: "Bouldering events in London for people who want to climb and meet new people.",
+    lumaUrl: "https://lu.ma/outventuring",
+  },
+  {
+    name: "Coloop Events",
+    slug: "coloop",
+    logo: coloopLogo,
+    description: "Community events, meetups, and gatherings hosted by the Coloop team.",
+    lumaUrl: "https://lu.ma/coloop",
+  },
+];
+---
+
+<Layout
+  title="events | oscarama"
+  description="Events I run - bouldering, community meetups, and more"
+  ogUrl="https://oscarama.dev/events"
+>
+  <BackgroundTexture />
+  <div class="flex flex-col items-center">
+    <div class="flex flex-col w-full sm:w-2xl md:w-3xl px-6 pt-18 pb-32">
+      <h1 class="text-3xl font-bold">events</h1>
+      <p class="text-sm text-white/70 mt-4">
+        I run a few event series in London. Here's where you can find them.
+      </p>
+
+      <div class="flex flex-col gap-6 mt-12">
+        {
+          eventSeries.map((series) => (
+            <a
+              href={`/events/${series.slug}`}
+              class="group flex flex-row items-center gap-4 p-4 border border-white/20 hover:border-white/40 transition-colors"
+            >
+              <Image
+                src={series.logo}
+                alt={series.name}
+                class="w-16 h-16 rounded-sm object-contain"
+              />
+              <div class="flex flex-col">
+                <h2 class="text-lg font-semibold group-hover:text-[#E56717] transition-colors">
+                  {series.name}
+                </h2>
+                <p class="text-sm text-white/70 mt-1">{series.description}</p>
+              </div>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</Layout>

@@ -1,0 +1,70 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import BackgroundTexture from "../../components/BackgroundTexture.astro";
+import { Image } from "astro:assets";
+
+import coloopLogo from "@/assets/logos/coloop-new.png";
+---
+
+<Layout
+  title="Coloop Events | events | oscarama"
+  description="Community events, meetups, and gatherings hosted by the Coloop team"
+  ogUrl="https://oscarama.dev/events/coloop"
+>
+  <BackgroundTexture />
+  <div class="flex flex-col items-center">
+    <div class="flex flex-col w-full sm:w-2xl md:w-3xl px-6 pt-18 pb-32">
+      <a href="/events" class="text-sm text-white/50 hover:text-white/70 transition-colors mb-4">
+        &larr; all events
+      </a>
+
+      <div class="flex flex-row items-center gap-4">
+        <Image src={coloopLogo} alt="Coloop Events" class="w-16 h-16 rounded-sm object-contain" />
+        <div>
+          <h1 class="text-3xl font-bold">Coloop Events</h1>
+          <a
+            href="https://lu.ma/coloop"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-sm text-[#E56717] hover:underline"
+          >
+            lu.ma/coloop
+          </a>
+        </div>
+      </div>
+
+      <p class="text-sm text-white/70 mt-6">
+        Community events, meetups, and gatherings hosted by the Coloop team. Join us for tech
+        talks, networking events, and more.
+      </p>
+
+      <h2 class="text-xl mt-12 mb-6">upcoming & past events</h2>
+
+      <div class="w-full border border-white/20 rounded-sm overflow-hidden bg-[#1a1a1a]">
+        <iframe
+          src="https://lu.ma/embed/calendar/cal-s9dPkrJLF4d8WgS/events"
+          width="100%"
+          height="600"
+          frameborder="0"
+          style="border: none; background: transparent;"
+          allowfullscreen
+          aria-hidden="false"
+          tabindex="0"
+        >
+        </iframe>
+      </div>
+
+      <p class="text-sm text-white/50 mt-4">
+        View all events and RSVP on{" "}
+        <a
+          href="https://lu.ma/coloop"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-[#E56717] hover:underline"
+        >
+          Luma
+        </a>
+      </p>
+    </div>
+  </div>
+</Layout>

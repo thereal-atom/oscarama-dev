@@ -1,0 +1,74 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import BackgroundTexture from "../../components/BackgroundTexture.astro";
+import { Image } from "astro:assets";
+
+import outventuringLogo from "@/assets/logos/out-buildering.png";
+---
+
+<Layout
+  title="Out Venturing | events | oscarama"
+  description="Bouldering events in London - climb, meet new people, and have fun"
+  ogUrl="https://oscarama.dev/events/outventuring"
+>
+  <BackgroundTexture />
+  <div class="flex flex-col items-center">
+    <div class="flex flex-col w-full sm:w-2xl md:w-3xl px-6 pt-18 pb-32">
+      <a href="/events" class="text-sm text-white/50 hover:text-white/70 transition-colors mb-4">
+        &larr; all events
+      </a>
+
+      <div class="flex flex-row items-center gap-4">
+        <Image
+          src={outventuringLogo}
+          alt="Out Venturing"
+          class="w-16 h-16 rounded-sm object-contain"
+        />
+        <div>
+          <h1 class="text-3xl font-bold">Out Venturing</h1>
+          <a
+            href="https://lu.ma/outventuring"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-sm text-[#E56717] hover:underline"
+          >
+            lu.ma/outventuring
+          </a>
+        </div>
+      </div>
+
+      <p class="text-sm text-white/70 mt-6">
+        Bouldering events in London for people who want to climb and meet new people. Whether you're
+        a complete beginner or an experienced climber, come join us!
+      </p>
+
+      <h2 class="text-xl mt-12 mb-6">upcoming & past events</h2>
+
+      <div class="w-full border border-white/20 rounded-sm overflow-hidden bg-[#1a1a1a]">
+        <iframe
+          src="https://lu.ma/embed/calendar/cal-7wFjqNpnkWGXXNy/events"
+          width="100%"
+          height="600"
+          frameborder="0"
+          style="border: none; background: transparent;"
+          allowfullscreen
+          aria-hidden="false"
+          tabindex="0"
+        >
+        </iframe>
+      </div>
+
+      <p class="text-sm text-white/50 mt-4">
+        View all events and RSVP on{" "}
+        <a
+          href="https://lu.ma/outventuring"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-[#E56717] hover:underline"
+        >
+          Luma
+        </a>
+      </p>
+    </div>
+  </div>
+</Layout>
