@@ -1,25 +1,23 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-import BackgroundTexture from "../../components/BackgroundTexture.astro";
-import { Image } from "astro:assets";
+import Layout from "@/layouts/Layout.astro";
+import BackgroundTexture from "@/components/BackgroundTexture.astro";
+import EventSeriesCard from "@/components/EventSeriesCard.astro";
 
 import outventuringLogo from "@/assets/logos/out-buildering.png";
 import coloopLogo from "@/assets/logos/coloop-new.png";
 
 const eventSeries = [
   {
-    name: "Out Venturing",
+    name: "Out Buildering",
     slug: "outventuring",
     logo: outventuringLogo,
     description: "Bouldering events in London for people who want to climb and meet new people.",
-    lumaUrl: "https://lu.ma/outventuring",
   },
   {
     name: "CoLoop Events",
     slug: "coloop",
     logo: coloopLogo,
     description: "Community events, meetups, and gatherings hosted by the Coloop team.",
-    lumaUrl: "https://lu.ma/coloop",
   },
 ];
 ---
@@ -40,22 +38,12 @@ const eventSeries = [
       <div class="flex flex-col gap-6 mt-12">
         {
           eventSeries.map((series) => (
-            <a
-              href={`/events/${series.slug}`}
-              class="group flex flex-row items-center gap-4 p-4 border border-white/20 hover:border-white/40 transition-colors"
-            >
-              <Image
-                src={series.logo}
-                alt={series.name}
-                class="w-16 h-16 rounded-sm object-contain"
-              />
-              <div class="flex flex-col">
-                <h2 class="text-lg font-semibold group-hover:text-[#E56717] transition-colors">
-                  {series.name}
-                </h2>
-                <p class="text-sm text-white/70 mt-1">{series.description}</p>
-              </div>
-            </a>
+            <EventSeriesCard
+              name={series.name}
+              slug={series.slug}
+              logo={series.logo}
+              description={series.description}
+            />
           ))
         }
       </div>
