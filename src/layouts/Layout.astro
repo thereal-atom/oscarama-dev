@@ -1,4 +1,5 @@
 ---
+import BackgroundTexture from "@/components/BackgroundTexture.astro";
 import "../styles/global.css";
 import Header from "@/components/Header.astro";
 import Posthog from "@/components/posthog.astro";
@@ -53,6 +54,7 @@ const {
     <title>{title}</title>
   </head>
   <body>
+    <BackgroundTexture />
     <div class="min-h-screen flex flex-col">
       <Header />
       <slot />

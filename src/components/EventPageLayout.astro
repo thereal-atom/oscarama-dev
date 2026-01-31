@@ -1,6 +1,5 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import BackgroundTexture from "@/components/BackgroundTexture.astro";
 import { Image } from "astro:assets";
 import type { ImageMetadata } from "astro";
 
@@ -22,7 +21,6 @@ const lumaDisplayUrl = lumaUrl.replace("https://", "");
   description={description}
   ogUrl={`https://oscarama.dev/events/${slug}`}
 >
-  <BackgroundTexture />
   <div class="flex flex-col items-center">
     <div class="flex flex-col w-full sm:w-2xl md:w-3xl px-6 pt-18 pb-32">
       <a
