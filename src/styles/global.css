@@ -119,7 +119,7 @@
   }
   body {
     @apply bg-[#101010] text-white;
-    font-family: "Inter Mono", monospace;
+    font-family: monospace;
   }
   ul {
     @apply list-['*'] ml-2.5 list-outside;
