@@ -127,4 +127,7 @@
   ul li {
     @apply pl-2;
   }
+  button {
+    @apply hover:cursor-pointer;
+  }
 }
