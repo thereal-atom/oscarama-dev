@@ -177,52 +177,30 @@ const techStack = [
       <h2 class="text-xl mt-16 sm:mt-24 md:mt-32">let's chat</h2>
       <div class="flex flex-col mt-8">
         <p class="text-sm text-white/70">
-          in 2026 I'm trying to meet as many new people as possible
+          in 2026 I'm on a mission to meet as many new people as possible.
         </p>
         <p class="text-sm text-white/70 mt-4">
-          I'd love to chat about anything, over coffee or video call :)
+          whether you're building something cool, exploring a wild idea, or just want to talk about
+          rockets and climbing walls - I'm always down for a good conversation.
         </p>
-        <a
-          class="text-sm text-[#E56717] mt-4 underline"
-          target="_blank"
-          href="https://cal.com/oscarama/lets-chat"
-          onclick="window.posthog?.capture('lets_chat_clicked')">let's chat!</a
-        >
-        <p class="text-sm text-white/70 mt-8">some topics I find interesting:</p>
-        <ul class="text-sm text-white/70 mt-4">
-          <li>
-            <span class="font-semibold text-white">aerospace:</span> rockets, planes, drones, sattelites;
-            their aerodynamics, avionics, propulsion, material science and everything in between
-          </li>
-          <li>
-            <span class="font-semibold text-white">AI (classic lol):</span> AGI, agents, fine tuning,
-            architecture, data
-          </li>
-          <li>
-            <span class="font-semibold text-white">embedded systems:</span> microcontrollers, RTOS, comm
-            protocols, QA, signal processing
-          </li>
-          <li>
-            <span class="font-semibold text-white">other buzzwords:</span> systems programming, computer
-            architecture, networking, quantum computing, cybersec
-          </li>
-          <li>
-            <span class="font-semibold text-white">blockchain:</span> proof of stake vs proof of work,
-            zero knowledge proof, economics of tokens, payments
-          </li>
-          <li>
-            <span class="font-semibold text-white">outdoors:</span> mountaineering, ultralight camping
-            & hiking, bouldering & rock climbing, alpine mountaineering
-          </li>
-          <li>
-            quantum physics, nuclear fusion, psychology, neuroscience, genetics, chemical
-            engineering
-          </li>
-          <li>
-            literally anything else in science, technology, engineering and maths, as well as
-            business and content creation
-          </li>
-        </ul>
+        <a class="text-sm text-[#E56717] mt-4 underline" href="/chat">book a time &rarr;</a>
+        <p class="text-sm text-white/70 mt-4">
+          or reach me on{" "}
+          <a
+            href="https://x.com/oscarfalll"
+            target="_blank"
+            class="text-[#E56717] hover:underline"
+            onclick="window.posthog?.capture('social_link_clicked', { platform: 'X' })">X</a
+          >{" "}
+          /{" "}
+          <a
+            href="https://linkedin.com/in/oscarfalemara"
+            target="_blank"
+            class="text-[#E56717] hover:underline"
+            onclick="window.posthog?.capture('social_link_clicked', { platform: 'LinkedIn' })"
+            >LinkedIn</a
+          > - DMs are open.
+        </p>
       </div>
     </div>
   </div>
