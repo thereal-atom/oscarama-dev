@@ -5,9 +5,11 @@ import backgroundTexture from "@/assets/background-texture.png";
 import githubIcon from "@/assets/socials/github.svg";
 import linkedinIcon from "@/assets/socials/linkedin.svg";
 import xIcon from "@/assets/socials/x.svg";
+import calendarIcon from "@/assets/socials/cal-com.svg";
 // import emailIcon from "@/assets/socials/email.svg";
 
 const socialLinks = [
+  { href: "https://cal.oscarama.dev", icon: calendarIcon, label: "Calendar" },
   { href: "https://github.com/thereal-atom", icon: githubIcon, label: "GitHub" },
   {
     href: "https://linkedin.com/in/oscarfalemara",
@@ -35,6 +37,7 @@ const socialLinks = [
         </a>
         <div class="flex flex-row items-center ml-8 gap-6">
           <a href="/events" class="text-sm hover:opacity-70 transition-opacity">events</a>
+          <a href="/chat" class="text-sm hover:opacity-70 transition-opacity">let's chat</a>
         </div>
       </div>
       <nav class="relative flex items-center gap-6">
@@ -48,7 +51,7 @@ const socialLinks = [
               class="hover:opacity-70 transition-opacity duration-200"
               onclick={`window.posthog?.capture('social_link_clicked', { platform: '${link.label}' })`}
             >
-              <Image src={link.icon} alt={link.label} class="h-5 w-auto" width={24} height={24} />
+              <Image src={link.icon} alt={link.label} class="h-5 w-auto" width={20} height={20} />
             </a>
           ))
         }
