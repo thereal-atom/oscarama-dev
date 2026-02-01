@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "923d804c-04ab-4081-be89-b37478eed888",
+  "id": "920ae04d-b876-4095-aa13-04964df62932",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "subscriptions": {
@@ -44,6 +44,13 @@
         },
         "notes": {
           "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "raw": {
+          "name": "raw",
           "type": "text",
           "primaryKey": false,
           "notNull": false,

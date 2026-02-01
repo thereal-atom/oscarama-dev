@@ -5,6 +5,7 @@ CREATE TABLE `subscriptions` (
 	`interests` text,
 	`channels` text,
 	`notes` text,
+	`raw` text,
 	`created_at` text NOT NULL
 );
 --> statement-breakpoint
