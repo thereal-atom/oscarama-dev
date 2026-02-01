@@ -1,41 +1,25 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import EventSeriesCard from "@/components/EventSeriesCard.astro";
-
-import outventuringLogo from "@/assets/logos/out-buildering.png";
-import coloopLogo from "@/assets/logos/coloop-new.png";
-
-const eventSeries = [
-  {
-    name: "Out Buildering",
-    slug: "outventuring",
-    logo: outventuringLogo,
-    description: "Bouldering events in London for people who want to climb and meet new people.",
-  },
-  {
-    name: "CoLoop Events",
-    slug: "coloop",
-    logo: coloopLogo,
-    description: "Community events, meetups, and gatherings hosted by the Coloop team.",
-  },
-];
+import { eventSeriesList } from "@/data/eventSeries";
 ---
 
 <Layout
   title="events | oscarama"
-  description="Events I run - bouldering, community meetups, and more"
+  description="bouldering, dinners, coworking, hackathons - I like to run events in London."
   ogUrl="https://oscarama.dev/events"
 >
   <div class="flex flex-col items-center">
     <div class="flex flex-col w-full sm:w-2xl md:w-3xl px-6 pt-18 pb-32">
       <h1 class="text-3xl font-bold">events</h1>
       <p class="text-sm text-white/70 mt-4">
-        I run a few event series in London. Here's where you can find them.
+        bouldering, dinners, coworking, hackathons - I like to run events in London. sign up for
+        some below :)
       </p>
 
       <div class="flex flex-col gap-6 mt-12">
         {
-          eventSeries.map((series) => (
+          eventSeriesList.map((series) => (
             <EventSeriesCard
               name={series.name}
               slug={series.slug}

@@ -1,13 +1,15 @@
 ---
 import EventPageLayout from "@/components/EventPageLayout.astro";
-import outventuringLogo from "@/assets/logos/out-buildering.png";
+import { eventSeries } from "@/data/eventSeries";
+
+const data = eventSeries.outventuring;
 ---
 
 <EventPageLayout
-  name="Out Buildering"
-  slug="outventuring"
-  logo={outventuringLogo}
-  description="Bouldering events in London for people who want to climb and meet new people. Whether you're a complete beginner or an experienced climber, come join us!"
-  lumaUrl="https://lu.ma/outventuring"
-  lumaCalendarId="cal-XR9yMbuVv84aRKj"
+  name={data.name}
+  slug={data.slug}
+  logo={data.logo}
+  description={data.description}
+  lumaUrl={data.lumaUrl}
+  lumaCalendarId={data.lumaCalendarId}
 />

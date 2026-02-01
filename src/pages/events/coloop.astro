@@ -1,13 +1,15 @@
 ---
 import EventPageLayout from "@/components/EventPageLayout.astro";
-import coloopLogo from "@/assets/logos/coloop-new.png";
+import { eventSeries } from "@/data/eventSeries";
+
+const data = eventSeries.coloop;
 ---
 
 <EventPageLayout
-  name="CoLoop Events"
-  slug="coloop"
-  logo={coloopLogo}
-  description="Community events, meetups, and gatherings hosted by the Coloop team. Join us for tech talks, networking events, and more."
-  lumaUrl="https://lu.ma/coloop"
-  lumaCalendarId="cal-iTDg1jJCygIbf5u"
+  name={data.name}
+  slug={data.slug}
+  logo={data.logo}
+  description={data.description}
+  lumaUrl={data.lumaUrl}
+  lumaCalendarId={data.lumaCalendarId}
 />
