@@ -1,0 +1,22 @@
+---
+import PageLayout from "@/layouts/PageLayout.astro";
+import SubscribeForm from "@/components/SubscribeForm.svelte";
+
+const TURNSTILE_SITEKEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
+---
+
+<PageLayout
+  title="subscribe | events | oscarama"
+  description="Get notified about upcoming events - bouldering, dinners, coworking, hackathons in London."
+  ogUrl="https://oscarama.dev/events/subscribe"
+  class="pt-12 pb-12 max-sm:pt-12"
+>
+  <h1 class="text-3xl font-bold">stay in the loop</h1>
+  <p class="text-sm text-white/70 mt-4">
+    get notified when I run events in London. no spam, just good times.
+  </p>
+
+  <SubscribeForm client:load sitekey={TURNSTILE_SITEKEY} />
+
+  <p class="text-xs text-white/40 mt-6">you can unsubscribe anytime. I respect your inbox.</p>
+</PageLayout>

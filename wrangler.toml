@@ -1,0 +1,11 @@
+name = "oscarama-dev"
+compatibility_date = "2025-11-18"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "oscarama-db"
+database_id = "ab36a6c1-d3ca-4a59-835b-f6bb6c024237"
+
+# Secrets (set via: npx wrangler secret put <SECRET_NAME>)
+# RESEND_API_KEY
+# TURNSTILE_SECRET

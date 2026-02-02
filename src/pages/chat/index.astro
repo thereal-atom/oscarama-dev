@@ -1,126 +1,122 @@
 ---
-import Layout from "@/layouts/Layout.astro";
+import PageLayout from "@/layouts/PageLayout.astro";
 ---
 
-<Layout
+<PageLayout
   title="let's chat | oscarama"
   description="I'd love to meet you. Let's grab coffee or hop on a call."
   ogUrl="https://oscarama.dev/chat"
 >
-  <div class="flex flex-col items-center">
-    <div class="flex flex-col w-full sm:w-2xl md:w-3xl px-6 pt-18 pb-32">
-      <a class="text-sm text-white/50 hover:text-white/70 transition-colors" href="/">
-        &larr; back home
-      </a>
+  <a class="text-sm text-white/50 hover:text-white/70 transition-colors" href="/">
+    &larr; back home
+  </a>
 
-      <h1 class="text-3xl font-bold mt-8">let's chat</h1>
+  <h1 class="text-3xl font-bold mt-8">let's chat</h1>
 
-      <div class="flex flex-col mt-8">
-        <p class="text-lg text-white/90">
-          in 2026 I'm on a mission to meet as many interesting people as possible.
-        </p>
-        <p class="text-sm text-white/70 mt-4">
-          whether you're building something cool, exploring a wild idea, or just want to talk about
-          rockets and climbing walls - I'm always down for a good conversation.
-        </p>
+  <div class="flex flex-col mt-8">
+    <p class="text-lg text-white/90">
+      in 2026 I'm on a mission to meet as many interesting people as possible.
+    </p>
+    <p class="text-sm text-white/70 mt-4">
+      whether you're building something cool, exploring a wild idea, or just want to talk about
+      rockets and climbing walls - I'm always down for a good conversation.
+    </p>
+  </div>
+
+  <a
+    class="inline-flex items-center justify-center w-full sm:w-fit mt-10 px-8 py-4 bg-[#E56717] text-white font-semibold rounded-lg hover:bg-[#c9550f] transition-colors duration-200"
+    href="https://cal.oscarama.dev"
+    onclick="window.posthog?.capture('lets_chat_clicked', { source: 'chat_page' })"
+  >
+    book a time to chat
+  </a>
+
+  <p class="text-sm text-white/70 mt-10">
+    this is a convenient way to do it, but I'd honestly rather you just DM me :p<br />{" "}
+    <a
+      href="https://x.com/oscarfalll"
+      target="_blank"
+      class="text-[#E56717] hover:underline"
+      onclick="window.posthog?.capture('social_link_clicked', { platform: 'X', source: 'chat_page' })"
+      >Twitter</a
+    >{" "}
+    or{" "}
+    <a
+      href="https://linkedin.com/in/oscarfalemara"
+      target="_blank"
+      class="text-[#E56717] hover:underline"
+      onclick="window.posthog?.capture('social_link_clicked', { platform: 'LinkedIn', source: 'chat_page' })"
+      >LinkedIn</a
+    > - DMs are always open. or if I know you, then WhatsApp is best :)
+  </p>
+  <p class="text-sm text-white/70 mt-6">
+    I also run events in London - <a
+      href="/events"
+      target="_blank"
+      class="text-[#E56717] hover:underline">sign up</a
+    > to one!
+  </p>
+
+  <div class="mt-16 pt-8 border-t border-white/10">
+    <h2 class="text-xl font-semibold">how it works</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-6">
+      <div class="flex flex-col">
+        <span class="text-2xl font-bold text-[#E56717]">01</span>
+        <h3 class="text-sm font-semibold mt-2">pick a time</h3>
+        <p class="text-sm text-white/60 mt-1">choose a time slot that works for you</p>
       </div>
-
-      <a
-        class="inline-flex items-center justify-center w-full sm:w-fit mt-10 px-8 py-4 bg-[#E56717] text-white font-semibold rounded-lg hover:bg-[#c9550f] transition-colors duration-200"
-        href="https://cal.oscarama.dev"
-        onclick="window.posthog?.capture('lets_chat_clicked', { source: 'chat_page' })"
-      >
-        book a time to chat
-      </a>
-
-      <p class="text-sm text-white/70 mt-10">
-        not into scheduling? you can also reach me on{" "}
-        <a
-          href="https://x.com/oscarfalll"
-          target="_blank"
-          class="text-[#E56717] hover:underline"
-          onclick="window.posthog?.capture('social_link_clicked', { platform: 'X', source: 'chat_page' })"
-          >X</a
-        >{" "}
-        or{" "}
-        <a
-          href="https://linkedin.com/in/oscarfalemara"
-          target="_blank"
-          class="text-[#E56717] hover:underline"
-          onclick="window.posthog?.capture('social_link_clicked', { platform: 'LinkedIn', source: 'chat_page' })"
-          >LinkedIn</a
-        > - DMs are always open.
-      </p>
-      <p class="text-sm text-white/70 mt-6">
-        I also run events in London - <a
-          href="/events"
-          target="_blank"
-          class="text-[#E56717] hover:underline">sign up</a
-        > to one!
-      </p>
-
-      <div class="mt-16 pt-8 border-t border-white/10">
-        <h2 class="text-xl font-semibold">how it works</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-6">
-          <div class="flex flex-col">
-            <span class="text-2xl font-bold text-[#E56717]">01</span>
-            <h3 class="text-sm font-semibold mt-2">pick a time</h3>
-            <p class="text-sm text-white/60 mt-1">choose a time slot that works for you</p>
-          </div>
-          <div class="flex flex-col">
-            <span class="text-2xl font-bold text-[#E56717]">02</span>
-            <h3 class="text-sm font-semibold mt-2">choose the format</h3>
-            <p class="text-sm text-white/60 mt-1">coffee in London or video call from anywhere</p>
-          </div>
-          <div class="flex flex-col">
-            <span class="text-2xl font-bold text-[#E56717]">03</span>
-            <h3 class="text-sm font-semibold mt-2">let's talk</h3>
-            <p class="text-sm text-white/60 mt-1">no agenda needed - just good conversation</p>
-          </div>
-        </div>
+      <div class="flex flex-col">
+        <span class="text-2xl font-bold text-[#E56717]">02</span>
+        <h3 class="text-sm font-semibold mt-2">choose the format</h3>
+        <p class="text-sm text-white/60 mt-1">coffee in London or video call from anywhere</p>
       </div>
-
-      <div class="mt-16 pt-8 border-t border-white/10">
-        <h2 class="text-xl font-semibold">things I love talking about</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 mt-6">
-          <div class="flex flex-col">
-            <h3 class="text-sm font-semibold text-white">aerospace</h3>
-            <p class="text-sm text-white/60">
-              rockets, drones, satellites - how they fly, how they're built, and the future of space
-            </p>
-          </div>
-          <div class="flex flex-col">
-            <h3 class="text-sm font-semibold text-white">AI & agents</h3>
-            <p class="text-sm text-white/60">
-              AGI timelines, fine-tuning, architecture, and actually useful applications
-            </p>
-          </div>
-          <div class="flex flex-col">
-            <h3 class="text-sm font-semibold text-white">embedded systems</h3>
-            <p class="text-sm text-white/60">
-              microcontrollers, RTOS, signal processing - the stuff that makes hardware tick
-            </p>
-          </div>
-          <div class="flex flex-col">
-            <h3 class="text-sm font-semibold text-white">the outdoors</h3>
-            <p class="text-sm text-white/60">
-              mountaineering, bouldering, ultralight hiking - bonus points if you have beta
-            </p>
-          </div>
-          <div class="flex flex-col">
-            <h3 class="text-sm font-semibold text-white">blockchain & crypto</h3>
-            <p class="text-sm text-white/60">
-              ZK proofs, token economics, actual real-world payment use cases
-            </p>
-          </div>
-          <div class="flex flex-col">
-            <h3 class="text-sm font-semibold text-white">everything else</h3>
-            <p class="text-sm text-white/60">
-              quantum physics, nuclear fusion, neuroscience, or whatever you're excited about
-            </p>
-          </div>
-        </div>
+      <div class="flex flex-col">
+        <span class="text-2xl font-bold text-[#E56717]">03</span>
+        <h3 class="text-sm font-semibold mt-2">let's talk</h3>
+        <p class="text-sm text-white/60 mt-1">no agenda needed - just good conversation</p>
       </div>
     </div>
   </div>
-</Layout>
+
+  <div class="mt-16 pt-8 border-t border-white/10">
+    <h2 class="text-xl font-semibold">things I love talking about</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 mt-6">
+      <div class="flex flex-col">
+        <h3 class="text-sm font-semibold text-white">aerospace</h3>
+        <p class="text-sm text-white/60">
+          rockets, drones, satellites - how they fly, how they're built, and the future of space
+        </p>
+      </div>
+      <div class="flex flex-col">
+        <h3 class="text-sm font-semibold text-white">AI & agents</h3>
+        <p class="text-sm text-white/60">
+          AGI timelines, fine-tuning, architecture, and actually useful applications
+        </p>
+      </div>
+      <div class="flex flex-col">
+        <h3 class="text-sm font-semibold text-white">embedded systems</h3>
+        <p class="text-sm text-white/60">
+          microcontrollers, RTOS, signal processing - the stuff that makes hardware tick
+        </p>
+      </div>
+      <div class="flex flex-col">
+        <h3 class="text-sm font-semibold text-white">the outdoors</h3>
+        <p class="text-sm text-white/60">
+          mountaineering, bouldering, ultralight hiking - bonus points if you have beta
+        </p>
+      </div>
+      <div class="flex flex-col">
+        <h3 class="text-sm font-semibold text-white">blockchain & crypto</h3>
+        <p class="text-sm text-white/60">
+          ZK proofs, token economics, actual real-world payment use cases
+        </p>
+      </div>
+      <div class="flex flex-col">
+        <h3 class="text-sm font-semibold text-white">everything else</h3>
+        <p class="text-sm text-white/60">
+          quantum physics, nuclear fusion, neuroscience, or whatever you're excited about
+        </p>
+      </div>
+    </div>
+  </div>
+</PageLayout>
