@@ -26,7 +26,6 @@
 
   let isSubmitting = $state(false);
   let message = $state<{ text: string; type: "success" | "error" } | null>(null);
-  let turnstileKey = $state(0);
 
   function toggleInterest(value: string) {
     if (interests.includes(value)) {
@@ -73,7 +72,6 @@
       message = { text: "something went wrong. please try again.", type: "error" };
     } finally {
       isSubmitting = false;
-      turnstileKey++; // Reset Turnstile widget for next submission
     }
   }
 </script>
@@ -188,11 +186,9 @@
     ></textarea>
   </div>
 
-  {#if sitekey}
-    {#key turnstileKey}
-      <Turnstile siteKey={sitekey} theme="dark" appearance="interaction-only" />
-    {/key}
-  {/if}
+  <!-- {#if sitekey}
+    <Turnstile siteKey={sitekey} theme="dark" appearance="interaction-only" />
+  {/if} -->
 
   <button
     type="submit"

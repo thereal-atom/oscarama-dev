@@ -30,17 +30,17 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const formData = await request.formData();
     const env = locals.runtime.env as Record<string, unknown>;
 
-    const turnstileToken = formData.get("cf-turnstile-response")?.toString();
-    const turnstileSecret = env.TURNSTILE_SECRET_KEY as string;
-    if (!turnstileSecret) {
-      throw new Error("Turnstile not configured");
-    }
-    if (!turnstileToken || !(await verifyTurnstile(turnstileToken, turnstileSecret))) {
-      return new Response(
-        JSON.stringify({ success: false, error: "Bot verification failed. Please try again." }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
-      );
-    }
+    // const turnstileToken = formData.get("cf-turnstile-response")?.toString();
+    // const turnstileSecret = env.TURNSTILE_SECRET_KEY as string;
+    // if (!turnstileSecret) {
+    //   throw new Error("Turnstile not configured");
+    // }
+    // if (!turnstileToken || !(await verifyTurnstile(turnstileToken, turnstileSecret))) {
+    //   return new Response(
+    //     JSON.stringify({ success: false, error: "Bot verification failed. Please try again." }),
+    //     { status: 400, headers: { "Content-Type": "application/json" } }
+    //   );
+    // }
 
     const rawData = {
       name: formData.get("name")?.toString() ?? "",
