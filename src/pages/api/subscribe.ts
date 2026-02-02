@@ -1,10 +1,13 @@
 import type { APIRoute } from "astro";
 import type { D1Database } from "@cloudflare/workers-types";
 import { drizzle } from "drizzle-orm/d1";
+import { Resend } from "resend";
 import { z } from "zod";
 import { subscriptions } from "@/db/schema";
 
 export const prerender = false;
+
+const RESEND_WELCOME_TEMPLATE_ID = "d92f9ffd-14dc-43cf-b858-dd75fda0c26e";
 
 const subscribeSchema = z.object({
   name: z
@@ -69,6 +72,23 @@ export const POST: APIRoute = async ({ request, locals }) => {
       notes,
       raw: JSON.stringify(parsed.data),
     });
+
+    const resendApiKey = env.RESEND_API_KEY as string;
+    if (!resendApiKey) {
+      throw new Error("Email service not configured");
+    }
+
+    const resend = new Resend(resendApiKey);
+    const emailResult = await resend.emails.send({
+      from: "oscarama <hey@updates.oscarama.dev>",
+      to: email,
+      subject: "you're in!",
+      template: { id: RESEND_WELCOME_TEMPLATE_ID, variables: { name } },
+    });
+
+    if (emailResult.error) {
+      throw new Error(`Failed to send welcome email: ${emailResult.error.message}`);
+    }
 
     return new Response(JSON.stringify({ success: true, message: "Subscribed successfully!" }), {
       status: 200,

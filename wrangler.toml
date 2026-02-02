@@ -5,3 +5,6 @@ compatibility_date = "2025-11-18"
 binding = "DB"
 database_name = "oscarama-db"
 database_id = "ab36a6c1-d3ca-4a59-835b-f6bb6c024237"
+
+# Secrets (set via: npx wrangler secret put RESEND_API_KEY)
+# RESEND_API_KEY
