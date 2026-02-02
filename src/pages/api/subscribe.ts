@@ -4,32 +4,18 @@ import { drizzle } from "drizzle-orm/d1";
 import { Resend } from "resend";
 import { z } from "zod";
 import { subscriptions } from "@/db/schema";
+import { verifyTurnstile } from "@/utils/turnstile";
 
 export const prerender = false;
 
 const RESEND_WELCOME_TEMPLATE_ID = "d92f9ffd-14dc-43cf-b858-dd75fda0c26e";
-const TURNSTILE_VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
-
-async function verifyTurnstile(token: string, secret: string): Promise<boolean> {
-  const response = await fetch(TURNSTILE_VERIFY_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({ secret, response: token }),
-  });
-  const result = (await response.json()) as { success: boolean };
-  return result.success;
-}
 
 const subscribeSchema = z.object({
   name: z
     .string()
     .min(1, "Name is required")
     .transform((v) => v.trim()),
-  email: z
-    .string()
-    .min(1, "Email is required")
-    .email("Invalid email format")
-    .transform((v) => v.trim().toLowerCase()),
+  email: z.email("Invalid email format").transform((v) => v.trim().toLowerCase()),
   interests: z.array(z.string()).min(1, "Select at least one event interest"),
   channels: z.array(z.string()).default([]),
   notes: z
@@ -44,14 +30,11 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const formData = await request.formData();
     const env = locals.runtime.env as Record<string, unknown>;
 
-    // Verify Turnstile token
     const turnstileToken = formData.get("cf-turnstile-response")?.toString();
     const turnstileSecret = env.TURNSTILE_SECRET_KEY as string;
-
     if (!turnstileSecret) {
       throw new Error("Turnstile not configured");
     }
-
     if (!turnstileToken || !(await verifyTurnstile(turnstileToken, turnstileSecret))) {
       return new Response(
         JSON.stringify({ success: false, error: "Bot verification failed. Please try again." }),
@@ -59,7 +42,6 @@ export const POST: APIRoute = async ({ request, locals }) => {
       );
     }
 
-    // Extract form fields
     const rawData = {
       name: formData.get("name")?.toString() ?? "",
       email: formData.get("email")?.toString() ?? "",
@@ -68,11 +50,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
       notes: formData.get("notes")?.toString() ?? null,
     };
 
-    // Validate with Zod
     const parsed = subscribeSchema.safeParse(rawData);
-
     if (!parsed.success) {
-      const firstError = parsed.error.errors[0]?.message ?? "Invalid input";
+      const firstError = parsed.error.issues[0]?.message ?? "Invalid input";
       return new Response(JSON.stringify({ success: false, error: firstError }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
@@ -83,7 +63,6 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     // Get D1 binding (DB in production, oscarama_db locally via wrangler pages dev)
     const d1 = (env.DB || env.oscarama_db) as D1Database;
-
     if (!d1) {
       throw new Error("D1 database binding not found");
     }
@@ -121,17 +100,6 @@ export const POST: APIRoute = async ({ request, locals }) => {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    // Handle unique constraint violation (duplicate email)
-    if (error instanceof Error && error.message.includes("UNIQUE constraint failed")) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: "This email is already subscribed",
-        }),
-        { status: 409, headers: { "Content-Type": "application/json" } }
-      );
-    }
-
     console.error("Subscription error:", error);
     return new Response(JSON.stringify({ success: false, error: "Something went wrong" }), {
       status: 500,
