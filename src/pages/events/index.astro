@@ -10,33 +10,33 @@ import { eventSeriesList } from "@/data/eventSeries";
   ogUrl="https://oscarama.dev/events"
 >
   <h1 class="text-3xl font-bold">events</h1>
-      <p class="text-sm text-white/70 mt-4">
-        bouldering, dinners, coworking, hackathons - I like to run events in London. sign up for
-        some below :)
-      </p>
+  <p class="text-sm text-white/70 mt-4">
+    bouldering, dinners, coworking, hackathons - I like to run events in London. sign up for some
+    below :)
+  </p>
 
-      <div class="flex flex-col gap-6 mt-12">
-        {
-          eventSeriesList.map((series) => (
-            <EventSeriesCard
-              name={series.name}
-              slug={series.slug}
-              logo={series.logo}
-              description={series.description}
-            />
-          ))
-        }
-      </div>
+  <div class="flex flex-col gap-6 mt-12">
+    {
+      eventSeriesList.map((series) => (
+        <EventSeriesCard
+          name={series.name}
+          slug={series.slug}
+          logo={series.logo}
+          description={series.description}
+        />
+      ))
+    }
+  </div>
 
-      <a
-        href="/events/subscribe"
-        class="group flex flex-col gap-2 mt-12 p-6 border border-dashed border-white/20 rounded-lg hover:border-[#E56717]/50 hover:bg-white/[0.02] transition-all"
-      >
-        <span class="text-lg font-semibold group-hover:text-[#E56717] transition-colors">
-          stay in the loop &rarr;
-        </span>
-        <span class="text-sm text-white/50">
-          get notified about upcoming events. no spam, just good times.
-        </span>
-    </a>
+  <a
+    href="/events/subscribe"
+    class="group flex flex-col gap-2 mt-12 p-6 border border-dashed border-white/20 rounded-lg hover:border-[#E56717]/50 hover:bg-white/[0.02] transition-all"
+  >
+    <span class="text-lg font-semibold group-hover:text-[#E56717] transition-colors">
+      stay in the loop &rarr;
+    </span>
+    <span class="text-sm text-white/50">
+      get notified about upcoming events. no spam, just good times.
+    </span>
+  </a>
 </PageLayout>
