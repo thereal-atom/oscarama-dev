@@ -186,11 +186,8 @@
     ></textarea>
   </div>
 
-  <!-- DEBUG: sitekey={sitekey ? "present" : "MISSING"} -->
   {#if sitekey}
-    <Turnstile siteKey={sitekey} theme="dark" />
-  {:else}
-    <p class="text-red-500 text-xs">DEBUG: No sitekey provided</p>
+    <Turnstile siteKey={sitekey} theme="dark" appearance="interaction-only" />
   {/if}
 
   <button
