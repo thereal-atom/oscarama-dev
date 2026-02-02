@@ -1,6 +1,8 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import SubscribeForm from "@/components/SubscribeForm.svelte";
+
+const TURNSTILE_SITEKEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
 ---
 
 <Layout
@@ -15,7 +17,7 @@ import SubscribeForm from "@/components/SubscribeForm.svelte";
         get notified when I run events in London. no spam, just good times.
       </p>
 
-      <SubscribeForm client:load />
+      <SubscribeForm client:load sitekey={TURNSTILE_SITEKEY} />
 
       <p class="text-xs text-white/40 mt-6">you can unsubscribe anytime. I respect your inbox.</p>
     </div>

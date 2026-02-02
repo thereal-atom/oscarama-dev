@@ -8,6 +8,17 @@ import { subscriptions } from "@/db/schema";
 export const prerender = false;
 
 const RESEND_WELCOME_TEMPLATE_ID = "d92f9ffd-14dc-43cf-b858-dd75fda0c26e";
+const TURNSTILE_VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
+
+async function verifyTurnstile(token: string, secret: string): Promise<boolean> {
+  const response = await fetch(TURNSTILE_VERIFY_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({ secret, response: token }),
+  });
+  const result = (await response.json()) as { success: boolean };
+  return result.success;
+}
 
 const subscribeSchema = z.object({
   name: z
@@ -31,6 +42,22 @@ const subscribeSchema = z.object({
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
     const formData = await request.formData();
+    const env = locals.runtime.env as Record<string, unknown>;
+
+    // Verify Turnstile token
+    const turnstileToken = formData.get("cf-turnstile-response")?.toString();
+    const turnstileSecret = env.TURNSTILE_SECRET_KEY as string;
+
+    if (!turnstileSecret) {
+      throw new Error("Turnstile not configured");
+    }
+
+    if (!turnstileToken || !(await verifyTurnstile(turnstileToken, turnstileSecret))) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Bot verification failed. Please try again." }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
 
     // Extract form fields
     const rawData = {
@@ -55,7 +82,6 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const { name, email, interests, channels, notes } = parsed.data;
 
     // Get D1 binding (DB in production, oscarama_db locally via wrangler pages dev)
-    const env = locals.runtime.env as Record<string, unknown>;
     const d1 = (env.DB || env.oscarama_db) as D1Database;
 
     if (!d1) {

@@ -1,4 +1,8 @@
 <script lang="ts">
+  import { Turnstile } from "svelte-turnstile";
+
+  let { sitekey = "" }: { sitekey?: string } = $props();
+
   const eventsList = [
     { label: "🧗 bouldering", value: "bouldering" },
     { label: "🍽️ dinners", value: "dinners" },
@@ -181,6 +185,10 @@
       class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-md text-white placeholder:text-white/30 focus:outline-none focus:border-white/50 transition-colors resize-none"
     ></textarea>
   </div>
+
+  {#if sitekey}
+    <Turnstile siteKey={sitekey} theme="dark" appearance="interaction-only" />
+  {/if}
 
   <button
     type="submit"

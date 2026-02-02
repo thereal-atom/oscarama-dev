@@ -6,6 +6,7 @@ type D1Database = import("@cloudflare/workers-types").D1Database;
 type Runtime = import("@astrojs/cloudflare").Runtime<{
   DB: D1Database;
   RESEND_API_KEY: string;
+  TURNSTILE_SECRET: string;
 }>;
 
 declare namespace App {
