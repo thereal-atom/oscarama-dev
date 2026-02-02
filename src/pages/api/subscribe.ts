@@ -35,7 +35,14 @@ export const POST: APIRoute = async ({ request, locals }) => {
     if (!turnstileSecret) {
       throw new Error("Turnstile not configured");
     }
-    if (!turnstileToken || !(await verifyTurnstile(turnstileToken, turnstileSecret))) {
+    if (!turnstileToken) {
+      console.error("Turnstile token missing from form submission");
+      return new Response(
+        JSON.stringify({ success: false, error: "Bot verification failed. Please try again." }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
+    if (!(await verifyTurnstile(turnstileToken, turnstileSecret))) {
       return new Response(
         JSON.stringify({ success: false, error: "Bot verification failed. Please try again." }),
         { status: 400, headers: { "Content-Type": "application/json" } }
