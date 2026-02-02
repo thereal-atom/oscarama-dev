@@ -1,17 +1,15 @@
 ---
-import Layout from "@/layouts/Layout.astro";
+import PageLayout from "@/layouts/PageLayout.astro";
 import EventSeriesCard from "@/components/EventSeriesCard.astro";
 import { eventSeriesList } from "@/data/eventSeries";
 ---
 
-<Layout
+<PageLayout
   title="events | oscarama"
   description="bouldering, dinners, coworking, hackathons - I like to run events in London."
   ogUrl="https://oscarama.dev/events"
 >
-  <div class="flex flex-col items-center">
-    <div class="flex flex-col w-full sm:w-2xl md:w-3xl px-6 pt-18 pb-32">
-      <h1 class="text-3xl font-bold">events</h1>
+  <h1 class="text-3xl font-bold">events</h1>
       <p class="text-sm text-white/70 mt-4">
         bouldering, dinners, coworking, hackathons - I like to run events in London. sign up for
         some below :)
@@ -40,7 +38,5 @@ import { eventSeriesList } from "@/data/eventSeries";
         <span class="text-sm text-white/50">
           get notified about upcoming events. no spam, just good times.
         </span>
-      </a>
-    </div>
-  </div>
-</Layout>
+    </a>
+</PageLayout>

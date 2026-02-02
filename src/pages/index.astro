@@ -1,5 +1,5 @@
 ---
-import Layout from "../layouts/Layout.astro";
+import PageLayout from "@/layouts/PageLayout.astro";
 import IconLink from "../components/IconLink.svelte";
 import BackgroundTexture from "../components/BackgroundTexture.astro";
 import { Image } from "astro:assets";
@@ -37,10 +37,8 @@ const techStack = [
 ];
 ---
 
-<Layout title="oscarama | software eng">
-  <div class="flex flex-col items-center z-10">
-    <div class="flex flex-col w-full sm:w-2xl md:w-3xl px-6 pt-18 pb-32">
-      <h1 class="text-3xl font-bold">oscar falemara</h1>
+<PageLayout title="oscarama | software eng">
+  <h1 class="text-3xl font-bold">oscar falemara</h1>
       <div class="flex flex-col mt-8">
         <p class="text-sm text-white/70">
           i'm a self-taught software engineer from 📍 London, currently working as a full-stack web
@@ -201,7 +199,5 @@ const techStack = [
             >LinkedIn</a
           > - DMs are open.
         </p>
-      </div>
-    </div>
   </div>
-</Layout>
+</PageLayout>

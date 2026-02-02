@@ -1,8 +1,10 @@
 ---
-import BackgroundTexture from "@/components/BackgroundTexture.astro";
-import "../styles/global.css";
-import Header from "@/components/Header.astro";
-import Posthog from "@/components/posthog.astro";
+/**
+ * @deprecated Use BaseLayout or PageLayout instead.
+ * - BaseLayout: For custom page structures (no content wrapper)
+ * - PageLayout: For standard content pages with centered layout
+ */
+import BaseLayout from "./BaseLayout.astro";
 
 interface Props {
   title?: string;
@@ -11,53 +13,9 @@ interface Props {
   ogUrl?: string;
 }
 
-const {
-  title = "oscar | software engineer",
-  description = "self-taught software engineer from London currently working @ coloop.ai (yc s21)",
-  ogImage = "/og.png",
-  ogUrl = "https://oscarama.dev",
-} = Astro.props;
+const { title, description, ogImage, ogUrl } = Astro.props;
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <Posthog />
-
-    <meta charset="UTF-8" />
-    <meta name="description" content={description} />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.png" />
-    <meta name="generator" content={Astro.generator} />
-
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content={ogUrl} />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:image" content={new URL(ogImage, ogUrl).href} />
-    <meta property="og:site_name" content="oscarama.dev" />
-
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content={ogUrl} />
-    <meta property="twitter:title" content={title} />
-    <meta property="twitter:description" content={description} />
-    <meta property="twitter:image" content={new URL(ogImage, ogUrl).href} />
-
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&display=swap"
-      rel="stylesheet"
-    />
-    <title>{title}</title>
-  </head>
-  <body>
-    <!-- <BackgroundTexture /> -->
-    <div class="min-h-screen flex flex-col">
-      <Header />
-      <slot />
-    </div>
-  </body>
-</html>
+<BaseLayout title={title} description={description} ogImage={ogImage} ogUrl={ogUrl}>
+  <slot />
+</BaseLayout>

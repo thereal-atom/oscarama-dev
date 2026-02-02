@@ -1,17 +1,15 @@
 ---
-import Layout from "@/layouts/Layout.astro";
+import PageLayout from "@/layouts/PageLayout.astro";
 ---
 
-<Layout
+<PageLayout
   title="let's chat | oscarama"
   description="I'd love to meet you. Let's grab coffee or hop on a call."
   ogUrl="https://oscarama.dev/chat"
 >
-  <div class="flex flex-col items-center">
-    <div class="flex flex-col w-full sm:w-2xl md:w-3xl px-6 pt-18 pb-32">
-      <a class="text-sm text-white/50 hover:text-white/70 transition-colors" href="/">
-        &larr; back home
-      </a>
+  <a class="text-sm text-white/50 hover:text-white/70 transition-colors" href="/">
+    &larr; back home
+  </a>
 
       <h1 class="text-3xl font-bold mt-8">let's chat</h1>
 
@@ -121,6 +119,4 @@ import Layout from "@/layouts/Layout.astro";
           </div>
         </div>
       </div>
-    </div>
-  </div>
-</Layout>
+</PageLayout>

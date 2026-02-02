@@ -33,14 +33,22 @@ const socialLinks = [
       </div> -->
       <div class="flex flex-row items-center">
         <a href="/" class="gap-2 hover:opacity-80 transition-opacity">
-          <Image src={oscaramaLogo} alt="oscarama" class="w-8 h-8 rounded-sm" />
+          <Image
+            src={oscaramaLogo}
+            alt="oscarama"
+            class="w-8 h-8 rounded-sm max-[32rem]:w-6 max-[32rem]:h-6"
+          />
         </a>
-        <div class="flex flex-row items-center ml-8 gap-6">
-          <a href="/events" class="text-sm hover:opacity-70 transition-opacity">events</a>
-          <a href="/chat" class="text-sm hover:opacity-70 transition-opacity">let's chat</a>
+        <div class="flex flex-row items-center ml-8 gap-6 max-[32rem]:ml-4 max-[32rem]:gap-4">
+          <a href="/events" class="text-sm hover:opacity-70 transition-opacity max-[32rem]:text-xs"
+            >events</a
+          >
+          <a href="/chat" class="text-sm hover:opacity-70 transition-opacity max-[32rem]:text-xs"
+            >let's chat</a
+          >
         </div>
       </div>
-      <nav class="relative flex items-center gap-6">
+      <nav class="relative flex items-center gap-6 max-[32rem]:gap-4">
         {
           socialLinks.map((link) => (
             <a
@@ -51,7 +59,13 @@ const socialLinks = [
               class="hover:opacity-70 transition-opacity duration-200"
               onclick={`window.posthog?.capture('social_link_clicked', { platform: '${link.label}' })`}
             >
-              <Image src={link.icon} alt={link.label} class="h-5 w-auto" width={20} height={20} />
+              <Image
+                src={link.icon}
+                alt={link.label}
+                class="h-5 w-auto max-[32rem]:h-4"
+                width={20}
+                height={20}
+              />
             </a>
           ))
         }
