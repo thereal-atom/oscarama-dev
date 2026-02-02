@@ -2,7 +2,7 @@
 import PageLayout from "@/layouts/PageLayout.astro";
 import SubscribeForm from "@/components/SubscribeForm.svelte";
 
-const TURNSTILE_SITEKEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
+const TURNSTILE_SITEKEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || "0x4AAAAAACWg4OkitT9o6n7M";
 ---
 
 <PageLayout
