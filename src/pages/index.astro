@@ -1,13 +1,15 @@
 ---
 import PageLayout from "@/layouts/PageLayout.astro";
 import IconLink from "@/components/IconLink.astro";
-import BackgroundTexture from "../components/BackgroundTexture.astro";
-import { Image } from "astro:assets";
+// import BackgroundTexture from "../components/BackgroundTexture.astro";
+// import { Image } from "astro:assets";
 
 // Import logos
 import coolopLogo from "@/assets/logos/coloop.png";
 import fanksLogo from "@/assets/logos/fanks.png";
 import outBoulderingLogo from "@/assets/logos/out-buildering.png";
+import demoNightsLogo from "@/assets/logos/demo-nights.png";
+
 import expLogo from "@/assets/logos/exp.png";
 import helioLogo from "@/assets/logos/helio.png";
 import ycLogo from "@/assets/logos/yc.png";
@@ -43,12 +45,7 @@ const techStack = [
     <p class="text-sm text-white/70">
       i'm a self-taught software engineer from 📍 London, currently working as a full-stack web dev
       at
-      <IconLink
-        href="https://coloop.ai"
-        src={coolopLogo.src}
-        alt="coloop ai"
-        text="coloop ai"
-              />
+      <IconLink href="https://coloop.ai" src={coolopLogo.src} alt="coloop ai" text="coloop ai" />
       (yc s21)
     </p>
   </div>
@@ -56,17 +53,13 @@ const techStack = [
   <h2 class="text-xl mt-8 sm:mt-12 md:mt-16">some other things I'm working on</h2>
   <ul class="text-sm text-white/70 mt-8">
     <li>
-      helping build better community-brand matching @
-      <IconLink href="https://fanks.co" src={fanksLogo.src} alt="fanks" text="fanks" client:load />
-    </li>
-    <li>
       running bouldering events in London @
       <IconLink
         href="https://luma.com/outventuring"
         src={outBoulderingLogo.src}
         alt="outventuring"
         text="out venturing"
-              />
+      />
     </li>
     <li>
       community & events @
@@ -75,11 +68,24 @@ const techStack = [
         src={coloopNewLogo.src}
         alt="coloopevents"
         text="coloop events"
-              />
+      />
+    </li>
+    <li>
+      helping out @
+      <IconLink
+        href="https://lu.ma/ai-london"
+        src={demoNightsLogo.src}
+        alt="ai demo nights"
+        text="ai demo nights"
+      />
     </li>
   </ul>
   <h3 class="mt-4">past</h3>
   <ul class="text-sm text-white/70 mt-4">
+    <li>
+      helping build better community-brand matching @
+      <IconLink href="https://fanks.co" src={fanksLogo.src} alt="fanks" text="fanks" client:load />
+    </li>
     <li>
       built bot systems from the ground up @
       <IconLink href="https://discord.gg/exp" src={expLogo.src} alt="EXP" text="EXP" client:load />,
@@ -91,7 +97,7 @@ const techStack = [
         src={helioLogo.src}
         alt="helio"
         text="helio"
-              />
+      />
     </li>
   </ul>
 
@@ -103,7 +109,7 @@ const techStack = [
         src={ycLogo.src}
         alt="YC Startup"
         text="YC Startup"
-              /> as a full time software engineer
+      /> as a full time software engineer
     </li>
     <li>
       my passion is aerospace 🚀, and I wanna start an <IconLink
@@ -111,7 +117,7 @@ const techStack = [
         src={spacexLogo.src}
         alt="spacex"
         text="aerospace company"
-              /> some day
+      /> some day
     </li>
     <li>in my time off, I like to climb 🏔️ mountains , 🥾 hike, 🧗 boulder and rock climb</li>
     <li>
@@ -120,7 +126,7 @@ const techStack = [
         src={helioLogo.src}
         alt="helio"
         text="helio"
-              /> (which later <a
+      /> (which later <a
         href="https://www.moonpay.com/en-gb/newsroom/helio-acquisition"
         target="_blank"
         class="underline">sold for $175m</a
@@ -133,14 +139,14 @@ const techStack = [
         src={capturedAboveLogo.src}
         alt="captured above"
         text="captured above"
-              />
+      />
     </li>
     <li>
       I got my first freelance client less than 5 months after I started code, when I was still 14.
     </li>
   </ul>
 
-  <h2 class="text-xl mt-8 sm:mt-12 md:mt-16">tech that I use</h2>
+  <!-- <h2 class="text-xl mt-8 sm:mt-12 md:mt-16">tech that I use</h2>
   <div class="mt-8 grid w-full grid-cols-4 border-l border-t border-white">
     {
       techStack.map((tech) => (
@@ -149,9 +155,9 @@ const techStack = [
         </div>
       ))
     }
-  </div>
+  </div> -->
 
-  <h2 class="text-xl mt-16 sm:mt-24 md:mt-32">let's chat</h2>
+  <h2 class="text-xl mt-16 sm:mt-12 md:mt-16">let's chat</h2>
   <div class="flex flex-col mt-8">
     <p class="text-sm text-white/70">
       in 2026 I'm on a mission to meet as many new people as possible.
@@ -162,7 +168,7 @@ const techStack = [
     </p>
     <a class="text-sm text-[#E56717] mt-4 underline" href="/chat">book a time &rarr;</a>
     <p class="text-sm text-white/70 mt-4">
-      this is a convenient way to do it, but I'd honestly rather you just DM me :p<br />{" "}
+      this is a convenient way to do it, but I'd honestly rather you just DM me :)<br />{" "}
       <a
         href="https://x.com/oscarfalll"
         target="_blank"
