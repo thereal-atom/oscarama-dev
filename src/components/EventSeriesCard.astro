@@ -14,7 +14,7 @@ const { name, slug, logo, description } = Astro.props;
 
 <a
   href={`/events/${slug}`}
-  class="group flex flex-row gap-4 p-4 border border-white/20 hover:border-white/40 transition-colors"
+  class="group flex flex-row gap-4 p-4 border border-white/20 hover:border-white/40 transition-colors rounded-sm"
   onclick={`window.posthog?.capture('event_series_clicked', { series: '${slug}', name: '${name}' })`}
 >
   <Image src={logo} alt={name} class="w-16 h-16 rounded-sm object-contain" />

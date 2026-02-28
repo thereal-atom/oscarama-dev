@@ -1,5 +1,6 @@
 import outventuringLogo from "@/assets/logos/out-buildering.png";
 import coloopLogo from "@/assets/logos/coloop-new.png";
+import demoNightsLogo from "@/assets/logos/demo-nights.png";
 
 export const eventSeries = {
   outventuring: {
@@ -15,10 +16,18 @@ export const eventSeries = {
     name: "CoLoop Events",
     slug: "coloop",
     logo: coloopLogo,
-    description:
-      "community events, meetups, and gatherings hosted by the Coloop team.",
+    description: "community events, meetups, and gatherings hosted by the Coloop team.",
     lumaUrl: "https://lu.ma/coloop",
     lumaCalendarId: "cal-iTDg1jJCygIbf5u",
+  },
+  ["demo-nights"]: {
+    name: "AI Demo Nights",
+    slug: "demo-nights",
+    logo: demoNightsLogo,
+    description:
+      "a community of engineers, builders & super early founders. we run nights where people a curated set of builders show off what they have been working on in the AI space.",
+    lumaUrl: "https://lu.ma/london-ai",
+    lumaCalendarId: "cal-BwhGlJaFM1pBN79",
   },
 } as const;
 
