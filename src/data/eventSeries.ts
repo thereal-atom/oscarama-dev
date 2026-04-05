@@ -1,8 +1,18 @@
+import oscaramaLogo from "@/assets/logos/oscarama.png";
 import outventuringLogo from "@/assets/logos/out-buildering.png";
 import coloopLogo from "@/assets/logos/coloop-new.png";
 import demoNightsLogo from "@/assets/logos/demo-nights.png";
 
 export const eventSeries = {
+  ["oscaramas-stuff"]: {
+    name: "oscarama's stuff",
+    slug: "oscaramas-stuff",
+    logo: oscaramaLogo,
+    description:
+      "a community for London's finest and most interested tech & AI builders and founders. hackathons, coworking, dinners and much more",
+    lumaUrl: "https://luma.com/oscarama",
+    lumaCalendarId: "cal-fTicl1ALRR1FGZt",
+  },
   outventuring: {
     name: "Out Venturing",
     slug: "outventuring",
