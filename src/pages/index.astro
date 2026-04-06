@@ -12,10 +12,15 @@ import demoNightsLogo from "@/assets/logos/demo-nights.jpg";
 
 import expLogo from "@/assets/logos/exp.png";
 import helioLogo from "@/assets/logos/helio.png";
+import omisphereLogo from "@/assets/logos/omisphere.png";
 import ycLogo from "@/assets/logos/yc.png";
 import spacexLogo from "@/assets/logos/spacex.png";
 import capturedAboveLogo from "@/assets/logos/capturedabove.png";
 import coloopNewLogo from "@/assets/logos/coloop-new.png";
+import vercelLogo from "@/assets/logos/vercel.png";
+import incidentLogo from "@/assets/logos/incident.png";
+import posthogLogo from "@/assets/logos/posthog.png";
+import autumnLogo from "@/assets/logos/autumn.png";
 
 // Import tech icons
 import typescriptIcon from "@/assets/techs/typescript.svg";
@@ -104,6 +109,14 @@ const techStack = [
         text="helio"
       />
     </li>
+    <li>
+      won my first every hackathon with <IconLink
+        href="https://github.com/omisphere/omisphere"
+        src={omisphereLogo.src}
+        alt="OmiSphere"
+        text="OmiSphere"
+      /> - a project that aims to turn every conversation into part of a collective consciousness
+    </li>
   </ul>
 
   <h2 class="text-xl mt-8 sm:mt-12 md:mt-16">fun facts about me</h2>
@@ -116,7 +129,27 @@ const techStack = [
         text="YC"
       /> as a full time software engineer
     </li>
-    <li>at age 19, I've hosted & helped host over 15 events for over 300 people</li>
+    <li>
+      at age 19, I've hosted & helped organise over 15 events with 300 people attending, working
+      with companies like
+      <IconLink href="https://vercel.com" src={vercelLogo.src} alt="Vercel" text="Vercel" />, <IconLink
+        href="https://incident.io"
+        src={incidentLogo.src}
+        alt="Incident"
+        text="Incident"
+      />, <IconLink
+        href="https://posthog.com"
+        src={posthogLogo.src}
+        alt="PostHog"
+        text="PostHog"
+      />,
+      <IconLink
+        href="https://useautumn.com"
+        src={autumnLogo.src}
+        alt="Autumn"
+        text="Autumn (YC S25)"
+      />, and more!
+    </li>
     <li>
       my passion is aerospace 🚀, and I wanna start an <IconLink
         href="https://spacex.com"
