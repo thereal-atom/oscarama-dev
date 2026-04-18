@@ -9,10 +9,11 @@
     "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@app/*": ["./app/*"]
     },
     "types": ["vite/client", "@cloudflare/workers-types"]
   },
-  "include": ["app/**/*", "src/**/*", "vite.config.ts", "index.html"],
-  "exclude": ["dist", "src/pages/**/*", "app/client.tsx", "app/router.tsx", "app/ssr.tsx"]
+  "include": ["app/**/*", "src/**/*", "vite.config.ts"],
+  "exclude": ["dist", ".vinxi", ".output", "src/pages/**/*"]
 }

@@ -4,6 +4,7 @@ dist/
 .vinxi/
 # generated types
 .astro/
+app/routeTree.gen.ts
 
 # dependencies
 node_modules/

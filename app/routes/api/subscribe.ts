@@ -35,7 +35,7 @@ function getEnv(): Env {
   return runtimeEnv.__CLOUDFLARE_ENV__ ?? {};
 }
 
-export async function POST(request: Request) {
+export async function POST({ request }: { request: Request }) {
   try {
     const formData = await request.formData();
     const env = getEnv();
