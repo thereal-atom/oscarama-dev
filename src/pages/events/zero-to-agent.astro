@@ -242,6 +242,7 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
       </div>
     </section>
 
+    <!-- TODO: link tracks, judging & submission out to a dedicated page with full details -->
     <!-- tracks -->
     <section
       class="mx-auto max-w-[1080px] px-8 max-[560px]:px-5 py-14 border-t border-dashed border-[#1f1e1c]"
@@ -262,13 +263,13 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
         <div
           class="kicker text-[13.5px] text-[#8a8781] max-w-[480px] text-right max-[920px]:text-left"
         >
-          bring whatever weird, ambitious, or stupidly useful thing you've been itching to make. if
-          you need a nudge, pick a track.
+          three tracks, each backed by a real shipping stack from vercel. pick one, or freestyle
+          &mdash; just ship something cool by 19:00.
         </div>
       </div>
 
       <div
-        class="grid grid-cols-4 gap-3.5 max-[920px]:grid-cols-2 max-[560px]:grid-cols-1 [&>*]:bg-[#161615] [&>*]:border [&>*]:border-[#242321] [&>*]:rounded-lg [&>*]:px-5 [&>*]:pt-[22px] [&>*]:pb-6 [&>*]:transition [&>*]:duration-150 [&>*:hover]:-translate-y-0.5 [&>*:hover]:border-[#3a3834]"
+        class="grid grid-cols-3 gap-3.5 max-[920px]:grid-cols-1 [&>*]:bg-[#161615] [&>*]:border [&>*]:border-[#242321] [&>*]:rounded-lg [&>*]:px-5 [&>*]:pt-[22px] [&>*]:pb-6 [&>*]:transition [&>*]:duration-150 [&>*:hover]:-translate-y-0.5 [&>*:hover]:border-[#3a3834]"
       >
         <div>
           <div
@@ -276,10 +277,9 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
             >01</div
           >
           <div class="text-[10px] text-[#e56717] uppercase tracking-[0.2em] mb-2.5">track</div>
-          <div class="text-[15px] font-bold leading-[1.3] mb-2">agents for makers</div>
+          <div class="text-[15px] font-bold leading-[1.3] mb-2">vercel workflow (wdk)</div>
           <div class="text-[12.5px] text-[#8a8781] leading-[1.55]"
-            >tools that help you ship faster &mdash; code review, research, design systems, release
-            notes.</div
+            >long-running, durable async agents that survive crashes, resume after deploys, and pause for minutes or months.</div
           >
         </div>
         <div>
@@ -288,10 +288,9 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
             >02</div
           >
           <div class="text-[10px] text-[#e56717] uppercase tracking-[0.2em] mb-2.5">track</div>
-          <div class="text-[15px] font-bold leading-[1.3] mb-2">agents for the rest of london</div>
+          <div class="text-[15px] font-bold leading-[1.3] mb-2">v0 + mcps</div>
           <div class="text-[12.5px] text-[#8a8781] leading-[1.55]"
-            >consumer-facing agents: bookings, travel, events, daily life. make something your mum
-            would use.</div
+            >use v0 to rapidly build an ai app or agent that connects to at least one mcp server.</div
           >
         </div>
         <div>
@@ -300,20 +299,9 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
             >03</div
           >
           <div class="text-[10px] text-[#e56717] uppercase tracking-[0.2em] mb-2.5">track</div>
-          <div class="text-[15px] font-bold leading-[1.3] mb-2">weird & wonderful</div>
+          <div class="text-[15px] font-bold leading-[1.3] mb-2">chatsdk agents</div>
           <div class="text-[12.5px] text-[#8a8781] leading-[1.55]"
-            >the wildcard. multi-agent art, games, sensory experiments. no judgement here.</div
-          >
-        </div>
-        <div>
-          <div
-            class="text-[44px] font-extrabold text-[#e56717] opacity-[0.18] tracking-[-0.04em] leading-none mb-2.5"
-            >04</div
-          >
-          <div class="text-[10px] text-[#e56717] uppercase tracking-[0.2em] mb-2.5">track</div>
-          <div class="text-[15px] font-bold leading-[1.3] mb-2">freestyle</div>
-          <div class="text-[12.5px] text-[#8a8781] leading-[1.55]"
-            >ignore all of the above. build the thing you've been itching to. usually the best one.</div
+            >ai sdk + ai gateway + chatsdk agents that interface across slack, discord, teams, github, and more.</div
           >
         </div>
       </div>
