@@ -1,5 +1,9 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+
+const eventDate = new Date("2026-05-02T10:00:00+01:00");
+const now = new Date();
+const daysToGo = Math.max(0, Math.ceil((eventDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
 ---
 
 <BaseLayout
@@ -29,7 +33,7 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
           >
             <span
               class="w-[7px] h-[7px] rounded-full bg-[#e56717] shadow-[0_0_12px_#e56717] animate-[z2a-pulse_1.8s_ease-in-out_infinite]"
-            ></span>registrations open · 12 days to go
+            ></span>registrations open · {daysToGo} {daysToGo === 1 ? "day" : "days"} to go
           </div>
 
           <h1
@@ -128,11 +132,6 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
               >
             </div>
             <div class="whitespace-nowrap overflow-hidden text-ellipsis">
-              <span class="inline-block w-[80px] text-[#8a8781]">cost</span><span
-                class="text-[#7fce7b]">free</span
-              ><span class="text-[#5a5854] ml-2"># approval based</span>
-            </div>
-            <div class="whitespace-nowrap overflow-hidden text-ellipsis">
               <span class="inline-block w-[80px] text-[#8a8781]">build</span><span
                 class="text-[#e5c07b]">"any agent you want"</span
               >
@@ -205,7 +204,7 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
     <!-- meta strip -->
     <section class="mx-auto max-w-[1080px] px-8 max-[560px]:px-5">
       <div
-        class="grid grid-cols-4 bg-[#242321] gap-px border border-[#242321] rounded-lg overflow-hidden mb-9 max-[920px]:grid-cols-2 max-[560px]:grid-cols-1"
+        class="grid grid-cols-3 bg-[#242321] gap-px border border-[#242321] rounded-lg overflow-hidden mb-9 max-[920px]:grid-cols-1"
       >
         <div class="bg-[#161615] px-[22px] py-5">
           <div class="text-[11px] text-[#8a8781] uppercase tracking-[0.16em] mb-2">where</div>
@@ -220,14 +219,6 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
           <div class="text-[16px] text-[#e8e6e1] font-semibold"
             >~100 builders<span class="block text-[12px] text-[#8a8781] font-normal mt-1"
               >engineers, designers, founders</span
-            ></div
-          >
-        </div>
-        <div class="bg-[#161615] px-[22px] py-5">
-          <div class="text-[11px] text-[#8a8781] uppercase tracking-[0.16em] mb-2">cost</div>
-          <div class="text-[16px] text-[#e8e6e1] font-semibold"
-            >free<span class="block text-[12px] text-[#8a8781] font-normal mt-1"
-              >approval-based reg</span
             ></div
           >
         </div>
@@ -457,74 +448,45 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
           >
         </div>
         <div class="text-[13.5px] text-[#8a8781] max-w-[480px] text-right max-[920px]:text-left">
-          a shortlist of 6 teams get 5-min live demos. judges score against the criteria below. the
-          room gets a people's choice vote.
+          submit individually to the vercel community hub by may 3. community votes for 24 hours on
+          may 4. one submission per person, no teams.
         </div>
       </div>
 
       <div class="grid grid-cols-[1.1fr_1fr] gap-10 max-[920px]:grid-cols-1 max-[920px]:gap-6">
         <div class="z2a-criteria">
           <div
-            class="grid grid-cols-[48px_1fr_auto] gap-4 items-start py-[18px] px-1 border-t border-dashed border-[#1f1e1c] max-[560px]:grid-cols-[40px_1fr]"
+            class="grid grid-cols-[48px_1fr] gap-4 items-start py-[18px] px-1 border-t border-dashed border-[#1f1e1c] max-[560px]:grid-cols-[40px_1fr]"
           >
             <div class="text-[20px] font-bold text-[#e56717]">01</div>
             <div>
-              <b class="block text-[15px] text-[#e8e6e1] font-semibold">agent-ness</b><span
+              <b class="block text-[15px] text-[#e8e6e1] font-semibold">usefulness</b><span
                 class="block text-[13px] text-[#8a8781] leading-[1.6] mt-0.5"
-                >does it actually act? can it take multi-step actions on behalf of a user &mdash;
-                not just chat?</span
+                >agent usefulness and real-world applicability. would anyone actually use this?</span
               >
             </div>
-            <div
-              class="text-[11px] text-[#5a5854] uppercase tracking-[0.12em] whitespace-nowrap pt-1 max-[560px]:col-start-2"
-              >30%</div
-            >
           </div>
           <div
-            class="grid grid-cols-[48px_1fr_auto] gap-4 items-start py-[18px] px-1 border-t border-dashed border-[#1f1e1c] max-[560px]:grid-cols-[40px_1fr]"
+            class="grid grid-cols-[48px_1fr] gap-4 items-start py-[18px] px-1 border-t border-dashed border-[#1f1e1c] max-[560px]:grid-cols-[40px_1fr]"
           >
             <div class="text-[20px] font-bold text-[#e56717]">02</div>
             <div>
-              <b class="block text-[15px] text-[#e8e6e1] font-semibold">craft</b><span
+              <b class="block text-[15px] text-[#e8e6e1] font-semibold">technical execution</b><span
                 class="block text-[13px] text-[#8a8781] leading-[1.6] mt-0.5"
-                >taste, polish, the small details. you can tell when something's been made with
-                care.</span
+                >built with v0, deployed on vercel.</span
               >
             </div>
-            <div
-              class="text-[11px] text-[#5a5854] uppercase tracking-[0.12em] whitespace-nowrap pt-1 max-[560px]:col-start-2"
-              >25%</div
-            >
           </div>
           <div
-            class="grid grid-cols-[48px_1fr_auto] gap-4 items-start py-[18px] px-1 border-t border-dashed border-[#1f1e1c] max-[560px]:grid-cols-[40px_1fr]"
+            class="grid grid-cols-[48px_1fr] gap-4 items-start py-[18px] px-1 border-t border-dashed border-[#1f1e1c] max-[560px]:grid-cols-[40px_1fr]"
           >
             <div class="text-[20px] font-bold text-[#e56717]">03</div>
             <div>
-              <b class="block text-[15px] text-[#e8e6e1] font-semibold">usefulness</b><span
+              <b class="block text-[15px] text-[#e8e6e1] font-semibold">creativity</b><span
                 class="block text-[13px] text-[#8a8781] leading-[1.6] mt-0.5"
-                >would anyone actually use this? bonus points for "i'd pay for this right now."</span
+                >originality. did you make something that surprises people?</span
               >
             </div>
-            <div
-              class="text-[11px] text-[#5a5854] uppercase tracking-[0.12em] whitespace-nowrap pt-1 max-[560px]:col-start-2"
-              >25%</div
-            >
-          </div>
-          <div
-            class="grid grid-cols-[48px_1fr_auto] gap-4 items-start py-[18px] px-1 border-t border-dashed border-[#1f1e1c] max-[560px]:grid-cols-[40px_1fr]"
-          >
-            <div class="text-[20px] font-bold text-[#e56717]">04</div>
-            <div>
-              <b class="block text-[15px] text-[#e8e6e1] font-semibold">ambition</b><span
-                class="block text-[13px] text-[#8a8781] leading-[1.6] mt-0.5"
-                >did you try something hard? a brave half-built idea beats a safe finished one.</span
-              >
-            </div>
-            <div
-              class="text-[11px] text-[#5a5854] uppercase tracking-[0.12em] whitespace-nowrap pt-1 max-[560px]:col-start-2"
-              >20%</div
-            >
           </div>
         </div>
 
@@ -538,9 +500,8 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
           >
             <div class="text-[13px] font-bold text-[#e56717]">01</div>
             <div>
-              <b class="block text-[13.5px] text-[#e8e6e1] font-semibold">push to github</b><span
-                class="block text-[12px] text-[#8a8781] mt-0.5"
-                >public repo, readme with a one-liner</span
+              <b class="block text-[13.5px] text-[#e8e6e1] font-semibold">deploy to vercel</b><span
+                class="block text-[12px] text-[#8a8781] mt-0.5">built with v0, live on vercel</span
               >
             </div>
           </div>
@@ -549,8 +510,13 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
           >
             <div class="text-[13px] font-bold text-[#e56717]">02</div>
             <div>
-              <b class="block text-[13.5px] text-[#e8e6e1] font-semibold">deploy to vercel</b><span
-                class="block text-[12px] text-[#8a8781] mt-0.5">must be live by 19:30</span
+              <b class="block text-[13.5px] text-[#e8e6e1] font-semibold">submit individually by may 3</b><span
+                class="block text-[12px] text-[#8a8781] mt-0.5"
+                >at the <a
+                  href="https://community.vercel.com/host/zero-to-agent-2026"
+                  target="_blank"
+                  rel="noopener noreferrer">vercel community zero to agent hub</a
+                > &mdash; one per person, no teams</span
               >
             </div>
           </div>
@@ -559,22 +525,9 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
           >
             <div class="text-[13px] font-bold text-[#e56717]">03</div>
             <div>
-              <b class="block text-[13.5px] text-[#e8e6e1] font-semibold"
-                >drop links + 60s loom</b
-              ><span class="block text-[12px] text-[#8a8781] mt-0.5"
-                >in the form shared on the day</span
-              >
-            </div>
-          </div>
-          <div
-            class="grid grid-cols-[24px_1fr] gap-3.5 py-2.5 border-t border-dashed border-[#1f1e1c] items-start"
-          >
-            <div class="text-[13px] font-bold text-[#e56717]">04</div>
-            <div>
-              <b class="block text-[13.5px] text-[#e8e6e1] font-semibold"
-                >auto-enter global pool</b
-              ><span class="block text-[12px] text-[#8a8781] mt-0.5"
-                >every london submission goes into the $6k+ worldwide comp</span
+              <b class="block text-[13.5px] text-[#e8e6e1] font-semibold">community vote &middot; may 4</b><span
+                class="block text-[12px] text-[#8a8781] mt-0.5"
+                >24 hours of voting on the hub. winners announced after.</span
               >
             </div>
           </div>
@@ -586,18 +539,16 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
     <section
       class="mx-auto max-w-[1080px] px-8 max-[560px]:px-5 py-14 border-t border-dashed border-[#1f1e1c]"
     >
-      <div class="flex justify-between items-baseline flex-wrap gap-4 mb-7">
-        <div>
-          <div
-            class="text-[#e56717] text-[12px] uppercase tracking-[0.18em] font-semibold mb-2.5"
-            >04 / prizes</div
-          >
-          <h2
-            class="text-[clamp(28px,3.5vw,40px)] font-bold tracking-[-0.015em] leading-[1.1] m-0"
-            >stuff that helps you <span class="text-[#e56717]">keep building.</span></h2
-          >
-        </div>
-        <div class="text-[13.5px] text-[#8a8781] max-w-[480px] text-right max-[920px]:text-left">
+      <div class="mb-7">
+        <div
+          class="text-[#e56717] text-[12px] uppercase tracking-[0.18em] font-semibold mb-2.5"
+          >04 / prizes</div
+        >
+        <h2
+          class="text-[clamp(28px,3.5vw,40px)] font-bold tracking-[-0.015em] leading-[1.1] m-0 mb-4"
+          >stuff that helps you <span class="text-[#e56717]">keep building.</span></h2
+        >
+        <div class="text-[13.5px] text-[#8a8781] max-w-[680px]">
           full london list confirmed closer to the day. expect the kind of stuff that actually helps
           you keep building, not a fruit basket.
         </div>
@@ -614,16 +565,12 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
           </div>
           <div
             class="relative text-[22px] font-bold tracking-[-0.01em] mb-3.5 text-[#e56717]"
-            >judged at halkin</div
+            >judged on the day</div
           >
           <ul class="relative list-none p-0 m-0">
             <li
               class="relative text-[13px] py-[9px] pl-[22px] border-t border-dashed border-[#1f1e1c] text-[#8a8781] before:content-['→'] before:absolute before:left-0 before:text-[#e56717]"
-              ><b class="text-[#e8e6e1] font-semibold">macbooks</b> &mdash; for the top team</li
-            >
-            <li
-              class="relative text-[13px] py-[9px] pl-[22px] border-t border-dashed border-[#1f1e1c] text-[#8a8781] before:content-['→'] before:absolute before:left-0 before:text-[#e56717]"
-              ><b class="text-[#e8e6e1] font-semibold">claude code / codex</b> &mdash; annual subs</li
+              ><b class="text-[#e8e6e1] font-semibold">hardware</b> &mdash; for the top team</li
             >
             <li
               class="relative text-[13px] py-[9px] pl-[22px] border-t border-dashed border-[#1f1e1c] text-[#8a8781] before:content-['→'] before:absolute before:left-0 before:text-[#e56717]"
@@ -632,12 +579,8 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
             >
             <li
               class="relative text-[13px] py-[9px] pl-[22px] border-t border-dashed border-[#1f1e1c] text-[#8a8781] before:content-['→'] before:absolute before:left-0 before:text-[#e56717]"
-              ><b class="text-[#e8e6e1] font-semibold">coworking</b> &mdash; memberships at partner
-              spaces</li
-            >
-            <li
-              class="relative text-[13px] py-[9px] pl-[22px] border-t border-dashed border-[#1f1e1c] text-[#8a8781] before:content-['→'] before:absolute before:left-0 before:text-[#e56717]"
-              ><b class="text-[#e8e6e1] font-semibold">people's choice</b> &mdash; voted by the room</li
+              ><b class="text-[#e8e6e1] font-semibold">+ more</b> &mdash; full list closer to the
+              day</li
             >
           </ul>
         </div>
@@ -654,20 +597,19 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
           >
           <ul class="relative list-none p-0 m-0">
             <li
-              class="relative text-[13px] py-[9px] pl-[22px] border-t border-dashed border-[#1f1e1c] text-[#8a8781] before:content-['→'] before:absolute before:left-0 before:text-[#e56717]"
-              ><b class="text-[#e8e6e1] font-semibold">$6,000+</b> in v0 credits</li
+              class="relative text-[13px] py-[9px] pl-[26px] border-t border-dashed border-[#1f1e1c] text-[#8a8781] before:content-['1st'] before:absolute before:left-0 before:text-[#e56717] before:font-semibold before:text-[11px] before:top-[11px]"
+              ><b class="text-[#e8e6e1] font-semibold">$3,000 v0 credits</b> + $200/mo vercel
+              platform credits + vercel pro for 6 months</li
             >
             <li
-              class="relative text-[13px] py-[9px] pl-[22px] border-t border-dashed border-[#1f1e1c] text-[#8a8781] before:content-['→'] before:absolute before:left-0 before:text-[#e56717]"
-              ><b class="text-[#e8e6e1] font-semibold">vercel platform</b> credits</li
+              class="relative text-[13px] py-[9px] pl-[26px] border-t border-dashed border-[#1f1e1c] text-[#8a8781] before:content-['2nd'] before:absolute before:left-0 before:text-[#e56717] before:font-semibold before:text-[11px] before:top-[11px]"
+              ><b class="text-[#e8e6e1] font-semibold">$2,000 v0 credits</b> + $100/mo vercel
+              platform credits + vercel pro for 6 months</li
             >
             <li
-              class="relative text-[13px] py-[9px] pl-[22px] border-t border-dashed border-[#1f1e1c] text-[#8a8781] before:content-['→'] before:absolute before:left-0 before:text-[#e56717]"
-              ><b class="text-[#e8e6e1] font-semibold">vercel pro</b> plans</li
-            >
-            <li
-              class="relative text-[13px] py-[9px] pl-[22px] border-t border-dashed border-[#1f1e1c] text-[#8a8781] before:content-['→'] before:absolute before:left-0 before:text-[#e56717]"
-              ><b class="text-[#e8e6e1] font-semibold">every london submission</b> auto-entered</li
+              class="relative text-[13px] py-[9px] pl-[26px] border-t border-dashed border-[#1f1e1c] text-[#8a8781] before:content-['3rd'] before:absolute before:left-0 before:text-[#e56717] before:font-semibold before:text-[11px] before:top-[11px]"
+              ><b class="text-[#e8e6e1] font-semibold">$1,000 v0 credits</b> + $50/mo vercel
+              platform credits + vercel pro for 6 months</li
             >
           </ul>
         </div>
@@ -820,7 +762,7 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
           <div class="text-[22px] mb-3.5 inline-block text-[#e56717]">&#127942;</div>
           <b class="text-[14px] text-[#e8e6e1] block mb-1">real shot at prizes</b>
           <span class="text-[12.5px] text-[#8a8781] leading-[1.55]"
-            >london pool + auto-entry into the $6k+ global zero-to-agent comp.</span
+            >london pool plus a global $6k+ zero-to-agent prize pool.</span
           >
         </div>
       </div>
@@ -847,7 +789,7 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
         </div>
       </div>
 
-      <div class="grid grid-cols-2 gap-3.5 max-[920px]:grid-cols-1">
+      <div class="grid grid-cols-1">
         <div class="p-[22px] border border-[#242321] rounded-lg bg-[#161615]">
           <h4 class="text-[15px] font-semibold m-0 mb-2.5 flex items-center gap-2.5"
             ><span class="w-2.5 h-2.5 rounded-full inline-block bg-[#25D366]"></span>whatsapp · primary</h4
@@ -856,16 +798,6 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
             >announcements, wifi, credit links, on-the-day chaos. invite drops when you're
             approved.</p
           >
-          <div class="text-[11px] text-[#5a5854] mt-2.5">// live from mon 27 apr</div>
-        </div>
-        <div class="p-[22px] border border-[#242321] rounded-lg bg-[#161615]">
-          <h4 class="text-[15px] font-semibold m-0 mb-2.5 flex items-center gap-2.5"
-            ><span class="w-2.5 h-2.5 rounded-full inline-block bg-[#5865F2]"></span>discord · async help</h4
-          >
-          <p class="text-[13px] text-[#8a8781] m-0"
-            >channels for teams, tracks, and debugging. stays live post-event for the build week.</p
-          >
-          <div class="text-[11px] text-[#5a5854] mt-2.5">// live through may 3</div>
         </div>
       </div>
 
@@ -984,7 +916,6 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
           >linkedin</a
         >
       </div>
-      <div class="mt-1.5 opacity-60">updated 20 apr 2026 · made with v0 and caffeine &#9749;</div>
     </footer>
   </main>
 </BaseLayout>
