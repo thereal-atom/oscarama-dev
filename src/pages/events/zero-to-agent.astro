@@ -1,0 +1,1059 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+
+const eventDate = new Date("2026-05-02T10:00:00+01:00");
+const now = new Date();
+const daysToGo = Math.max(0, Math.ceil((eventDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+---
+
+<BaseLayout
+  title="zero to agent: london | events | oscarama"
+  description="come ship an ai agent with us. in a day. in london. then bbq, ice cream & music til late. sat 2 may 2026."
+  ogUrl="https://oscarama.dev/events/zero-to-agent"
+>
+  <main
+    class="02a relative z-[1] text-[#e8e6e1] leading-[1.65] text-[14px] antialiased [&_a]:text-[#e56717] [&_a]:no-underline [&_a:hover]:underline"
+  >
+    <!-- hero -->
+    <section class="mx-auto max-w-[1080px] px-8 max-[560px]:px-5 pt-10 pb-[60px]">
+      <div class="text-[12px] mb-8 leading-none">
+        <span class="text-[#5a5854]">~/events/</span><span class="text-[#e56717]"
+          >zero-to-agent-london</span
+        ><span
+          class="inline-block w-[7px] h-[13px] bg-[#e56717] ml-0.5 align-[-2px] animate-[02a-blink_1.1s_steps(1,end)_infinite]"
+        ></span>
+      </div>
+
+      <div
+        class="grid grid-cols-[1fr_340px] gap-[60px] items-start max-[920px]:grid-cols-1 max-[920px]:gap-10"
+      >
+        <div>
+          <div
+            class="inline-flex items-center gap-2.5 text-[12px] uppercase tracking-[0.18em] text-[#e56717] font-semibold mb-[18px]"
+          >
+            <span
+              class="w-[7px] h-[7px] rounded-full bg-[#e56717] shadow-[0_0_12px_#e56717] animate-[02a-pulse_1.8s_ease-in-out_infinite]"
+            ></span>registrations open · {daysToGo} {daysToGo === 1 ? "day" : "days"} to go
+          </div>
+
+          <h1
+            class="text-[clamp(44px,7vw,84px)] font-extrabold leading-[0.98] tracking-[-0.035em] m-0 mb-6 max-[560px]:text-[44px]"
+          >
+            <span>zero</span><span class="text-[#5a5854] font-normal px-1.5">&rarr;</span><span
+              class="text-[#e56717]">agent</span
+            ><span
+              class="text-[#e56717] animate-[02a-blink_1.1s_steps(1,end)_infinite] inline-block"
+              >_</span
+            >
+          </h1>
+
+          <div class="flex flex-wrap items-center gap-[14px] text-[#8a8781] text-[16px] mb-5">
+            <span
+              class="inline-flex items-center gap-1.5 bg-[#161615] border border-[#242321] py-[3px] px-2.5 rounded text-[13px] text-[#e8e6e1]"
+              ><span class="text-[#e56717]">&#9678;</span> london</span
+            >
+            <span class="text-[#5a5854]">·</span>
+            <span>sat 2 may 2026</span>
+            <span class="text-[#5a5854]">·</span>
+            <span>10:00 - late</span>
+          </div>
+
+          <p class="text-[16px] text-[#e8e6e1] max-w-[560px] m-0 mb-4">
+            come ship an ai agent with us. <span class="text-[#e56717]"
+              >in a day. in london. then bbq, ice cream &amp; music til late.</span
+            >
+          </p>
+
+          <p class="text-[14px] text-[#8a8781] max-w-[560px] m-0">
+            the london stop of vercel's
+            <a
+              href="https://community.vercel.com/hackathons/zero-to-agent"
+              target="_blank"
+              rel="noopener noreferrer">zero to agent</a
+            > global build week. one glorious saturday, ~100 cracked builders, eight hours on the clock.
+          </p>
+
+          <div class="flex flex-wrap gap-3 mt-6">
+            <a
+              href="https://luma.com/p7pnjcu8"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="!text-[#0a0a0a] inline-block bg-[#e56717] px-[22px] py-[13px] rounded-md font-bold text-[13.5px] transition duration-150 !no-underline hover:-translate-y-[1px] hover:shadow-[0_6px_30px_-6px_rgba(229,103,23,0.6)] hover:brightness-110"
+              >register on luma &rarr;</a
+            >
+            <a
+              href="#schedule"
+              class="!text-[#e8e6e1] inline-block bg-transparent px-[22px] py-[13px] rounded-md font-bold text-[13.5px] border border-[#242321] transition duration-150 !no-underline hover:-translate-y-[1px] hover:bg-[#161615]"
+              >see the schedule</a
+            >
+          </div>
+
+          <div class="mt-4 flex items-center gap-2 text-[12px] text-[#8a8781]">
+            <span class="w-[7px] h-[7px] rounded-full bg-[#7fce7b] shadow-[0_0_10px_#7fce7b]"></span
+            >approval based · hit register, i'll get back to you soon
+          </div>
+        </div>
+
+        <aside
+          class="w-[340px] bg-[#161615] border border-[#242321] rounded-lg shadow-[0_10px_40px_-20px_rgba(0,0,0,0.8)] sticky top-5 overflow-hidden max-[920px]:static max-[920px]:w-full max-[920px]:max-w-[420px]"
+        >
+          <div
+            class="flex items-center gap-1.5 bg-[#1b1a18] px-[14px] py-2.5 border-b border-[#242321]"
+          >
+            <span class="w-[10px] h-[10px] rounded-full bg-[#ff5f57]"></span>
+            <span class="w-[10px] h-[10px] rounded-full bg-[#febc2e]"></span>
+            <span class="w-[10px] h-[10px] rounded-full bg-[#28c840]"></span>
+            <span class="ml-2.5 text-[#8a8781] text-[11px]">~/02a-london · specs</span>
+          </div>
+          <div class="px-4 py-[18px] leading-[1.75] text-[12.5px]">
+            <div class="whitespace-nowrap overflow-hidden text-ellipsis">
+              <span class="text-[#e56717]">$</span>
+              <span class="text-[#8a8781]">cat</span>
+              event.toml
+            </div>
+            <div class="whitespace-nowrap overflow-hidden text-ellipsis">
+              <span class="inline-block w-[80px] text-[#8a8781]">when</span><span
+                class="text-[#e5c07b]">"2026-05-02"</span
+              >
+            </div>
+            <div class="whitespace-nowrap overflow-hidden text-ellipsis">
+              <span class="inline-block w-[80px] text-[#8a8781]">doors</span><span
+                class="text-[#e5c07b]">"10:00 - 22:00+"</span
+              >
+            </div>
+            <div class="whitespace-nowrap overflow-hidden text-ellipsis">
+              <span class="inline-block w-[80px] text-[#8a8781]">venue</span><span
+                class="text-[#e5c07b]">"tbd · central london"</span
+              >
+            </div>
+            <div class="whitespace-nowrap overflow-hidden text-ellipsis">
+              <span class="inline-block w-[80px] text-[#8a8781]">seats</span><span
+                class="text-[#7fce7b]">~100</span
+              >
+            </div>
+            <div class="whitespace-nowrap overflow-hidden text-ellipsis">
+              <span class="inline-block w-[80px] text-[#8a8781]">build</span><span
+                class="text-[#e5c07b]">"any agent you want"</span
+              >
+            </div>
+            <div class="whitespace-nowrap overflow-hidden text-ellipsis">
+              <span class="inline-block w-[80px] text-[#8a8781]">stack</span><span
+                class="text-[#e56717]">v0</span
+              > + <span class="text-[#e56717]">vercel</span>
+              <span class="text-[#5a5854] ml-2"># + anything else</span>
+            </div>
+            <div class="whitespace-nowrap overflow-hidden text-ellipsis">
+              <span class="inline-block w-[80px] text-[#8a8781]">prizes</span><span
+                class="text-[#7fce7b]">$6,000+ global + london</span
+              >
+            </div>
+            <div class="h-2.5"></div>
+            <div class="whitespace-nowrap overflow-hidden text-ellipsis">
+              <span class="text-[#e56717]">$</span>
+              <span class="text-[#8a8781]">echo</span>
+              <span class="text-[#e5c07b]">"see you may 2nd"</span>
+            </div>
+            <div class="whitespace-nowrap overflow-hidden text-ellipsis text-[#7fce7b]"
+              >&rarr; see you may 2nd</div
+            >
+          </div>
+          <div
+            class="border-t border-dashed border-[#242321] px-4 py-[14px] grid grid-cols-4 gap-2 text-center"
+          >
+            <div>
+              <div
+                class="text-[22px] font-bold text-[#e56717] tabular-nums leading-none"
+                id="cd-d"
+              >
+                00
+              </div>
+              <div class="text-[10px] text-[#8a8781] uppercase tracking-[0.1em] mt-1">days</div>
+            </div>
+            <div>
+              <div
+                class="text-[22px] font-bold text-[#e56717] tabular-nums leading-none"
+                id="cd-h"
+              >
+                00
+              </div>
+              <div class="text-[10px] text-[#8a8781] uppercase tracking-[0.1em] mt-1">hrs</div>
+            </div>
+            <div>
+              <div
+                class="text-[22px] font-bold text-[#e56717] tabular-nums leading-none"
+                id="cd-m"
+              >
+                00
+              </div>
+              <div class="text-[10px] text-[#8a8781] uppercase tracking-[0.1em] mt-1">min</div>
+            </div>
+            <div>
+              <div
+                class="text-[22px] font-bold text-[#e56717] tabular-nums leading-none"
+                id="cd-s"
+              >
+                00
+              </div>
+              <div class="text-[10px] text-[#8a8781] uppercase tracking-[0.1em] mt-1">sec</div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- meta strip -->
+    <section class="mx-auto max-w-[1080px] px-8 max-[560px]:px-5">
+      <div
+        class="grid grid-cols-3 bg-[#242321] gap-px border border-[#242321] rounded-lg overflow-hidden mb-9 max-[920px]:grid-cols-1"
+      >
+        <div class="bg-[#161615] px-[22px] py-5">
+          <div class="text-[11px] text-[#8a8781] uppercase tracking-[0.16em] mb-2">where</div>
+          <div class="text-[16px] text-[#e8e6e1] font-semibold"
+            >tbd<span class="block text-[12px] text-[#8a8781] font-normal mt-1"
+              >central london - announced soon</span
+            ></div
+          >
+        </div>
+        <div class="bg-[#161615] px-[22px] py-5">
+          <div class="text-[11px] text-[#8a8781] uppercase tracking-[0.16em] mb-2">who</div>
+          <div class="text-[16px] text-[#e8e6e1] font-semibold"
+            >~100 solo builders<span class="block text-[12px] text-[#8a8781] font-normal mt-1"
+              >no teams - you ship your own agent</span
+            ></div
+          >
+        </div>
+        <div class="bg-[#161615] px-[22px] py-5">
+          <div class="text-[11px] text-[#8a8781] uppercase tracking-[0.16em] mb-2">you get</div>
+          <div class="text-[16px] text-[#e8e6e1] font-semibold"
+            >v0 + vercel credits<span class="block text-[12px] text-[#8a8781] font-normal mt-1"
+              >plus the full sponsor stack</span
+            ></div
+          >
+        </div>
+      </div>
+    </section>
+
+    <!-- TODO: link tracks, judging & submission out to a dedicated page with full details -->
+    <!-- tracks -->
+    <section
+      class="mx-auto max-w-[1080px] px-8 max-[560px]:px-5 py-14 border-t border-dashed border-[#1f1e1c]"
+    >
+      <div
+        class="flex justify-between items-baseline flex-wrap gap-4 mb-7 max-[920px]:[&>.kicker]:text-left"
+      >
+        <div>
+          <div
+            class="text-[#e56717] text-[12px] uppercase tracking-[0.18em] font-semibold mb-2.5"
+            >01 / what you'll build</div
+          >
+          <h2
+            class="text-[clamp(28px,3.5vw,40px)] font-bold tracking-[-0.015em] leading-[1.1] m-0"
+            >agents. <span class="text-[#e56717]">any agents.</span></h2
+          >
+        </div>
+        <div
+          class="kicker text-[13.5px] text-[#8a8781] max-w-[480px] text-right max-[920px]:text-left"
+        >
+          three tracks, each backed by a real shipping stack from vercel. pick one, or freestyle.
+          you build solo - one agent per person, no teams.
+        </div>
+      </div>
+
+      <div
+        class="grid grid-cols-3 gap-3.5 max-[920px]:grid-cols-1 [&>*]:bg-[#161615] [&>*]:border [&>*]:border-[#242321] [&>*]:rounded-lg [&>*]:px-5 [&>*]:pt-[22px] [&>*]:pb-6 [&>*]:transition [&>*]:duration-150 [&>*:hover]:-translate-y-0.5 [&>*:hover]:border-[#3a3834]"
+      >
+        <div>
+          <div
+            class="text-[44px] font-extrabold text-[#e56717] opacity-[0.18] tracking-[-0.04em] leading-none mb-2.5"
+            >01</div
+          >
+          <div class="text-[10px] text-[#e56717] uppercase tracking-[0.2em] mb-2.5">track</div>
+          <div class="text-[15px] font-bold leading-[1.3] mb-2">vercel workflow (wdk)</div>
+          <div class="text-[12.5px] text-[#8a8781] leading-[1.55]"
+            >long-running, durable async agents that survive crashes, resume after deploys, and pause for minutes or months.</div
+          >
+        </div>
+        <div>
+          <div
+            class="text-[44px] font-extrabold text-[#e56717] opacity-[0.18] tracking-[-0.04em] leading-none mb-2.5"
+            >02</div
+          >
+          <div class="text-[10px] text-[#e56717] uppercase tracking-[0.2em] mb-2.5">track</div>
+          <div class="text-[15px] font-bold leading-[1.3] mb-2">v0 + mcps</div>
+          <div class="text-[12.5px] text-[#8a8781] leading-[1.55]"
+            >use v0 to rapidly build an ai app or agent that connects to at least one mcp server.</div
+          >
+        </div>
+        <div>
+          <div
+            class="text-[44px] font-extrabold text-[#e56717] opacity-[0.18] tracking-[-0.04em] leading-none mb-2.5"
+            >03</div
+          >
+          <div class="text-[10px] text-[#e56717] uppercase tracking-[0.2em] mb-2.5">track</div>
+          <div class="text-[15px] font-bold leading-[1.3] mb-2">chatsdk agents</div>
+          <div class="text-[12.5px] text-[#8a8781] leading-[1.55]"
+            >ai sdk + ai gateway + chatsdk agents that interface across slack, discord, teams, github, and more.</div
+          >
+        </div>
+      </div>
+
+      <a
+        href="https://vercel.notion.site/02agentresources"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="!text-[#e8e6e1] !no-underline hover:!no-underline mt-5 flex items-center justify-between gap-4 px-5 py-4 border border-[#e56717]/40 rounded-lg bg-[linear-gradient(140deg,rgba(229,103,23,0.08),transparent)] transition duration-150 hover:border-[#e56717] hover:-translate-y-0.5 max-[560px]:flex-col max-[560px]:items-start"
+      >
+        <div>
+          <div class="text-[10px] text-[#e56717] uppercase tracking-[0.2em] mb-1">// resources</div>
+          <div class="text-[14px] font-bold text-[#e8e6e1]"
+            >full track docs, quickstarts & sdk links</div
+          >
+          <div class="text-[12px] text-[#8a8781] mt-0.5"
+            >vercel's official zero to agent resource hub - everything you need to ship</div
+          >
+        </div>
+        <div class="text-[12px] text-[#e56717] font-semibold whitespace-nowrap"
+          >vercel.notion.site/02agentresources &rarr;</div
+        >
+      </a>
+    </section>
+
+    <!-- schedule -->
+    <section
+      id="schedule"
+      class="mx-auto max-w-[1080px] px-8 max-[560px]:px-5 py-14 border-t border-dashed border-[#1f1e1c]"
+    >
+      <div class="flex justify-between items-baseline flex-wrap gap-4 mb-7">
+        <div>
+          <div
+            class="text-[#e56717] text-[12px] uppercase tracking-[0.18em] font-semibold mb-2.5"
+            >02 / the day</div
+          >
+          <h2
+            class="text-[clamp(28px,3.5vw,40px)] font-bold tracking-[-0.015em] leading-[1.1] m-0"
+            >10:00 &rarr; <span class="text-[#e56717]">late.</span></h2
+          >
+        </div>
+        <div class="text-[13.5px] text-[#8a8781] max-w-[480px] text-right max-[920px]:text-left">
+          arrive from 10am. hacking kicks off around 11:30, wraps around 8pm. stick around for the
+          afterparty.
+        </div>
+      </div>
+
+      <div class="grid grid-cols-[140px_1fr] max-[560px]:grid-cols-[90px_1fr]">
+        <div class="contents 02a-row">
+          <div
+            class="02a-t relative text-[22px] font-bold text-[#e56717] tabular-nums tracking-[-0.01em] pr-6 py-5 text-right border-r border-[#242321] max-[560px]:text-[16px] max-[560px]:pr-3.5 max-[560px]:py-4"
+            >10:00</div
+          >
+          <div class="pl-7 py-5 max-[560px]:pl-[18px] max-[560px]:py-4">
+            <div class="text-[15.5px] font-semibold text-[#e8e6e1]">arrival & check in</div>
+            <div class="text-[12.5px] text-[#8a8781] mt-0.5">coffee / pastries / say hi</div>
+          </div>
+        </div>
+        <div class="contents 02a-row">
+          <div
+            class="02a-t relative text-[22px] font-bold text-[#e56717] tabular-nums tracking-[-0.01em] pr-6 py-5 text-right border-r border-[#242321] max-[560px]:text-[16px] max-[560px]:pr-3.5 max-[560px]:py-4"
+            >11:00</div
+          >
+          <div
+            class="pl-7 py-5 border-t border-dashed border-[#1f1e1c] max-[560px]:pl-[18px] max-[560px]:py-4"
+          >
+            <div class="text-[15.5px] font-semibold text-[#e8e6e1]">intro</div>
+            <div class="text-[12.5px] text-[#8a8781] mt-0.5"
+              >vercel + sponsors + me · format, judging, info</div
+            >
+          </div>
+        </div>
+        <div class="contents 02a-row">
+          <div
+            class="02a-t relative text-[22px] font-bold text-[#e56717] tabular-nums tracking-[-0.01em] pr-6 py-5 text-right border-r border-[#242321] max-[560px]:text-[16px] max-[560px]:pr-3.5 max-[560px]:py-4"
+            >11:30</div
+          >
+          <div
+            class="pl-7 py-5 border-t border-dashed border-[#1f1e1c] max-[560px]:pl-[18px] max-[560px]:py-4"
+          >
+            <div class="text-[17px] font-semibold text-[#e56717]"
+              >hacking starts &#129489;&zwj;&#128187;</div
+            >
+            <div class="text-[12.5px] text-[#8a8781] mt-0.5">8 hours on the clock</div>
+          </div>
+        </div>
+        <div class="contents 02a-row">
+          <div
+            class="02a-t relative text-[22px] font-bold text-[#e56717] tabular-nums tracking-[-0.01em] pr-6 py-5 text-right border-r border-[#242321] max-[560px]:text-[16px] max-[560px]:pr-3.5 max-[560px]:py-4"
+            >13:00</div
+          >
+          <div
+            class="pl-7 py-5 border-t border-dashed border-[#1f1e1c] max-[560px]:pl-[18px] max-[560px]:py-4"
+          >
+            <div class="text-[15.5px] font-semibold text-[#e8e6e1]">lunch</div>
+            <div class="text-[12.5px] text-[#8a8781] mt-0.5">on us</div>
+          </div>
+        </div>
+        <div class="contents 02a-row">
+          <div
+            class="02a-t relative text-[22px] font-bold text-[#e56717] tabular-nums tracking-[-0.01em] pr-6 py-5 text-right border-r border-[#242321] max-[560px]:text-[16px] max-[560px]:pr-3.5 max-[560px]:py-4"
+            >19:30</div
+          >
+          <div
+            class="pl-7 py-5 border-t border-dashed border-[#1f1e1c] max-[560px]:pl-[18px] max-[560px]:py-4"
+          >
+            <div class="text-[15.5px] font-semibold text-[#e8e6e1]">tools down · top 6 demos</div>
+            <div class="text-[12.5px] text-[#8a8781] mt-0.5">5 min each on the main stage</div>
+          </div>
+        </div>
+        <div class="contents 02a-row">
+          <div
+            class="02a-t relative text-[22px] font-bold text-[#e56717] tabular-nums tracking-[-0.01em] pr-6 py-5 text-right border-r border-[#242321] max-[560px]:text-[16px] max-[560px]:pr-3.5 max-[560px]:py-4"
+            >20:00</div
+          >
+          <div
+            class="pl-7 py-5 border-t border-dashed border-[#1f1e1c] max-[560px]:pl-[18px] max-[560px]:py-4"
+          >
+            <div class="text-[17px] font-semibold text-[#e56717]">winners &#127942;</div>
+          </div>
+        </div>
+        <div class="contents 02a-row">
+          <div
+            class="02a-t relative text-[22px] font-bold text-[#e56717] tabular-nums tracking-[-0.01em] pr-6 py-5 text-right border-r border-[#242321] max-[560px]:text-[16px] max-[560px]:pr-3.5 max-[560px]:py-4"
+            >20:00+</div
+          >
+          <div
+            class="pl-7 py-5 border-t border-dashed border-[#1f1e1c] max-[560px]:pl-[18px] max-[560px]:py-4"
+          >
+            <div class="text-[15.5px] font-semibold text-[#e8e6e1]">afterparty</div>
+            <div class="text-[12.5px] text-[#8a8781] mt-0.5">bbq · drinks · ice cream &#127846;</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- judging -->
+    <section
+      class="mx-auto max-w-[1080px] px-8 max-[560px]:px-5 py-14 border-t border-dashed border-[#1f1e1c]"
+    >
+      <div class="flex justify-between items-baseline flex-wrap gap-4 mb-7">
+        <div>
+          <div
+            class="text-[#e56717] text-[12px] uppercase tracking-[0.18em] font-semibold mb-2.5"
+            >03 / judging & submission</div
+          >
+          <h2
+            class="text-[clamp(28px,3.5vw,40px)] font-bold tracking-[-0.015em] leading-[1.1] m-0"
+            >how we pick <span class="text-[#e56717]">winners.</span></h2
+          >
+        </div>
+        <div class="text-[13.5px] text-[#8a8781] max-w-[480px] text-right max-[920px]:text-left">
+          solo hackathon - one submission per person, no teams. two pools, same rubric.
+          local: judged on the day for the london prizes. global: submit to the vercel community
+          hub by may 3, community votes 24 hours on may 4.
+        </div>
+      </div>
+
+      <div
+        class="grid grid-cols-2 gap-3.5 mb-9 max-[920px]:grid-cols-1 [&>*]:px-5 [&>*]:py-[18px] [&>*]:rounded-lg [&>*]:border"
+      >
+        <div class="bg-[#161615] border-[#242321]">
+          <div class="text-[10px] text-[#e56717] uppercase tracking-[0.18em] mb-2"
+            >// local &middot; london pool</div
+          >
+          <div class="text-[15px] font-bold text-[#e8e6e1] mb-1">judged on the day</div>
+          <div class="text-[12.5px] text-[#8a8781] leading-[1.55]"
+            >same rubric, scored in the room. winners announced before the bbq.</div
+          >
+        </div>
+        <div
+          class="!bg-[linear-gradient(140deg,rgba(229,103,23,0.08),transparent)] !border-[#e56717]/30"
+        >
+          <div class="text-[10px] text-[#e56717] uppercase tracking-[0.18em] mb-2"
+            >// global &middot; vercel pool</div
+          >
+          <div class="text-[15px] font-bold text-[#e8e6e1] mb-1">community vote on the hub</div>
+          <div class="text-[12.5px] text-[#8a8781] leading-[1.55]"
+            >submit by may 3, voting may 4. open to every london builder.</div
+          >
+        </div>
+      </div>
+
+      <div class="grid grid-cols-[1.1fr_1fr] gap-10 max-[920px]:grid-cols-1 max-[920px]:gap-6">
+        <div class="02a-criteria">
+          <div
+            class="grid grid-cols-[48px_1fr] gap-4 items-start py-[18px] px-1 border-t border-dashed border-[#1f1e1c] max-[560px]:grid-cols-[40px_1fr]"
+          >
+            <div class="text-[20px] font-bold text-[#e56717]">01</div>
+            <div>
+              <b class="block text-[15px] text-[#e8e6e1] font-semibold">usefulness</b><span
+                class="block text-[13px] text-[#8a8781] leading-[1.6] mt-0.5"
+                >agent usefulness and real-world applicability. would anyone actually use this?</span
+              >
+            </div>
+          </div>
+          <div
+            class="grid grid-cols-[48px_1fr] gap-4 items-start py-[18px] px-1 border-t border-dashed border-[#1f1e1c] max-[560px]:grid-cols-[40px_1fr]"
+          >
+            <div class="text-[20px] font-bold text-[#e56717]">02</div>
+            <div>
+              <b class="block text-[15px] text-[#e8e6e1] font-semibold">technical execution</b><span
+                class="block text-[13px] text-[#8a8781] leading-[1.6] mt-0.5"
+                >built with v0, deployed on vercel.</span
+              >
+            </div>
+          </div>
+          <div
+            class="grid grid-cols-[48px_1fr] gap-4 items-start py-[18px] px-1 border-t border-dashed border-[#1f1e1c] max-[560px]:grid-cols-[40px_1fr]"
+          >
+            <div class="text-[20px] font-bold text-[#e56717]">03</div>
+            <div>
+              <b class="block text-[15px] text-[#e8e6e1] font-semibold">creativity</b><span
+                class="block text-[13px] text-[#8a8781] leading-[1.6] mt-0.5"
+                >originality. did you make something that surprises people?</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-[#161615] border border-[#242321] rounded-lg px-6 py-[22px]">
+          <div
+            class="text-[14px] text-[#e56717] tracking-[0.1em] uppercase mb-3.5"
+            >// how to submit</div
+          >
+          <div
+            class="grid grid-cols-[24px_1fr] gap-3.5 py-2.5 border-t border-dashed border-[#1f1e1c] items-start"
+          >
+            <div class="text-[13px] font-bold text-[#e56717]">01</div>
+            <div>
+              <b class="block text-[13.5px] text-[#e8e6e1] font-semibold">deploy to vercel</b><span
+                class="block text-[12px] text-[#8a8781] mt-0.5">built with v0, live on vercel</span
+              >
+            </div>
+          </div>
+          <div
+            class="grid grid-cols-[24px_1fr] gap-3.5 py-2.5 border-t border-dashed border-[#1f1e1c] items-start"
+          >
+            <div class="text-[13px] font-bold text-[#e56717]">02</div>
+            <div>
+              <b class="block text-[13.5px] text-[#e8e6e1] font-semibold">submit individually by may 3</b><span
+                class="block text-[12px] text-[#8a8781] mt-0.5"
+                >at the <a
+                  href="https://community.vercel.com/host/zero-to-agent-2026"
+                  target="_blank"
+                  rel="noopener noreferrer">vercel community zero to agent hub</a
+                > - one per person, no teams</span
+              >
+            </div>
+          </div>
+          <div
+            class="grid grid-cols-[24px_1fr] gap-3.5 py-2.5 border-t border-dashed border-[#1f1e1c] items-start"
+          >
+            <div class="text-[13px] font-bold text-[#e56717]">03</div>
+            <div>
+              <b class="block text-[13.5px] text-[#e8e6e1] font-semibold">community vote &middot; may 4</b><span
+                class="block text-[12px] text-[#8a8781] mt-0.5"
+                >24 hours of voting on the hub. winners announced after.</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- prizes -->
+    <section
+      class="mx-auto max-w-[1080px] px-8 max-[560px]:px-5 py-14 border-t border-dashed border-[#1f1e1c]"
+    >
+      <div class="mb-7">
+        <div
+          class="text-[#e56717] text-[12px] uppercase tracking-[0.18em] font-semibold mb-2.5"
+          >04 / prizes</div
+        >
+        <h2
+          class="text-[clamp(28px,3.5vw,40px)] font-bold tracking-[-0.015em] leading-[1.1] m-0 mb-4"
+          >stuff that helps you <span class="text-[#e56717]">keep building.</span></h2
+        >
+        <div class="text-[13.5px] text-[#8a8781] max-w-[680px]">
+          full london list confirmed closer to the day. expect the kind of stuff that actually helps
+          you keep building, not a fruit basket.
+        </div>
+      </div>
+
+      <div class="grid grid-cols-[1.05fr_1fr] gap-4 max-[920px]:grid-cols-1 max-[920px]:gap-6">
+        <div
+          class="relative border border-[#e56717]/30 rounded-[10px] px-7 pt-7 pb-6 bg-[linear-gradient(180deg,rgba(229,103,23,0.08)_0%,rgba(229,103,23,0.02)_100%)] overflow-hidden before:content-[''] before:absolute before:-top-[40%] before:-right-[20%] before:w-[260px] before:h-[260px] before:bg-[radial-gradient(circle,rgba(229,103,23,0.25),transparent_70%)] before:pointer-events-none"
+        >
+          <div
+            class="relative text-[12px] uppercase text-[#8a8781] tracking-[0.16em] font-semibold mb-[18px] flex items-center gap-2"
+          >
+            <span class="text-[18px]">&#127468;&#127463;</span> london pool
+          </div>
+          <div
+            class="relative text-[22px] font-bold tracking-[-0.01em] mb-3.5 text-[#e56717]"
+            >judged on the day</div
+          >
+          <ul class="relative list-none p-0 m-0">
+            <li
+              class="relative text-[13px] py-[9px] pl-[22px] border-t border-dashed border-[#1f1e1c] text-[#8a8781] before:content-['→'] before:absolute before:left-0 before:text-[#e56717]"
+              ><b class="text-[#e8e6e1] font-semibold">hardware</b> - for the top builder</li
+            >
+            <li
+              class="relative text-[13px] py-[9px] pl-[22px] border-t border-dashed border-[#1f1e1c] text-[#8a8781] before:content-['→'] before:absolute before:left-0 before:text-[#e56717]"
+              ><b class="text-[#e8e6e1] font-semibold">ai credits</b> - across the sponsor
+              stack</li
+            >
+            <li
+              class="relative text-[13px] py-[9px] pl-[22px] border-t border-dashed border-[#1f1e1c] text-[#8a8781] before:content-['→'] before:absolute before:left-0 before:text-[#e56717]"
+              ><b class="text-[#e8e6e1] font-semibold">+ more</b> - full list closer to the
+              day</li
+            >
+          </ul>
+        </div>
+        <div
+          class="relative border border-[#242321] rounded-[10px] px-7 pt-7 pb-6 bg-[linear-gradient(180deg,#1a1918_0%,#131211_100%)] overflow-hidden"
+        >
+          <div
+            class="relative text-[12px] uppercase text-[#8a8781] tracking-[0.16em] font-semibold mb-[18px] flex items-center gap-2"
+          >
+            <span class="text-[18px]">&#127757;</span> global pool
+          </div>
+          <div class="relative text-[22px] font-bold tracking-[-0.01em] mb-3.5"
+            >$6,000+ up for grabs</div
+          >
+          <ul class="relative list-none p-0 m-0">
+            <li
+              class="relative text-[13px] py-[9px] pl-[26px] border-t border-dashed border-[#1f1e1c] text-[#8a8781] before:content-['1st'] before:absolute before:left-0 before:text-[#e56717] before:font-semibold before:text-[11px] before:top-[11px]"
+              ><b class="text-[#e8e6e1] font-semibold">$3,000 v0 credits</b> + $200/mo vercel
+              platform credits + vercel pro for 6 months</li
+            >
+            <li
+              class="relative text-[13px] py-[9px] pl-[26px] border-t border-dashed border-[#1f1e1c] text-[#8a8781] before:content-['2nd'] before:absolute before:left-0 before:text-[#e56717] before:font-semibold before:text-[11px] before:top-[11px]"
+              ><b class="text-[#e8e6e1] font-semibold">$2,000 v0 credits</b> + $100/mo vercel
+              platform credits + vercel pro for 6 months</li
+            >
+            <li
+              class="relative text-[13px] py-[9px] pl-[26px] border-t border-dashed border-[#1f1e1c] text-[#8a8781] before:content-['3rd'] before:absolute before:left-0 before:text-[#e56717] before:font-semibold before:text-[11px] before:top-[11px]"
+              ><b class="text-[#e8e6e1] font-semibold">$1,000 v0 credits</b> + $50/mo vercel
+              platform credits + vercel pro for 6 months</li
+            >
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- venue -->
+    <section
+      class="mx-auto max-w-[1080px] px-8 max-[560px]:px-5 py-14 border-t border-dashed border-[#1f1e1c]"
+    >
+      <div class="flex justify-between items-baseline flex-wrap gap-4 mb-7">
+        <div>
+          <div
+            class="text-[#e56717] text-[12px] uppercase tracking-[0.18em] font-semibold mb-2.5"
+            >05 / venue</div
+          >
+          <h2
+            class="text-[clamp(28px,3.5vw,40px)] font-bold tracking-[-0.015em] leading-[1.1] m-0"
+            >location <span class="text-[#e56717]">tbd.</span></h2
+          >
+        </div>
+        <div class="text-[13.5px] text-[#8a8781] max-w-[480px] text-right max-[920px]:text-left">
+          a proper room somewhere in central london - we're locking it in. exact venue, full
+          travel details, and check-in info drop in the group chat once confirmed.
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-10 max-[920px]:grid-cols-1 max-[920px]:gap-6">
+        <div
+          class="relative block aspect-[4/3] border border-[#242321] rounded-[10px] bg-[#161615] p-7 overflow-hidden before:content-[''] before:absolute before:inset-0 before:pointer-events-none before:[background-image:linear-gradient(to_right,rgba(229,103,23,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(229,103,23,0.06)_1px,transparent_1px)] before:[background-size:30px_30px]"
+        >
+          <div
+            class="absolute top-5 left-5 text-[11px] text-[#8a8781] uppercase tracking-[0.1em]"
+            >// map.lookup("???")</div
+          >
+          <div
+            class="absolute top-1/2 left-[52%] -translate-x-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-[#5a5854] shadow-[0_0_0_6px_rgba(90,88,84,0.18),0_0_0_14px_rgba(90,88,84,0.08)] animate-[02a-pinpulse_2s_ease-in-out_infinite]"
+          ></div>
+          <div class="absolute bottom-[18px] left-5 right-[100px] text-[13px] font-bold text-[#e8e6e1]">
+            location tbd
+            <span class="block text-[11px] text-[#8a8781] font-normal mt-0.5"
+              >central london · united kingdom</span
+            >
+          </div>
+          <div
+            class="absolute bottom-[18px] right-5 text-[11px] text-[#5a5854] tabular-nums text-right leading-[1.4]"
+            >??.????° N<br />?.????° W</div
+          >
+        </div>
+
+        <div>
+          <h3
+            class="text-[13px] text-[#e56717] uppercase tracking-[0.14em] m-0 mb-3.5"
+            >// getting there</h3
+          >
+          <div
+            class="grid grid-cols-[110px_1fr] gap-4 py-3 text-[13px] [&:first-of-type]:border-t-0 [&:first-of-type]:pt-0 border-t border-dashed border-[#1f1e1c]"
+          >
+            <div class="text-[#8a8781]">address</div>
+            <div class="text-[#e8e6e1]">tbd - somewhere central. announced soon.</div>
+          </div>
+          <div
+            class="grid grid-cols-[110px_1fr] gap-4 py-3 text-[13px] border-t border-dashed border-[#1f1e1c]"
+          >
+            <div class="text-[#8a8781]">tube / rail</div>
+            <div class="text-[#e8e6e1]">we're optimising for &lt;10min walk from a major station</div>
+          </div>
+          <div
+            class="grid grid-cols-[110px_1fr] gap-4 py-3 text-[13px] border-t border-dashed border-[#1f1e1c]"
+          >
+            <div class="text-[#8a8781]">wifi</div>
+            <div class="text-[#e8e6e1]">fast & tested. details in the group chat on the morning.</div>
+          </div>
+          <div
+            class="grid grid-cols-[110px_1fr] gap-4 py-3 text-[13px] border-t border-dashed border-[#1f1e1c]"
+          >
+            <div class="text-[#8a8781]">access</div>
+            <div class="text-[#e8e6e1]">we're aiming for step-free. dm me if you need anything specific.</div>
+          </div>
+          <div
+            class="grid grid-cols-[110px_1fr] gap-4 py-3 text-[13px] border-t border-dashed border-[#1f1e1c]"
+          >
+            <div class="text-[#8a8781]">heads up</div>
+            <div class="text-[#e8e6e1]">final venue + travel details land in the group chat once locked in.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- what you get -->
+    <section
+      class="mx-auto max-w-[1080px] px-8 max-[560px]:px-5 py-14 border-t border-dashed border-[#1f1e1c]"
+    >
+      <div class="flex justify-between items-baseline flex-wrap gap-4 mb-7">
+        <div>
+          <div
+            class="text-[#e56717] text-[12px] uppercase tracking-[0.18em] font-semibold mb-2.5"
+            >06 / what you get</div
+          >
+          <h2
+            class="text-[clamp(28px,3.5vw,40px)] font-bold tracking-[-0.015em] leading-[1.1] m-0"
+            >everything you need to <span class="text-[#e56717]">actually ship.</span></h2
+          >
+        </div>
+        <div class="text-[13.5px] text-[#8a8781] max-w-[480px] text-right max-[920px]:text-left"
+          >credits, calories, caffeine, company. the full kit.</div
+        >
+      </div>
+
+      <div
+        class="grid grid-cols-3 gap-3.5 max-[920px]:grid-cols-2 max-[560px]:grid-cols-1 [&>*]:px-5 [&>*]:py-[22px] [&>*]:border [&>*]:border-[#242321] [&>*]:rounded-lg [&>*]:bg-[#161615]"
+      >
+        <div>
+          <div class="text-[22px] mb-3.5 inline-block text-[#e56717]">&#9650;</div>
+          <b class="text-[14px] text-[#e8e6e1] block mb-1">v0 + vercel credits</b>
+          <span class="text-[12.5px] text-[#8a8781] leading-[1.55]"
+            >free credits to build and deploy, sent out in the group chat on the morning.</span
+          >
+        </div>
+        <div>
+          <div class="text-[22px] mb-3.5 inline-block text-[#e56717]">&#9889;</div>
+          <b class="text-[14px] text-[#e8e6e1] block mb-1">sponsor stack</b>
+          <span class="text-[12.5px] text-[#8a8781] leading-[1.55]"
+            >ai credits, goodies, and bits from the secondary sponsors - full list closer to
+            the day.</span
+          >
+        </div>
+        <div>
+          <div class="text-[22px] mb-3.5 inline-block text-[#e56717]">&#9749;</div>
+          <b class="text-[14px] text-[#e8e6e1] block mb-1">coffee all day</b>
+          <span class="text-[12.5px] text-[#8a8781] leading-[1.55]"
+            >pastries at 10, lunch at 1, energy drinks & snacks running the whole day.</span
+          >
+        </div>
+        <div>
+          <div class="text-[22px] mb-3.5 inline-block text-[#e56717]">&#127830;</div>
+          <b class="text-[14px] text-[#e8e6e1] block mb-1">bbq afterparty</b>
+          <span class="text-[12.5px] text-[#8a8781] leading-[1.55]"
+            >dinner, drinks, ice cream. stick around - winners are announced before the food.</span
+          >
+        </div>
+        <div>
+          <div class="text-[22px] mb-3.5 inline-block text-[#e56717]">&#128101;</div>
+          <b class="text-[14px] text-[#e8e6e1] block mb-1">100 cracked builders</b>
+          <span class="text-[12.5px] text-[#8a8781] leading-[1.55]"
+            >the room is curated. you'll meet people worth knowing.</span
+          >
+        </div>
+        <div>
+          <div class="text-[22px] mb-3.5 inline-block text-[#e56717]">&#127942;</div>
+          <b class="text-[14px] text-[#e8e6e1] block mb-1">real shot at prizes</b>
+          <span class="text-[12.5px] text-[#8a8781] leading-[1.55]"
+            >london pool plus a global $6k+ zero-to-agent prize pool.</span
+          >
+        </div>
+      </div>
+    </section>
+
+    <!-- comms -->
+    <section
+      class="mx-auto max-w-[1080px] px-8 max-[560px]:px-5 py-14 border-t border-dashed border-[#1f1e1c]"
+    >
+      <div class="flex justify-between items-baseline flex-wrap gap-4 mb-7">
+        <div>
+          <div
+            class="text-[#e56717] text-[12px] uppercase tracking-[0.18em] font-semibold mb-2.5"
+            >07 / comms</div
+          >
+          <h2
+            class="text-[clamp(28px,3.5vw,40px)] font-bold tracking-[-0.015em] leading-[1.1] m-0"
+            >how we <span class="text-[#e56717]">talk.</span></h2
+          >
+        </div>
+        <div class="text-[13.5px] text-[#8a8781] max-w-[480px] text-right max-[920px]:text-left">
+          once you're approved, you'll get an invite to the event group chat. that's where
+          everything lives.
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1">
+        <div class="p-[22px] border border-[#242321] rounded-lg bg-[#161615]">
+          <h4 class="text-[15px] font-semibold m-0 mb-2.5 flex items-center gap-2.5"
+            ><span class="w-2.5 h-2.5 rounded-full inline-block bg-[#25D366]"></span>whatsapp · primary</h4
+          >
+          <p class="text-[13px] text-[#8a8781] m-0"
+            >announcements, wifi, credit links, on-the-day chaos. invite drops when you're
+            approved.</p
+          >
+        </div>
+      </div>
+
+      <p class="text-[13px] text-[#8a8781] mt-[18px]">
+        questions now? dm me on
+        <a href="https://x.com/oscarfalll" target="_blank" rel="noopener noreferrer">x</a>
+        or
+        <a href="https://linkedin.com/in/oscarfalemara" target="_blank" rel="noopener noreferrer"
+          >linkedin</a
+        > - dms are open.
+      </p>
+    </section>
+
+    <!-- partners -->
+    <section
+      class="mx-auto max-w-[1080px] px-8 max-[560px]:px-5 py-14 border-t border-dashed border-[#1f1e1c]"
+    >
+      <div class="flex justify-between items-baseline flex-wrap gap-4 mb-7">
+        <div>
+          <div
+            class="text-[#e56717] text-[12px] uppercase tracking-[0.18em] font-semibold mb-2.5"
+            >08 / partners</div
+          >
+          <h2
+            class="text-[clamp(28px,3.5vw,40px)] font-bold tracking-[-0.015em] leading-[1.1] m-0"
+            >making it <span class="text-[#e56717]">happen.</span></h2
+          >
+        </div>
+        <div class="text-[13.5px] text-[#8a8781] max-w-[480px] text-right max-[920px]:text-left"
+          >more partners announced in the run-up. follow along on x / linkedin.</div
+        >
+      </div>
+
+      <div
+        class="grid grid-cols-4 gap-3 max-[920px]:grid-cols-2 max-[560px]:grid-cols-1 [&>*]:px-5 [&>*]:py-[22px] [&>*]:border [&>*]:rounded-lg [&>*]:min-h-[130px] [&>*]:flex [&>*]:flex-col [&>*]:justify-between [&>*]:transition [&>*]:duration-150 [&>*:hover]:border-[#3a3834]"
+      >
+        <div
+          class="!bg-[linear-gradient(140deg,rgba(229,103,23,0.12),transparent)] !border-[#e56717]/30"
+        >
+          <div
+            class="text-[10px] text-[#e56717] uppercase tracking-[0.18em] mb-4"
+            >// title sponsor</div
+          >
+          <div>
+            <div class="text-[18px] font-bold text-[#e8e6e1] tracking-[-0.01em]"
+              >&#9650; vercel</div
+            >
+            <div class="text-[11.5px] text-[#8a8781] mt-1"
+              >host of <a
+                href="https://community.vercel.com/hackathons/zero-to-agent"
+                target="_blank"
+                rel="noopener noreferrer">zero to agent</a
+              > globally</div
+            >
+          </div>
+        </div>
+        <div class="bg-[#161615] border-[#242321]">
+          <div
+            class="text-[10px] text-[#5a5854] uppercase tracking-[0.18em] mb-4"
+            >// secondary sponsor</div
+          >
+          <div>
+            <div class="text-[18px] font-bold text-[#5a5854] tracking-[-0.01em]">tba</div>
+            <div class="text-[11.5px] text-[#8a8781] mt-1">announced soon</div>
+          </div>
+        </div>
+        <div class="bg-[#161615] border-[#242321]">
+          <div class="text-[10px] text-[#5a5854] uppercase tracking-[0.18em] mb-4">// venue</div>
+          <div>
+            <div class="text-[18px] font-bold text-[#5a5854] tracking-[-0.01em]">tbd</div>
+            <div class="text-[11.5px] text-[#8a8781] mt-1">central london</div>
+          </div>
+        </div>
+        <div class="bg-[#161615] border-[#242321]">
+          <div class="text-[10px] text-[#5a5854] uppercase tracking-[0.18em] mb-4">// your host</div>
+          <div>
+            <div class="text-[18px] font-bold text-[#e8e6e1] tracking-[-0.01em]">oscarama</div>
+            <div class="text-[11.5px] text-[#8a8781] mt-1">me - dm me anything</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- final cta -->
+    <section class="mx-auto max-w-[1080px] px-8 max-[560px]:px-5">
+      <div
+        class="relative text-center mx-0 my-20 max-[920px]:my-10 px-10 py-[60px] border border-[#242321] rounded-xl bg-[radial-gradient(ellipse_60%_100%_at_50%_100%,rgba(229,103,23,0.12),transparent_70%),linear-gradient(180deg,#181716_0%,#111110_100%)] overflow-hidden"
+      >
+        <div
+          class="text-[12px] text-[#e56717] uppercase tracking-[0.22em] font-semibold mb-3"
+          >saturday · 2 may · 2026</div
+        >
+        <h3
+          class="text-[clamp(32px,5vw,54px)] font-extrabold tracking-[-0.025em] leading-[1.05] m-0 mb-4"
+          >bring your laptop<br /><span class="text-[#e56717]">and your best ideas.</span></h3
+        >
+        <p class="text-[14px] text-[#8a8781] max-w-[420px] mx-auto mb-7"
+          >solo build. one submission per person, no teams. experienced or first-timer - we got you.</p
+        >
+        <a
+          href="https://luma.com/p7pnjcu8"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="!text-[#0a0a0a] inline-block bg-[#e56717] px-[22px] py-[13px] rounded-md font-bold text-[13.5px] transition duration-150 !no-underline hover:-translate-y-[1px] hover:shadow-[0_6px_30px_-6px_rgba(229,103,23,0.6)] hover:brightness-110"
+          >register on luma &rarr;</a
+        >
+        <div
+          class="mt-10 text-[10px] font-bold text-[#e56717] opacity-[0.15] whitespace-pre text-center"
+          >&#9650; &#9650; &#9650; zero &rarr; agent · london 2026 &#9650; &#9650; &#9650;</div
+        >
+      </div>
+    </section>
+
+    <footer
+      class="mx-auto max-w-[1080px] px-8 max-[560px]:px-5 text-center pt-8 pb-[60px] text-[12px] text-[#5a5854] border-t border-dashed border-[#1f1e1c] [&_a]:!text-[#5a5854]"
+    >
+      <div>
+        questions? dm me -
+        <a href="https://x.com/oscarfalll" target="_blank" rel="noopener noreferrer">x</a>
+        /
+        <a href="https://linkedin.com/in/oscarfalemara" target="_blank" rel="noopener noreferrer"
+          >linkedin</a
+        >
+      </div>
+    </footer>
+  </main>
+</BaseLayout>
+
+<style is:global>
+  body:has(.02a)::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+    background-size: 80px 80px;
+    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 0%, transparent 70%);
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 0%, transparent 70%);
+  }
+  body:has(.02a)::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background: radial-gradient(
+      ellipse 40% 30% at 80% 10%,
+      rgba(229, 103, 23, 0.08),
+      transparent 60%
+    );
+  }
+  body:has(.02a) ::selection {
+    background: #e56717;
+    color: #000;
+  }
+  @keyframes 02a-blink {
+    50% {
+      opacity: 0;
+    }
+  }
+  @keyframes 02a-pulse {
+    0%,
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.4;
+      transform: scale(1.3);
+    }
+  }
+  @keyframes 02a-pinpulse {
+    0%,
+    100% {
+      box-shadow:
+        0 0 0 6px rgba(229, 103, 23, 0.15),
+        0 0 0 14px rgba(229, 103, 23, 0.08);
+    }
+    50% {
+      box-shadow:
+        0 0 0 10px rgba(229, 103, 23, 0.2),
+        0 0 0 20px rgba(229, 103, 23, 0.05);
+    }
+  }
+  /* timeline rail node — scoped via .02a wrapper */
+  .02a .02a-row > .02a-t::after {
+    content: "";
+    position: absolute;
+    right: -5px;
+    top: 26px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #e56717;
+    box-shadow: 0 0 0 2px #101010;
+  }
+  .02a .02a-row-dim > .02a-t::after {
+    background: #5a5854;
+  }
+  @media (max-width: 560px) {
+    .02a .02a-row > .02a-t::after {
+      display: none;
+    }
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    const target = new Date("2026-05-02T10:00:00+01:00").getTime();
+    const pad = (n) => String(n).padStart(2, "0");
+    function tick() {
+      const now = Date.now();
+      let diff = Math.max(0, target - now);
+      const d = Math.floor(diff / 86400000);
+      diff -= d * 86400000;
+      const h = Math.floor(diff / 3600000);
+      diff -= h * 3600000;
+      const m = Math.floor(diff / 60000);
+      diff -= m * 60000;
+      const s = Math.floor(diff / 1000);
+      const elD = document.getElementById("cd-d");
+      const elH = document.getElementById("cd-h");
+      const elM = document.getElementById("cd-m");
+      const elS = document.getElementById("cd-s");
+      if (elD) elD.textContent = pad(d);
+      if (elH) elH.textContent = pad(h);
+      if (elM) elM.textContent = pad(m);
+      if (elS) elS.textContent = pad(s);
+    }
+    tick();
+    setInterval(tick, 1000);
+  })();
+</script>

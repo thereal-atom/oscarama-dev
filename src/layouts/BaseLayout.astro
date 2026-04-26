@@ -17,6 +17,8 @@ const {
   ogImage = "/og.png",
   ogUrl = "https://oscarama.dev",
 } = Astro.props;
+
+const showEventBanner = Astro.url.pathname !== "/events/zero-to-agent";
 ---
 
 <!doctype html>
@@ -55,6 +57,25 @@ const {
   </head>
   <body>
     <!-- <BackgroundTexture /> -->
+    {
+      showEventBanner && (
+        <a
+          href="/events/zero-to-agent"
+          class="group block w-full bg-[#e56717] text-[#0a0a0a] no-underline hover:no-underline"
+          onclick="window.posthog?.capture('event_banner_clicked', { event: 'zero-to-agent' })"
+        >
+          <div class="mx-auto flex max-w-3xl items-center justify-center gap-1.5 px-3 py-2 text-[11px] sm:text-[12px] font-semibold tracking-tight whitespace-nowrap">
+            <span class="inline-block h-1.5 w-1.5 shrink-0 animate-pulse rounded-full bg-[#0a0a0a]" />
+            <span>zero → agent · london</span>
+            <span class="opacity-70 hidden min-[420px]:inline">· sat 2 may</span>
+            <span class="opacity-70 hidden sm:inline">· solo hackathon w/ vercel</span>
+            <span class="ml-0.5 shrink-0 transition-transform duration-150 group-hover:translate-x-0.5">
+              →
+            </span>
+          </div>
+        </a>
+      )
+    }
     <div class="min-h-screen flex flex-col">
       <Header />
       <slot />
