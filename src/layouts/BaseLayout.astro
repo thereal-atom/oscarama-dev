@@ -18,7 +18,7 @@ const {
   ogUrl = "https://oscarama.dev",
 } = Astro.props;
 
-const showEventBanner = Astro.url.pathname !== "/events/zero-to-agent";
+const showEventBanner = Astro.url.pathname.replace(/\/$/, "") !== "/events/zero-to-agent";
 ---
 
 <!doctype html>
