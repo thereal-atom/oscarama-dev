@@ -75,7 +75,7 @@ const daysToGo = Math.max(
               href="https://community.vercel.com/hackathons/zero-to-agent"
               target="_blank"
               rel="noopener noreferrer">zero to agent</a
-            > global build week. one glorious saturday, ~100 cracked builders, eight hours on the clock.
+            > global build week. one glorious saturday, ~100 cracked builders, <a href="#schedule">eight hours on the clock</a>.
           </p>
 
           <div class="flex flex-wrap gap-3 mt-6">
@@ -127,9 +127,9 @@ const daysToGo = Math.max(
               >
             </div>
             <div class="whitespace-nowrap overflow-hidden text-ellipsis">
-              <span class="inline-block w-[80px] text-[#8a8781]">venue</span><span
-                class="text-[#e5c07b]">"halkin · 1-2 paris garden"</span
-              >
+              <span class="inline-block w-[80px] text-[#8a8781]">venue</span><a
+                href="#venue"
+                class="!text-[#e5c07b] !no-underline hover:!underline">"halkin · 1-2 paris garden"</a>
             </div>
             <div class="whitespace-nowrap overflow-hidden text-ellipsis">
               <span class="inline-block w-[80px] text-[#8a8781]">seats</span><span
@@ -148,9 +148,9 @@ const daysToGo = Math.max(
               <span class="text-[#5a5854] ml-2"># + anything else</span>
             </div>
             <div class="whitespace-nowrap overflow-hidden text-ellipsis">
-              <span class="inline-block w-[80px] text-[#8a8781]">prizes</span><span
-                class="text-[#7fce7b]">$6,000+ global + london</span
-              >
+              <span class="inline-block w-[80px] text-[#8a8781]">prizes</span><a
+                href="#prizes"
+                class="!text-[#7fce7b] !no-underline hover:!underline">$6,000+ global + london</a>
             </div>
             <div class="h-2.5"></div>
             <div class="whitespace-nowrap overflow-hidden text-ellipsis">
@@ -199,14 +199,14 @@ const daysToGo = Math.max(
       <div
         class="grid grid-cols-3 bg-[#242321] gap-px border border-[#242321] rounded-lg overflow-hidden mb-9 max-[920px]:grid-cols-1"
       >
-        <div class="bg-[#161615] px-[22px] py-5">
+        <a href="#venue" class="!text-[#e8e6e1] !no-underline hover:!no-underline bg-[#161615] px-[22px] py-5 block">
           <div class="text-[11px] text-[#8a8781] uppercase tracking-[0.16em] mb-2">where</div>
           <div class="text-[16px] text-[#e8e6e1] font-semibold">
             halkin<span class="block text-[12px] text-[#8a8781] font-normal mt-1"
               >1-2 paris garden, london</span
             >
           </div>
-        </div>
+        </a>
         <div class="bg-[#161615] px-[22px] py-5">
           <div class="text-[11px] text-[#8a8781] uppercase tracking-[0.16em] mb-2">who</div>
           <div class="text-[16px] text-[#e8e6e1] font-semibold">
@@ -215,20 +215,21 @@ const daysToGo = Math.max(
             >
           </div>
         </div>
-        <div class="bg-[#161615] px-[22px] py-5">
+        <a href="#what-you-get" class="!text-[#e8e6e1] !no-underline hover:!no-underline bg-[#161615] px-[22px] py-5 block">
           <div class="text-[11px] text-[#8a8781] uppercase tracking-[0.16em] mb-2">you get</div>
           <div class="text-[16px] text-[#e8e6e1] font-semibold">
             v0 + vercel credits<span class="block text-[12px] text-[#8a8781] font-normal mt-1"
               >plus the full sponsor stack</span
             >
           </div>
-        </div>
+        </a>
       </div>
     </section>
 
     <!-- TODO: link tracks, judging & submission out to a dedicated page with full details -->
     <!-- tracks -->
     <section
+      id="tracks"
       class="mx-auto max-w-[1080px] px-8 max-[560px]:px-5 py-14 border-t border-dashed border-[#1f1e1c]"
     >
       <div
@@ -357,7 +358,7 @@ const daysToGo = Math.max(
           >
             <div class="text-[15.5px] font-semibold text-[#e8e6e1]">intro</div>
             <div class="text-[12.5px] text-[#8a8781] mt-0.5">
-              vercel + sponsors + me · format, judging, info
+              vercel + <a href="#partners">sponsors</a> + me · format, <a href="#judging">judging</a>, info
             </div>
           </div>
         </div>
@@ -434,6 +435,7 @@ const daysToGo = Math.max(
 
     <!-- judging -->
     <section
+      id="judging"
       class="mx-auto max-w-[1080px] px-8 max-[560px]:px-5 py-14 border-t border-dashed border-[#1f1e1c]"
     >
       <div class="flex justify-between items-baseline flex-wrap gap-4 mb-7">
@@ -447,7 +449,7 @@ const daysToGo = Math.max(
         </div>
         <div class="text-[13.5px] text-[#8a8781] max-w-[480px] text-right max-[920px]:text-left">
           solo hackathon - one submission per person, no teams. two pools, same rubric. local:
-          judged on the day for the london prizes. global: submit to the vercel community hub by may
+          judged on the day for the <a href="#prizes">london prizes</a>. global: submit to the vercel community hub by may
           3, community votes 24 hours on may 4.
         </div>
       </div>
@@ -562,6 +564,7 @@ const daysToGo = Math.max(
 
     <!-- prizes -->
     <section
+      id="prizes"
       class="mx-auto max-w-[1080px] px-8 max-[560px]:px-5 py-14 border-t border-dashed border-[#1f1e1c]"
     >
       <div class="mb-7">
@@ -646,6 +649,7 @@ const daysToGo = Math.max(
 
     <!-- venue -->
     <section
+      id="venue"
       class="mx-auto max-w-[1080px] px-8 max-[560px]:px-5 py-14 border-t border-dashed border-[#1f1e1c]"
     >
       <div class="flex justify-between items-baseline flex-wrap gap-4 mb-7">
@@ -731,6 +735,7 @@ const daysToGo = Math.max(
 
     <!-- what you get -->
     <section
+      id="what-you-get"
       class="mx-auto max-w-[1080px] px-8 max-[560px]:px-5 py-14 border-t border-dashed border-[#1f1e1c]"
     >
       <div class="flex justify-between items-baseline flex-wrap gap-4 mb-7">
@@ -798,6 +803,7 @@ const daysToGo = Math.max(
 
     <!-- comms -->
     <section
+      id="comms"
       class="mx-auto max-w-[1080px] px-8 max-[560px]:px-5 py-14 border-t border-dashed border-[#1f1e1c]"
     >
       <div class="flex justify-between items-baseline flex-wrap gap-4 mb-7">
@@ -839,6 +845,7 @@ const daysToGo = Math.max(
 
     <!-- partners -->
     <section
+      id="partners"
       class="mx-auto max-w-[1080px] px-8 max-[560px]:px-5 py-14 border-t border-dashed border-[#1f1e1c]"
     >
       <div class="flex justify-between items-baseline flex-wrap gap-4 mb-7">
@@ -886,13 +893,13 @@ const daysToGo = Math.max(
             <div class="text-[11.5px] text-[#8a8781] mt-1">announced soon</div>
           </div>
         </div>
-        <div class="bg-[#161615] border-[#242321]">
+        <a href="#venue" class="!text-[#e8e6e1] !no-underline hover:!no-underline bg-[#161615] border-[#242321]">
           <div class="text-[10px] text-[#5a5854] uppercase tracking-[0.18em] mb-4">// venue</div>
           <div>
             <div class="text-[18px] font-bold text-[#e8e6e1] tracking-[-0.01em]">halkin</div>
             <div class="text-[11.5px] text-[#8a8781] mt-1">1-2 paris garden, london</div>
           </div>
-        </div>
+        </a>
         <div class="bg-[#161615] border-[#242321]">
           <div class="text-[10px] text-[#5a5854] uppercase tracking-[0.18em] mb-4">
             // your host
@@ -952,6 +959,12 @@ const daysToGo = Math.max(
 </BaseLayout>
 
 <style is:global>
+  html {
+    scroll-behavior: smooth;
+  }
+  section[id] {
+    scroll-margin-top: 32px;
+  }
   body:has(.02a)::before {
     content: "";
     position: fixed;
