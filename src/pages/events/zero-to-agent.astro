@@ -959,6 +959,12 @@ const daysToGo = Math.max(
 </BaseLayout>
 
 <style is:global>
+  html {
+    scroll-behavior: smooth;
+  }
+  section[id] {
+    scroll-margin-top: 32px;
+  }
   body:has(.02a)::before {
     content: "";
     position: fixed;
