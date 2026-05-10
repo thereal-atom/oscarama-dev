@@ -1,25 +1,140 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-
-const eventDate = new Date("2026-05-02T10:00:00+01:00");
-const now = new Date();
-const daysToGo = Math.max(
-  0,
-  Math.ceil((eventDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
-);
 ---
 
 <BaseLayout
   title="zero to agent: london | events | oscarama"
-  description="come ship an ai agent with us. in a day. in london. then bbq, ice cream & music til late. sat 2 may 2026."
+  description="that's a wrap. ~100 builders shipped ai agents in a day at the london stop of vercel's zero to agent. sat 2 may 2026."
   ogImage="/assets/og-zero-to-agent.png"
   ogUrl="https://oscarama.dev/events/zero-to-agent"
 >
   <main
     class="02a relative z-[1] text-[#e8e6e1] leading-[1.65] text-[14px] antialiased [&_a]:text-[#e56717] [&_a]:no-underline [&_a:hover]:underline"
   >
+    <!-- wrapped recap -->
+    <section class="mx-auto max-w-[1080px] px-8 max-[560px]:px-5 pt-10 mb-2">
+      <div
+        class="relative overflow-hidden rounded-xl border border-[#e56717]/30 bg-[radial-gradient(ellipse_80%_120%_at_0%_0%,rgba(229,103,23,0.18),transparent_60%),linear-gradient(180deg,#1a1817_0%,#121110_100%)] px-8 py-9 max-[560px]:px-5 max-[560px]:py-7"
+      >
+        <div
+          class="absolute top-4 right-5 text-[10px] uppercase tracking-[0.18em] text-[#8a8781] font-semibold flex items-center gap-2"
+        >
+          <span class="w-[6px] h-[6px] rounded-full bg-[#5a5854]"></span>event ended · 02.05.2026
+        </div>
+
+        <div>
+          <div>
+            <div class="text-[10px] uppercase tracking-[0.22em] text-[#e56717] font-semibold mb-3">
+              // recap
+            </div>
+            <h2
+              class="text-[clamp(28px,4.2vw,44px)] font-extrabold tracking-[-0.025em] leading-[1.05] m-0 mb-4"
+            >
+              that's a wrap.<br /><span class="text-[#e56717]">thank you for building.</span>
+            </h2>
+            <p class="text-[14px] text-[#8a8781] m-0 max-w-[520px]">
+              ~100 cracked builders, one room in southwark, a stupid amount of agents shipped in a
+              single saturday. huge thanks to vercel, mubit, bright data, code rabbit, halkin &amp;
+              swift food for making it real - and to everyone who showed up and shipped.
+            </p>
+
+            <div
+              class="grid grid-cols-4 gap-px bg-[#242321] border border-[#242321] rounded-lg overflow-hidden mt-6 max-[560px]:grid-cols-2"
+            >
+              <div class="bg-[#161615] px-4 py-4">
+                <div
+                  class="text-[22px] font-extrabold text-[#e56717] tracking-[-0.02em] leading-none"
+                >
+                  ~100
+                </div>
+                <div class="text-[10px] text-[#8a8781] uppercase tracking-[0.1em] mt-2">
+                  builders
+                </div>
+              </div>
+              <div class="bg-[#161615] px-4 py-4">
+                <div
+                  class="text-[22px] font-extrabold text-[#e56717] tracking-[-0.02em] leading-none"
+                >
+                  3
+                </div>
+                <div class="text-[10px] text-[#8a8781] uppercase tracking-[0.1em] mt-2">tracks</div>
+              </div>
+              <div class="bg-[#161615] px-4 py-4">
+                <div
+                  class="text-[22px] font-extrabold text-[#e56717] tracking-[-0.02em] leading-none"
+                >
+                  £5.8k
+                </div>
+                <div class="text-[10px] text-[#8a8781] uppercase tracking-[0.1em] mt-2">
+                  cash awarded
+                </div>
+              </div>
+              <div class="bg-[#161615] px-4 py-4">
+                <div
+                  class="text-[22px] font-extrabold text-[#e56717] tracking-[-0.02em] leading-none"
+                >
+                  $1m+
+                </div>
+                <div class="text-[10px] text-[#8a8781] uppercase tracking-[0.1em] mt-2">
+                  in credits
+                </div>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap gap-3 mt-6">
+              <a
+                href="https://x.com/oscarfalll"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="!text-[#0a0a0a] inline-block bg-[#e56717] px-[18px] py-[11px] rounded-md font-bold text-[12.5px] transition duration-150 !no-underline hover:-translate-y-[1px] hover:shadow-[0_6px_30px_-6px_rgba(229,103,23,0.6)] hover:brightness-110"
+                >like the recap on x &rarr;</a
+              >
+              <a
+                href="https://linkedin.com/in/oscarfalemara"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="!text-[#e8e6e1] inline-block bg-transparent px-[18px] py-[11px] rounded-md font-bold text-[12.5px] border border-[#242321] transition duration-150 !no-underline hover:-translate-y-[1px] hover:bg-[#161615]"
+                >follow on linkedin</a
+              >
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- recap video link -->
+    <section class="mx-auto max-w-[1080px] px-8 max-[560px]:px-5 mb-10">
+      <a
+        href="https://www.youtube.com/watch?v=i7uWbXDCj0A"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="!text-[#e8e6e1] !no-underline group flex items-center justify-between gap-6 px-6 py-5 rounded-xl border border-[#242321] bg-[linear-gradient(180deg,#161615_0%,#111110_100%)] transition duration-150 hover:border-[#e56717]/50 hover:-translate-y-[1px] max-[560px]:flex-col max-[560px]:items-start max-[560px]:gap-4"
+      >
+        <div class="flex items-center gap-4">
+          <div
+            class="w-[42px] h-[42px] shrink-0 rounded-full bg-[#e56717] flex items-center justify-center shadow-[0_6px_20px_-6px_rgba(229,103,23,0.5)] group-hover:brightness-110"
+          >
+            <svg width="14" height="16" viewBox="0 0 22 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+              ><path d="M0 0L22 12L0 24V0Z" fill="#0a0a0a"></path></svg
+            >
+          </div>
+          <div>
+            <div class="text-[10px] uppercase tracking-[0.22em] text-[#e56717] font-semibold mb-1">
+              // recap
+            </div>
+            <div class="text-[16px] font-bold text-[#e8e6e1]">watch the recap</div>
+            <div class="text-[12px] text-[#8a8781] mt-0.5">on youtube</div>
+          </div>
+        </div>
+        <div class="text-[12px] text-[#e56717] font-semibold whitespace-nowrap">
+          youtube.com/watch &rarr;
+        </div>
+      </a>
+    </section>
+
     <!-- hero -->
-    <section class="mx-auto max-w-[1080px] px-8 max-[560px]:px-5 pt-10 pb-[60px]">
+    <section class="mx-auto max-w-[1080px] px-8 max-[560px]:px-5 pt-8 pb-[60px]">
       <div class="text-[12px] mb-8 leading-none">
         <span class="text-[#5a5854]">~/events/</span><span class="text-[#e56717]"
           >zero-to-agent-london</span
@@ -36,9 +151,8 @@ const daysToGo = Math.max(
             class="inline-flex items-center gap-2.5 text-[12px] uppercase tracking-[0.18em] text-[#e56717] font-semibold mb-[18px]"
           >
             <span
-              class="w-[7px] h-[7px] rounded-full bg-[#e56717] shadow-[0_0_12px_#e56717] animate-[02a-pulse_1.8s_ease-in-out_infinite]"
-            ></span>registrations open · {daysToGo}
-            {daysToGo === 1 ? "day" : "days"} to go
+              class="w-[7px] h-[7px] rounded-full bg-[#5a5854]"
+            ></span>that's a wrap · thanks for coming
           </div>
 
           <h1
@@ -64,8 +178,8 @@ const daysToGo = Math.max(
           </div>
 
           <p class="text-[16px] text-[#e8e6e1] max-w-[560px] m-0 mb-4">
-            come ship an ai agent with us. <span class="text-[#e56717]"
-              >in a day. in london. then bbq, ice cream &amp; music til late.</span
+            ~100 builders shipped agents in a day. <span class="text-[#e56717]"
+              >huge thanks to everyone who came, built, judged &amp; sponsored.</span
             >
           </p>
 
@@ -75,29 +189,31 @@ const daysToGo = Math.max(
               href="https://community.vercel.com/hackathons/zero-to-agent"
               target="_blank"
               rel="noopener noreferrer">zero to agent</a
-            > global build week. one glorious saturday, ~100 cracked builders, <a href="#schedule"
-              >eight hours on the clock</a
-            >.
+            > global build week. global pool voting closes may 4 - go vote on the projects.
           </p>
 
           <div class="flex flex-wrap gap-3 mt-6">
             <a
-              href="https://luma.com/p7pnjcu8"
+              href="https://community.vercel.com/hackathons/zero-to-agent"
               target="_blank"
               rel="noopener noreferrer"
               class="!text-[#0a0a0a] inline-block bg-[#e56717] px-[22px] py-[13px] rounded-md font-bold text-[13.5px] transition duration-150 !no-underline hover:-translate-y-[1px] hover:shadow-[0_6px_30px_-6px_rgba(229,103,23,0.6)] hover:brightness-110"
-              >register on luma &rarr;</a
+              >see the projects &rarr;</a
             >
             <a
-              href="#schedule"
+              href="https://x.com/oscarfalll"
+              target="_blank"
+              rel="noopener noreferrer"
               class="!text-[#e8e6e1] inline-block bg-transparent px-[22px] py-[13px] rounded-md font-bold text-[13.5px] border border-[#242321] transition duration-150 !no-underline hover:-translate-y-[1px] hover:bg-[#161615]"
-              >see the schedule</a
+              >follow on x</a
             >
           </div>
 
           <div class="mt-4 flex items-center gap-2 text-[12px] text-[#8a8781]">
-            <span class="w-[7px] h-[7px] rounded-full bg-[#7fce7b] shadow-[0_0_10px_#7fce7b]"
-            ></span>approval based · hit register, i'll get back to you soon
+            <span class="w-[7px] h-[7px] rounded-full bg-[#5a5854]"></span>want to come to the next
+            one? follow me on <a href="https://x.com/oscarfalll" target="_blank" rel="noopener noreferrer">x</a>
+            or <a href="https://linkedin.com/in/oscarfalemara" target="_blank" rel="noopener noreferrer">linkedin</a>
+            for the next drop.
           </div>
         </div>
 
@@ -161,35 +277,35 @@ const daysToGo = Math.max(
             <div class="whitespace-nowrap overflow-hidden text-ellipsis">
               <span class="text-[#e56717]">$</span>
               <span class="text-[#8a8781]">echo</span>
-              <span class="text-[#e5c07b]">"see you may 2nd"</span>
+              <span class="text-[#e5c07b]">"thanks for coming"</span>
             </div>
             <div class="whitespace-nowrap overflow-hidden text-ellipsis text-[#7fce7b]">
-              &rarr; see you may 2nd
+              &rarr; that's a wrap &#127881;
             </div>
           </div>
           <div
             class="border-t border-dashed border-[#242321] px-4 py-[14px] grid grid-cols-4 gap-2 text-center"
           >
             <div>
-              <div class="text-[22px] font-bold text-[#e56717] tabular-nums leading-none" id="cd-d">
+              <div class="text-[22px] font-bold text-[#5a5854] tabular-nums leading-none" id="cd-d">
                 00
               </div>
               <div class="text-[10px] text-[#8a8781] uppercase tracking-[0.1em] mt-1">days</div>
             </div>
             <div>
-              <div class="text-[22px] font-bold text-[#e56717] tabular-nums leading-none" id="cd-h">
+              <div class="text-[22px] font-bold text-[#5a5854] tabular-nums leading-none" id="cd-h">
                 00
               </div>
               <div class="text-[10px] text-[#8a8781] uppercase tracking-[0.1em] mt-1">hrs</div>
             </div>
             <div>
-              <div class="text-[22px] font-bold text-[#e56717] tabular-nums leading-none" id="cd-m">
+              <div class="text-[22px] font-bold text-[#5a5854] tabular-nums leading-none" id="cd-m">
                 00
               </div>
               <div class="text-[10px] text-[#8a8781] uppercase tracking-[0.1em] mt-1">min</div>
             </div>
             <div>
-              <div class="text-[22px] font-bold text-[#e56717] tabular-nums leading-none" id="cd-s">
+              <div class="text-[22px] font-bold text-[#5a5854] tabular-nums leading-none" id="cd-s">
                 00
               </div>
               <div class="text-[10px] text-[#8a8781] uppercase tracking-[0.1em] mt-1">sec</div>
@@ -1031,23 +1147,37 @@ const daysToGo = Math.max(
         class="relative text-center mx-0 my-20 max-[920px]:my-10 px-10 py-[60px] border border-[#242321] rounded-xl bg-[radial-gradient(ellipse_60%_100%_at_50%_100%,rgba(229,103,23,0.12),transparent_70%),linear-gradient(180deg,#181716_0%,#111110_100%)] overflow-hidden"
       >
         <div class="text-[12px] text-[#e56717] uppercase tracking-[0.22em] font-semibold mb-3">
-          saturday · 2 may · 2026
+          that's a wrap · 2 may · 2026
         </div>
         <h3
           class="text-[clamp(32px,5vw,54px)] font-extrabold tracking-[-0.025em] leading-[1.05] m-0 mb-4"
         >
-          bring your laptop<br /><span class="text-[#e56717]">and your best ideas.</span>
+          thank you for<br /><span class="text-[#e56717]">coming &amp; building.</span>
         </h3>
-        <p class="text-[14px] text-[#8a8781] max-w-[420px] mx-auto mb-7">
-          solo build. one submission per person, no teams. experienced or first-timer - we got you.
+        <p class="text-[14px] text-[#8a8781] max-w-[460px] mx-auto mb-7">
+          ~100 builders, one room, a stupid amount of agents shipped in a day. share what you built
+          with #ZeroToAgent, tag <a
+            href="https://x.com/oscarfalll"
+            target="_blank"
+            rel="noopener noreferrer">@oscarfalll</a
+          > - and like the posts so the next one is even bigger.
         </p>
-        <a
-          href="https://luma.com/p7pnjcu8"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="!text-[#0a0a0a] inline-block bg-[#e56717] px-[22px] py-[13px] rounded-md font-bold text-[13.5px] transition duration-150 !no-underline hover:-translate-y-[1px] hover:shadow-[0_6px_30px_-6px_rgba(229,103,23,0.6)] hover:brightness-110"
-          >register on luma &rarr;</a
-        >
+        <div class="flex flex-wrap gap-3 justify-center">
+          <a
+            href="https://x.com/oscarfalll"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="!text-[#0a0a0a] inline-block bg-[#e56717] px-[22px] py-[13px] rounded-md font-bold text-[13.5px] transition duration-150 !no-underline hover:-translate-y-[1px] hover:shadow-[0_6px_30px_-6px_rgba(229,103,23,0.6)] hover:brightness-110"
+            >follow on x &rarr;</a
+          >
+          <a
+            href="https://linkedin.com/in/oscarfalemara"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="!text-[#e8e6e1] inline-block bg-transparent px-[22px] py-[13px] rounded-md font-bold text-[13.5px] border border-[#242321] transition duration-150 !no-underline hover:-translate-y-[1px] hover:bg-[#161615]"
+            >connect on linkedin</a
+          >
+        </div>
         <div
           class="mt-10 text-[10px] font-bold text-[#e56717] opacity-[0.15] whitespace-pre text-center"
         >
