@@ -1,11 +1,19 @@
 {
-  "extends": "astro/tsconfigs/strict",
-  "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist"],
   "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
-    }
-  }
+      "@/*": ["./src/*"],
+      "@app/*": ["./app/*"]
+    },
+    "types": ["vite/client", "@cloudflare/workers-types"]
+  },
+  "include": ["app/**/*", "src/**/*", "vite.config.ts"],
+  "exclude": ["dist", ".vinxi", ".output", "src/pages/**/*"]
 }
