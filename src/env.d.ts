@@ -1,14 +1,17 @@
-/// <reference path="../.astro/types.d.ts" />
-/// <reference types="astro/client" />
+/// <reference types="vite/client" />
+/// <reference types="@cloudflare/workers-types" />
 
-type D1Database = import("@cloudflare/workers-types").D1Database;
+declare module "*.png" {
+  const src: string;
+  export default src;
+}
 
-type Runtime = import("@astrojs/cloudflare").Runtime<{
-  DB: D1Database;
-  RESEND_API_KEY: string;
-  TURNSTILE_SECRET: string;
-}>;
+declare module "*.jpg" {
+  const src: string;
+  export default src;
+}
 
-declare namespace App {
-  interface Locals extends Runtime {}
+declare module "*.svg" {
+  const src: string;
+  export default src;
 }
