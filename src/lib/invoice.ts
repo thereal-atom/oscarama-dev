@@ -1,0 +1,68 @@
+export type InvoiceTheme = "dark" | "light";
+
+export type InvoiceLineItem = {
+  id: number;
+  description: string;
+  quantity: number;
+  unitPrice: number;
+};
+
+export type InvoiceData = {
+  from: {
+    name: string;
+    email: string;
+    address: string;
+    website: string;
+  };
+  customer: {
+    company: string;
+    contactName: string;
+    email: string;
+    address: string;
+  };
+  number: string;
+  issueDate: string;
+  dueDate: string;
+  currency: string;
+  items: InvoiceLineItem[];
+  taxLabel: string;
+  taxRate: number;
+  discount: number;
+  paymentDetails: string;
+  notes: string;
+  theme: InvoiceTheme;
+};
+
+export const CURRENCIES = ["GBP", "USD", "EUR"] as const;
+
+export function lineTotal(item: InvoiceLineItem) {
+  return (Number(item.quantity) || 0) * (Number(item.unitPrice) || 0);
+}
+
+export function invoiceTotals(data: InvoiceData) {
+  const subtotal = data.items.reduce((sum, item) => sum + lineTotal(item), 0);
+  const discount = Math.min(Number(data.discount) || 0, subtotal);
+  const taxable = subtotal - discount;
+  const tax = taxable * ((Number(data.taxRate) || 0) / 100);
+  return { subtotal, discount, tax, total: taxable + tax };
+}
+
+export function formatMoney(amount: number, currency: string) {
+  return new Intl.NumberFormat("en-GB", { style: "currency", currency }).format(amount);
+}
+
+export function formatDate(iso: string) {
+  if (!iso) return "—";
+  const date = new Date(`${iso}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return iso;
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = date.toLocaleDateString("en-US", { month: "short" }).toLowerCase();
+  return `${day} ${month} ${date.getFullYear()}`;
+}
+
+export function slugify(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
