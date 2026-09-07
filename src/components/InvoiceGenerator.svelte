@@ -220,7 +220,7 @@
       <label for="currency" class="text-sm text-white/70">currency</label>
       <select id="currency" bind:value={invoice.currency} class="{inputClass} bg-[#101010]">
         {#each CURRENCIES as currency}
-          <option value={currency}>{currency}</option>
+          <option value={currency} class="bg-[#101010] text-white">{currency}</option>
         {/each}
       </select>
     </div>
