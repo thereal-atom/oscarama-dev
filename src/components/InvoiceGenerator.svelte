@@ -214,7 +214,14 @@
   <div class="grid grid-cols-2 sm:grid-cols-4 gap-6 mt-6">
     <div class="flex flex-col gap-2 col-span-2 sm:col-span-1">
       <label for="invoice-number" class="text-sm text-white/70">invoice no.</label>
-      <input id="invoice-number" type="text" bind:value={invoice.number} required class={inputClass} />
+      <input
+        id="invoice-number"
+        type="text"
+        bind:value={invoice.number}
+        required
+        maxlength="64"
+        class={inputClass}
+      />
     </div>
     <div class="flex flex-col gap-2">
       <label for="issue-date" class="text-sm text-white/70">issued</label>
