@@ -76,16 +76,20 @@ export function paymentRows(payment: PaymentDetails): [string, string][] {
 
 export const CURRENCIES = ["GBP", "USD", "EUR"] as const;
 
+// All supported currencies have two minor units; every monetary stage is rounded
+// to cents so the printed line amounts always reconcile with the printed totals.
+const roundMoney = (amount: number) => Math.round(amount * 100) / 100;
+
 export function lineTotal(item: InvoiceLineItem) {
-  return (Number(item.quantity) || 0) * (Number(item.unitPrice) || 0);
+  return roundMoney((Number(item.quantity) || 0) * (Number(item.unitPrice) || 0));
 }
 
 export function invoiceTotals(data: InvoiceData) {
-  const subtotal = data.items.reduce((sum, item) => sum + lineTotal(item), 0);
-  const discount = Math.min(Number(data.discount) || 0, subtotal);
-  const taxable = subtotal - discount;
-  const tax = taxable * ((Number(data.taxRate) || 0) / 100);
-  return { subtotal, discount, tax, total: taxable + tax };
+  const subtotal = roundMoney(data.items.reduce((sum, item) => sum + lineTotal(item), 0));
+  const discount = roundMoney(Math.min(Number(data.discount) || 0, subtotal));
+  const taxable = roundMoney(subtotal - discount);
+  const tax = roundMoney(taxable * ((Number(data.taxRate) || 0) / 100));
+  return { subtotal, discount, tax, total: roundMoney(taxable + tax) };
 }
 
 export function formatMoney(amount: number, currency: string) {

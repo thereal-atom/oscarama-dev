@@ -135,11 +135,12 @@ export async function renderInvoicePdf(data: InvoiceData): Promise<jsPDF> {
     x: number,
     size: number,
     color: string,
-    onBreak?: () => void
+    onBreak?: () => void,
+    weight: "normal" | "bold" = "normal"
   ) => {
     for (const row of rows) {
       ensureSpace(cursor, lh(size), onBreak);
-      setStyle(size, color);
+      setStyle(size, color, weight);
       doc.text(row, x, cursor.y);
       cursor.y += lh(size);
     }
@@ -160,31 +161,44 @@ export async function renderInvoicePdf(data: InvoiceData): Promise<jsPDF> {
   doc.text("invoice", RIGHT, metaY, { align: "right" });
   metaY += lh(13);
 
-  const meta: [string, string][] = [
-    ["no.", data.number || "—"],
-    ["issued", formatDate(data.issueDate)],
-    ["due", formatDate(data.dueDate)],
-  ];
+  const metaValueWidth = 60;
   setStyle(8.5, palette.muted);
-  const valueWidth = Math.max(...meta.map(([, value]) => doc.getTextWidth(value)));
-  for (const [label, value] of meta) {
+  const meta: [string, string[]][] = [
+    ["no.", lines(data.number.trim() || "—", metaValueWidth)],
+    ["issued", [formatDate(data.issueDate)]],
+    ["due", [formatDate(data.dueDate)]],
+  ];
+  const valueWidth = Math.max(
+    ...meta.flatMap(([, rows]) => rows.map((row) => doc.getTextWidth(row)))
+  );
+  for (const [label, rows] of meta) {
     setStyle(8.5, palette.faint);
     doc.text(label, RIGHT - valueWidth - 4, metaY, { align: "right" });
     setStyle(8.5, palette.muted);
-    doc.text(value, RIGHT, metaY, { align: "right" });
-    metaY += lh(8.5);
+    for (const row of rows) {
+      doc.text(row, RIGHT, metaY, { align: "right" });
+      metaY += lh(8.5);
+    }
   }
 
   const fromX = PAGE.margin + logoSize + 4;
+  const fromWidth = RIGHT - metaValueWidth - 8 - fromX;
   main.y += 3.5;
   setStyle(13, palette.text, "bold");
-  doc.text(data.from.name || "your name", fromX, main.y);
-  main.y += lh(13);
+  flow(
+    main,
+    lines(data.from.name || "your name", fromWidth),
+    fromX,
+    13,
+    palette.text,
+    undefined,
+    "bold"
+  );
   const fromLines = [data.from.email, ...data.from.address.split("\n"), data.from.website]
     .map((line) => line.trim())
     .filter(Boolean);
   setStyle(8.5, palette.muted);
-  flow(main, lines(fromLines.join("\n"), 90), fromX, 8.5, palette.muted);
+  flow(main, lines(fromLines.join("\n"), fromWidth), fromX, 8.5, palette.muted);
 
   main.y = (main.page === 1 ? Math.max(main.y, metaY) : main.y) + 14;
 
@@ -194,8 +208,15 @@ export async function renderInvoicePdf(data: InvoiceData): Promise<jsPDF> {
   doc.text("billed to", PAGE.margin, main.y);
   main.y += lh(8.5) + 1;
   setStyle(11, palette.text, "bold");
-  doc.text(data.customer.company || "customer", PAGE.margin, main.y);
-  main.y += lh(11);
+  flow(
+    main,
+    lines(data.customer.company || "customer", CONTENT_WIDTH * 0.6),
+    PAGE.margin,
+    11,
+    palette.text,
+    undefined,
+    "bold"
+  );
   const customerLines = [
     data.customer.contactName,
     data.customer.email,
