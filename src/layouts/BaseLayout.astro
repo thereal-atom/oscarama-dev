@@ -9,9 +9,11 @@ interface Props {
   description?: string;
   ogImage?: string;
   ogUrl?: string;
+  noindex?: boolean;
 }
 
 const {
+  noindex = false,
   title = "oscar | software engineer",
   description = "self-taught software engineer from London currently working @ coloop.ai (yc s21)",
   ogImage = "/og.png",
@@ -29,6 +31,7 @@ const {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.png" />
     <meta name="generator" content={Astro.generator} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
