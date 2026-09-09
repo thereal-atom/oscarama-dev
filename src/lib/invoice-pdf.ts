@@ -194,7 +194,7 @@ export async function renderInvoicePdf(data: InvoiceData): Promise<jsPDF> {
     undefined,
     "bold"
   );
-  const fromLines = [data.from.email, ...data.from.address.split("\n"), data.from.website]
+  const fromLines = [data.from.email, ...data.from.address.split("\n")]
     .map((line) => line.trim())
     .filter(Boolean);
   setStyle(8.5, palette.muted);
@@ -334,7 +334,7 @@ export async function renderInvoicePdf(data: InvoiceData): Promise<jsPDF> {
     const columnWidth = (CONTENT_WIDTH - columnGap) / 2;
     const labelWidth = 30;
     const valueX = PAGE.margin + labelWidth + 3;
-    const rowGap = 1.5;
+    const rowGap = 2.5;
 
     // Keep the headings with at least a couple of rows of content.
     ensureSpace(main, lh(8.5) * 4);
@@ -359,9 +359,11 @@ export async function renderInvoicePdf(data: InvoiceData): Promise<jsPDF> {
         doc.text(firstRow, valueX, paymentCursor.y);
         paymentCursor.y += lh(8.5);
         flow(paymentCursor, restRows, valueX, 8.5, palette.text, onBreak);
+        const lastBaseline = paymentCursor.y - lh(8.5);
         paymentCursor.y += rowGap;
         if (index < paymentTable.length - 1) {
-          const lineY = paymentCursor.y - lh(8.5) + 1.5;
+          // Separator sits midway between this row's descenders and the next row's caps.
+          const lineY = lastBaseline + 2.8;
           doc.setDrawColor(palette.border);
           doc.setLineWidth(0.2);
           doc.line(PAGE.margin, lineY, PAGE.margin + columnWidth, lineY);
