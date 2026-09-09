@@ -20,7 +20,12 @@
   const compactInputClass = `${inputClass} px-3 py-2 text-sm`;
 
   const today = new Date();
-  const isoDate = (date: Date) => date.toISOString().slice(0, 10);
+  const isoDate = (date: Date) =>
+    [
+      date.getFullYear(),
+      String(date.getMonth() + 1).padStart(2, "0"),
+      String(date.getDate()).padStart(2, "0"),
+    ].join("-");
   const inTwoWeeks = new Date(today);
   inTwoWeeks.setDate(today.getDate() + 14);
 
