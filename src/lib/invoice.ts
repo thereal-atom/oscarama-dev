@@ -78,10 +78,10 @@ export const CURRENCIES = ["GBP", "USD", "EUR"] as const;
 
 // All supported currencies have two minor units; every monetary stage is rounded
 // half away from zero to cents so printed line amounts reconcile with printed totals.
-// The epsilon nudge stops exact half-cents (e.g. 0.145) rounding down through
-// binary floating-point error.
+// Scaling to 15 significant digits strips binary floating-point noise first, so
+// exact half-cents (0.145, 10.075, 1234567.005) round up rather than down.
 const roundMoney = (amount: number) =>
-  (Math.sign(amount) * Math.round((Math.abs(amount) + Number.EPSILON) * 100)) / 100;
+  (Math.sign(amount) * Math.round(Number((Math.abs(amount) * 100).toPrecision(15)))) / 100;
 
 export function lineTotal(item: InvoiceLineItem) {
   return roundMoney((Number(item.quantity) || 0) * (Number(item.unitPrice) || 0));
