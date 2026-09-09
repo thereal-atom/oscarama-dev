@@ -101,47 +101,61 @@ export async function renderInvoicePdf(data: InvoiceData): Promise<jsPDF> {
   const lines = (text: string, width: number) =>
     doc.splitTextToSize(text.trim(), width) as string[];
 
-  const paragraph = (
-    text: string,
-    x: number,
-    y: number,
-    width: number,
-    size: number,
-    color: string,
-    weight: "normal" | "bold" = "normal"
-  ) => {
-    setStyle(size, color, weight);
-    const rows = lines(text, width);
-    rows.forEach((row, i) => doc.text(row, x, y + i * lh(size)));
-    return y + rows.length * lh(size);
-  };
+  // Everything below BOTTOM is reserved for the footer.
+  const BOTTOM = PAGE.height - PAGE.margin - 12;
 
-  let y = PAGE.margin;
+  // A cursor is a (page, y) position. Independent cursors let two columns flow
+  // side by side across page breaks; the main cursor tracks the document body.
+  type Cursor = { page: number; y: number };
+  const main: Cursor = { page: 1, y: PAGE.margin };
   paintBackground();
 
-  const ensureSpace = (needed: number) => {
-    if (y + needed > PAGE.height - PAGE.margin - 12) {
+  const breakPage = (cursor: Cursor) => {
+    cursor.page += 1;
+    if (cursor.page > doc.getNumberOfPages()) {
       doc.addPage();
       paintBackground();
-      y = PAGE.margin;
+    } else {
+      doc.setPage(cursor.page);
     }
+    cursor.y = PAGE.margin;
+  };
+
+  const ensureSpace = (cursor: Cursor, needed: number, onBreak?: () => void) => {
+    if (cursor.y + needed > BOTTOM) {
+      breakPage(cursor);
+      onBreak?.();
+    }
+  };
+
+  // Writes pre-wrapped rows one line at a time, breaking pages between rows.
+  const flow = (
+    cursor: Cursor,
+    rows: string[],
+    x: number,
+    size: number,
+    color: string,
+    onBreak?: () => void
+  ) => {
+    for (const row of rows) {
+      ensureSpace(cursor, lh(size), onBreak);
+      setStyle(size, color);
+      doc.text(row, x, cursor.y);
+      cursor.y += lh(size);
+    }
+  };
+
+  const continued = (cursor: Cursor, x: number, heading: string) => () => {
+    setStyle(8.5, palette.faint);
+    doc.text(`${heading} (cont.)`, x, cursor.y);
+    cursor.y += lh(8.5) + 1;
   };
 
   // ── header ────────────────────────────────────────────────────────────────
   const logoSize = 10;
-  doc.addImage(logo, "PNG", PAGE.margin, y, logoSize, logoSize);
+  doc.addImage(logo, "PNG", PAGE.margin, main.y, logoSize, logoSize);
 
-  const fromX = PAGE.margin + logoSize + 4;
-  let fromY = y + 3.5;
-  setStyle(13, palette.text, "bold");
-  doc.text(data.from.name || "your name", fromX, fromY);
-  fromY += lh(13);
-  const fromLines = [data.from.email, ...data.from.address.split("\n"), data.from.website]
-    .map((line) => line.trim())
-    .filter(Boolean);
-  fromY = paragraph(fromLines.join("\n"), fromX, fromY, 90, 8.5, palette.muted);
-
-  let metaY = y + 3.5;
+  let metaY = main.y + 3.5;
   setStyle(13, palette.text, "bold");
   doc.text("invoice", RIGHT, metaY, { align: "right" });
   metaY += lh(13);
@@ -161,15 +175,27 @@ export async function renderInvoicePdf(data: InvoiceData): Promise<jsPDF> {
     metaY += lh(8.5);
   }
 
-  y = Math.max(fromY, metaY) + 14;
+  const fromX = PAGE.margin + logoSize + 4;
+  main.y += 3.5;
+  setStyle(13, palette.text, "bold");
+  doc.text(data.from.name || "your name", fromX, main.y);
+  main.y += lh(13);
+  const fromLines = [data.from.email, ...data.from.address.split("\n"), data.from.website]
+    .map((line) => line.trim())
+    .filter(Boolean);
+  setStyle(8.5, palette.muted);
+  flow(main, lines(fromLines.join("\n"), 90), fromX, 8.5, palette.muted);
+
+  main.y = (main.page === 1 ? Math.max(main.y, metaY) : main.y) + 14;
 
   // ── billed to ─────────────────────────────────────────────────────────────
+  ensureSpace(main, lh(8.5) + lh(11) + lh(8.5) + 1);
   setStyle(8.5, palette.faint);
-  doc.text("billed to", PAGE.margin, y);
-  y += lh(8.5) + 1;
+  doc.text("billed to", PAGE.margin, main.y);
+  main.y += lh(8.5) + 1;
   setStyle(11, palette.text, "bold");
-  doc.text(data.customer.company || "customer", PAGE.margin, y);
-  y += lh(11);
+  doc.text(data.customer.company || "customer", PAGE.margin, main.y);
+  main.y += lh(11);
   const customerLines = [
     data.customer.contactName,
     data.customer.email,
@@ -177,9 +203,10 @@ export async function renderInvoicePdf(data: InvoiceData): Promise<jsPDF> {
   ]
     .map((line) => line.trim())
     .filter(Boolean);
-  y = paragraph(customerLines.join("\n"), PAGE.margin, y, CONTENT_WIDTH * 0.6, 8.5, palette.muted);
+  setStyle(8.5, palette.muted);
+  flow(main, lines(customerLines.join("\n"), CONTENT_WIDTH * 0.6), PAGE.margin, 8.5, palette.muted);
 
-  y += 12;
+  main.y += 12;
 
   // ── line items ────────────────────────────────────────────────────────────
   const col = {
@@ -191,15 +218,16 @@ export async function renderInvoicePdf(data: InvoiceData): Promise<jsPDF> {
 
   const tableHeader = () => {
     setStyle(8, palette.faint);
-    doc.text("description", PAGE.margin, y);
-    doc.text("qty", col.qty, y, { align: "right" });
-    doc.text("unit price", col.unit, y, { align: "right" });
-    doc.text("amount", col.amount, y, { align: "right" });
-    y += 3;
-    rule(y, palette.faint);
-    y += lh(9) + 1;
+    doc.text("description", PAGE.margin, main.y);
+    doc.text("qty", col.qty, main.y, { align: "right" });
+    doc.text("unit price", col.unit, main.y, { align: "right" });
+    doc.text("amount", col.amount, main.y, { align: "right" });
+    main.y += 3;
+    rule(main.y, palette.faint);
+    main.y += lh(9) + 1;
   };
 
+  ensureSpace(main, lh(8) + 4 + lh(9) * 2);
   tableHeader();
 
   const items = data.items.filter(
@@ -208,34 +236,30 @@ export async function renderInvoicePdf(data: InvoiceData): Promise<jsPDF> {
 
   if (items.length === 0) {
     setStyle(9, palette.faint);
-    doc.text("no line items yet", PAGE.margin, y);
-    y += lh(9);
-    rule(y - lh(9) / 2 + 2);
-    y += 4;
+    doc.text("no line items yet", PAGE.margin, main.y);
+    main.y += lh(9);
+    rule(main.y - lh(9) / 2 + 2);
+    main.y += 4;
   }
 
   for (const item of items) {
     setStyle(9, palette.text);
-    const descriptionRows = lines(item.description || "—", col.descriptionWidth);
-    const rowHeight = descriptionRows.length * lh(9) + 4;
-    if (y + rowHeight > PAGE.height - PAGE.margin - 12) {
-      doc.addPage();
-      paintBackground();
-      y = PAGE.margin;
-      tableHeader();
-      setStyle(9, palette.text);
-    }
-    descriptionRows.forEach((row, i) => doc.text(row, PAGE.margin, y + i * lh(9)));
+    const [firstRow, ...restRows] = lines(item.description.trim() || "—", col.descriptionWidth);
+    ensureSpace(main, lh(9) + 4, tableHeader);
+    setStyle(9, palette.text);
+    doc.text(firstRow, PAGE.margin, main.y);
     setStyle(9, palette.muted);
-    doc.text(String(item.quantity || 0), col.qty, y, { align: "right" });
-    doc.text(formatMoney(Number(item.unitPrice) || 0, data.currency), col.unit, y, {
+    doc.text(String(item.quantity || 0), col.qty, main.y, { align: "right" });
+    doc.text(formatMoney(Number(item.unitPrice) || 0, data.currency), col.unit, main.y, {
       align: "right",
     });
     setStyle(9, palette.text);
-    doc.text(formatMoney(lineTotal(item), data.currency), col.amount, y, { align: "right" });
-    y += rowHeight;
-    rule(y - lh(9) / 2 + 2);
-    y += 4;
+    doc.text(formatMoney(lineTotal(item), data.currency), col.amount, main.y, { align: "right" });
+    main.y += lh(9);
+    flow(main, restRows, PAGE.margin, 9, palette.text, tableHeader);
+    main.y += 4;
+    rule(main.y - lh(9) / 2 + 2);
+    main.y += 4;
   }
 
   // ── totals ────────────────────────────────────────────────────────────────
@@ -255,31 +279,31 @@ export async function renderInvoicePdf(data: InvoiceData): Promise<jsPDF> {
   }
   totalRows.push(["total", formatMoney(totals.total, data.currency), true]);
 
-  ensureSpace(totalRows.length * lh(9) + 16);
-  y += 2;
+  ensureSpace(main, totalRows.length * lh(9) + 16);
+  main.y += 2;
   const labelX = RIGHT - 60;
   for (const [label, value, emphasis] of totalRows) {
     if (emphasis) {
-      y += 2;
+      main.y += 2;
       doc.setDrawColor(palette.faint);
       doc.setLineWidth(0.25);
-      doc.line(labelX, y - lh(9) + 1.5, RIGHT, y - lh(9) + 1.5);
-      y += 1;
+      doc.line(labelX, main.y - lh(9) + 1.5, RIGHT, main.y - lh(9) + 1.5);
+      main.y += 1;
       setStyle(9, palette.text, "bold");
-      doc.text(label, labelX, y);
+      doc.text(label, labelX, main.y);
       setStyle(12, palette.accent, "bold");
-      doc.text(value, RIGHT, y, { align: "right" });
-      y += lh(12);
+      doc.text(value, RIGHT, main.y, { align: "right" });
+      main.y += lh(12);
     } else {
       setStyle(9, palette.muted);
-      doc.text(label, labelX, y);
+      doc.text(label, labelX, main.y);
       setStyle(9, palette.text);
-      doc.text(value, RIGHT, y, { align: "right" });
-      y += lh(9);
+      doc.text(value, RIGHT, main.y, { align: "right" });
+      main.y += lh(9);
     }
   }
 
-  y += 14;
+  main.y += 14;
 
   // ── payment details & notes ───────────────────────────────────────────────
   const payment = paymentRows(data.payment);
@@ -288,46 +312,65 @@ export async function renderInvoicePdf(data: InvoiceData): Promise<jsPDF> {
     const columnGap = 10;
     const columnWidth = (CONTENT_WIDTH - columnGap) / 2;
     const labelWidth = 30;
-    const valueWidth = columnWidth - labelWidth - 3;
-    setStyle(8.5, palette.muted);
-    const paymentTable = payment.map(
-      ([label, value]) => [label, lines(value, valueWidth)] as [string, string[]]
-    );
+    const valueX = PAGE.margin + labelWidth + 3;
     const rowGap = 1.5;
-    const paymentHeight = paymentTable.reduce(
-      (sum, [, rows]) => sum + rows.length * lh(8.5) + rowGap,
-      0
-    );
-    const notesRows = notes ? lines(notes, columnWidth) : [];
-    const blockHeight = Math.max(paymentHeight, notesRows.length * lh(8.5)) + 2 * lh(8.5);
-    ensureSpace(blockHeight);
 
-    const startY = y;
+    // Keep the headings with at least a couple of rows of content.
+    ensureSpace(main, lh(8.5) * 4);
+    const paymentCursor: Cursor = { ...main };
+    const notesCursor: Cursor = { ...main };
+
     if (payment.length) {
+      setStyle(8.5, palette.muted);
+      const paymentTable = payment.map(
+        ([label, value]) =>
+          [label, lines(value, columnWidth - labelWidth - 3)] as [string, string[]]
+      );
+      const onBreak = continued(paymentCursor, PAGE.margin, "payment details");
       setStyle(8.5, palette.faint);
-      doc.text("payment details", PAGE.margin, y);
-      let rowY = y + lh(8.5) + 1;
-      doc.setDrawColor(palette.border);
-      doc.setLineWidth(0.2);
-      paymentTable.forEach(([label, rows], index) => {
+      doc.text("payment details", PAGE.margin, paymentCursor.y);
+      paymentCursor.y += lh(8.5) + 1;
+      paymentTable.forEach(([label, [firstRow, ...restRows]], index) => {
+        ensureSpace(paymentCursor, lh(8.5) + rowGap, onBreak);
         setStyle(8.5, palette.faint);
-        doc.text(label, PAGE.margin, rowY);
+        doc.text(label, PAGE.margin, paymentCursor.y);
         setStyle(8.5, palette.text);
-        rows.forEach((row, i) => doc.text(row, PAGE.margin + labelWidth + 3, rowY + i * lh(8.5)));
-        rowY += rows.length * lh(8.5) + rowGap;
+        doc.text(firstRow, valueX, paymentCursor.y);
+        paymentCursor.y += lh(8.5);
+        flow(paymentCursor, restRows, valueX, 8.5, palette.text, onBreak);
+        paymentCursor.y += rowGap;
         if (index < paymentTable.length - 1) {
-          const lineY = rowY - lh(8.5) + 1.5;
+          const lineY = paymentCursor.y - lh(8.5) + 1.5;
+          doc.setDrawColor(palette.border);
+          doc.setLineWidth(0.2);
           doc.line(PAGE.margin, lineY, PAGE.margin + columnWidth, lineY);
         }
       });
     }
+
     if (notes) {
       const notesX = payment.length ? PAGE.margin + columnWidth + columnGap : PAGE.margin;
+      doc.setPage(notesCursor.page);
       setStyle(8.5, palette.faint);
-      doc.text("notes", notesX, startY);
-      paragraph(notes, notesX, startY + lh(8.5) + 1, columnWidth, 8.5, palette.muted);
+      doc.text("notes", notesX, notesCursor.y);
+      notesCursor.y += lh(8.5) + 1;
+      setStyle(8.5, palette.muted);
+      flow(
+        notesCursor,
+        lines(notes, columnWidth),
+        notesX,
+        8.5,
+        palette.muted,
+        continued(notesCursor, notesX, "notes")
+      );
     }
-    y = startY + blockHeight;
+
+    const last = [paymentCursor, notesCursor].reduce((a, b) =>
+      b.page > a.page || (b.page === a.page && b.y > a.y) ? b : a
+    );
+    main.page = last.page;
+    main.y = last.y;
+    doc.setPage(main.page);
   }
 
   // ── footer ────────────────────────────────────────────────────────────────
