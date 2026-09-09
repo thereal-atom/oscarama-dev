@@ -28,10 +28,51 @@ export type InvoiceData = {
   taxLabel: string;
   taxRate: number;
   discount: number;
-  paymentDetails: string;
+  payment: PaymentDetails;
   notes: string;
   theme: InvoiceTheme;
 };
+
+export type PaymentDetails = {
+  accountName: string;
+  bankName: string;
+  sortCode: string;
+  accountNumber: string;
+  iban: string;
+  swift: string;
+  reference: string;
+};
+
+export const PAYMENT_FIELDS: {
+  key: keyof PaymentDetails;
+  label: string;
+  placeholder: string;
+}[] = [
+  { key: "accountName", label: "account name", placeholder: "oscar falemara" },
+  { key: "bankName", label: "bank", placeholder: "monzo" },
+  { key: "sortCode", label: "sort code", placeholder: "00-00-00" },
+  { key: "accountNumber", label: "account no.", placeholder: "12345678" },
+  { key: "iban", label: "iban", placeholder: "GB00 XXXX 0000 0000 0000 00" },
+  { key: "swift", label: "swift / bic", placeholder: "XXXXGB2L" },
+  { key: "reference", label: "reference", placeholder: "invoice number" },
+];
+
+export const emptyPaymentDetails = (): PaymentDetails => ({
+  accountName: "",
+  bankName: "",
+  sortCode: "",
+  accountNumber: "",
+  iban: "",
+  swift: "",
+  reference: "",
+});
+
+export function paymentRows(payment: PaymentDetails): [string, string][] {
+  return PAYMENT_FIELDS.flatMap(({ key, label }) => {
+    const value = payment[key].trim();
+    return value ? [[label, value] as [string, string]] : [];
+  });
+}
 
 export const CURRENCIES = ["GBP", "USD", "EUR"] as const;
 

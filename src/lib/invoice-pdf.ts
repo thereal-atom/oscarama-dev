@@ -4,6 +4,7 @@ import {
   formatMoney,
   invoiceTotals,
   lineTotal,
+  paymentRows,
   type InvoiceData,
   type InvoiceTheme,
 } from "./invoice";
@@ -281,24 +282,47 @@ export async function renderInvoicePdf(data: InvoiceData): Promise<jsPDF> {
   y += 14;
 
   // ── payment details & notes ───────────────────────────────────────────────
-  const payment = data.paymentDetails.trim();
+  const payment = paymentRows(data.payment);
   const notes = data.notes.trim();
-  if (payment || notes) {
+  if (payment.length || notes) {
     const columnGap = 10;
     const columnWidth = (CONTENT_WIDTH - columnGap) / 2;
-    const paymentRows = payment ? lines(payment, columnWidth) : [];
+    const labelWidth = 30;
+    const valueWidth = columnWidth - labelWidth - 3;
+    setStyle(8.5, palette.muted);
+    const paymentTable = payment.map(
+      ([label, value]) => [label, lines(value, valueWidth)] as [string, string[]]
+    );
+    const rowGap = 1.5;
+    const paymentHeight = paymentTable.reduce(
+      (sum, [, rows]) => sum + rows.length * lh(8.5) + rowGap,
+      0
+    );
     const notesRows = notes ? lines(notes, columnWidth) : [];
-    const blockHeight = (Math.max(paymentRows.length, notesRows.length) + 2) * lh(8.5);
+    const blockHeight = Math.max(paymentHeight, notesRows.length * lh(8.5)) + 2 * lh(8.5);
     ensureSpace(blockHeight);
 
     const startY = y;
-    if (payment) {
+    if (payment.length) {
       setStyle(8.5, palette.faint);
       doc.text("payment details", PAGE.margin, y);
-      paragraph(payment, PAGE.margin, y + lh(8.5) + 1, columnWidth, 8.5, palette.muted);
+      let rowY = y + lh(8.5) + 1;
+      doc.setDrawColor(palette.border);
+      doc.setLineWidth(0.2);
+      paymentTable.forEach(([label, rows], index) => {
+        setStyle(8.5, palette.faint);
+        doc.text(label, PAGE.margin, rowY);
+        setStyle(8.5, palette.text);
+        rows.forEach((row, i) => doc.text(row, PAGE.margin + labelWidth + 3, rowY + i * lh(8.5)));
+        rowY += rows.length * lh(8.5) + rowGap;
+        if (index < paymentTable.length - 1) {
+          const lineY = rowY - lh(8.5) + 1.5;
+          doc.line(PAGE.margin, lineY, PAGE.margin + columnWidth, lineY);
+        }
+      });
     }
     if (notes) {
-      const notesX = payment ? PAGE.margin + columnWidth + columnGap : PAGE.margin;
+      const notesX = payment.length ? PAGE.margin + columnWidth + columnGap : PAGE.margin;
       setStyle(8.5, palette.faint);
       doc.text("notes", notesX, startY);
       paragraph(notes, notesX, startY + lh(8.5) + 1, columnWidth, 8.5, palette.muted);

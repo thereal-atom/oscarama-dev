@@ -2,6 +2,8 @@
   import { onDestroy } from "svelte";
   import {
     CURRENCIES,
+    PAYMENT_FIELDS,
+    emptyPaymentDetails,
     formatMoney,
     invoiceTotals,
     lineTotal,
@@ -46,7 +48,7 @@
     taxLabel: "vat",
     taxRate: 0,
     discount: 0,
-    paymentDetails: "",
+    payment: emptyPaymentDetails(),
     notes: "",
     theme: "dark",
   });
@@ -333,32 +335,35 @@
     </li>
   </ul>
 
-  <h2 class="text-xl mt-8 sm:mt-12">extras</h2>
+  <h2 class="text-xl mt-8 sm:mt-12">payment details</h2>
+  <p class="text-sm text-white/50 mt-2">all optional - empty fields are left off the invoice.</p>
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
-    <div class="flex flex-col gap-2">
-      <label for="payment-details" class="text-sm text-white/70">
-        payment details <span class="text-white/40">(optional)</span>
-      </label>
-      <textarea
-        id="payment-details"
-        rows="4"
-        bind:value={invoice.paymentDetails}
-        placeholder={"account name\nsort code / account number\niban / swift"}
-        class="{inputClass} resize-none"
-      ></textarea>
-    </div>
-    <div class="flex flex-col gap-2">
-      <label for="notes" class="text-sm text-white/70">
-        notes <span class="text-white/40">(optional)</span>
-      </label>
-      <textarea
-        id="notes"
-        rows="4"
-        bind:value={invoice.notes}
-        placeholder="payment terms, thanks, anything else..."
-        class="{inputClass} resize-none"
-      ></textarea>
-    </div>
+    {#each PAYMENT_FIELDS as field (field.key)}
+      <div class="flex flex-col gap-2">
+        <label for="payment-{field.key}" class="text-sm text-white/70">{field.label}</label>
+        <input
+          id="payment-{field.key}"
+          type="text"
+          bind:value={invoice.payment[field.key]}
+          placeholder={field.placeholder}
+          class={inputClass}
+        />
+      </div>
+    {/each}
+  </div>
+
+  <h2 class="text-xl mt-8 sm:mt-12">notes</h2>
+  <div class="flex flex-col gap-2 mt-6">
+    <label for="notes" class="text-sm text-white/70">
+      notes <span class="text-white/40">(optional)</span>
+    </label>
+    <textarea
+      id="notes"
+      rows="4"
+      bind:value={invoice.notes}
+      placeholder="payment terms, thanks, anything else..."
+      class="{inputClass} resize-none"
+    ></textarea>
   </div>
 
   <div class="flex flex-col sm:flex-row sm:items-center gap-4 mt-10">
