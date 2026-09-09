@@ -77,8 +77,7 @@
   let renderTimer: ReturnType<typeof setTimeout> | undefined;
   let renderSeq = 0;
 
-  async function refreshPreview(data: InvoiceData) {
-    const seq = ++renderSeq;
+  async function refreshPreview(data: InvoiceData, seq: number) {
     isRendering = true;
     try {
       const { renderInvoicePdf } = await import("@/lib/invoice-pdf");
@@ -98,8 +97,9 @@
 
   $effect(() => {
     const data = snapshot();
+    const seq = ++renderSeq;
     clearTimeout(renderTimer);
-    renderTimer = setTimeout(() => refreshPreview(data), 350);
+    renderTimer = setTimeout(() => refreshPreview(data, seq), 350);
   });
 
   onDestroy(() => {
@@ -113,8 +113,9 @@
     isDownloading = true;
     try {
       const { renderInvoicePdf } = await import("@/lib/invoice-pdf");
-      const doc = await renderInvoicePdf(snapshot());
-      const parts = ["invoice", invoice.number, invoice.customer.company].map(slugify).filter(Boolean);
+      const data = snapshot();
+      const doc = await renderInvoicePdf(data);
+      const parts = ["invoice", data.number, data.customer.company].map(slugify).filter(Boolean);
       doc.save(`${parts.join("-")}.pdf`);
     } catch (error) {
       previewError = error instanceof Error ? error.message : "couldn't generate the pdf";
