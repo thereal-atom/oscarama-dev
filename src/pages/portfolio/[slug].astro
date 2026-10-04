@@ -1,0 +1,210 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import MuxPlayer from "@/components/MuxPlayer.astro";
+import PhotoGallery from "@/components/PhotoGallery.astro";
+import { getPortfolioEvent, portfolioImageUrl } from "@/lib/portfolio";
+
+export const prerender = false;
+
+const runtimeEnv = Astro.locals.runtime?.env;
+const slug = Astro.params.slug ?? "";
+const event = slug ? await getPortfolioEvent(slug, runtimeEnv) : null;
+
+if (!event) {
+  Astro.response.status = 404;
+}
+
+const date = event?.eventDate
+  ? new Intl.DateTimeFormat("en-GB", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      timeZone: "UTC",
+    }).format(new Date(`${event.eventDate}T00:00:00Z`))
+  : "";
+
+const selectedImages = event?.gallery.slice(0, 5) ?? [];
+---
+
+<BaseLayout
+  title={event ? `${event.title} | photo + video | oscarama` : "work not found | oscarama"}
+  description={event?.summary ?? "this photo story could not be found."}
+  ogImage={event?.coverImage?.url ?? "/og-photo-video.png"}
+  ogUrl={`https://oscarama.dev/portfolio/${slug}`}
+>
+  {
+    event ? (
+      <main class="mx-auto w-full max-w-[1080px] px-8 pb-32 pt-10 max-[560px]:px-5 max-[560px]:pt-4">
+        <a href="/portfolio" class="text-sm text-white/45 transition-colors hover:text-white/70">
+          &larr; all work
+        </a>
+
+        <header class="mt-10 border-b border-dashed border-white/10 pb-10">
+          <div class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#E56717]">
+            // event story
+          </div>
+          <div class="mt-4 grid items-end gap-8 md:grid-cols-[minmax(0,1fr)_320px]">
+            <div>
+              <h1 class="max-w-3xl text-3xl font-bold leading-[1.1] tracking-[-0.02em] sm:text-5xl">
+                {event.title}
+              </h1>
+              <div class="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-white/45">
+                {date && <time datetime={event.eventDate}>{date.toLowerCase()}</time>}
+                {date && event.location && <span aria-hidden="true">·</span>}
+                {event.location && <span>{event.location.toLowerCase()}</span>}
+                {event.client && <span aria-hidden="true">·</span>}
+                {event.client && <span>for {event.client}</span>}
+              </div>
+            </div>
+            <p class="text-sm leading-7 text-white/60">{event.summary}</p>
+          </div>
+
+          {event.services.length > 0 && (
+            <ul class="mt-6 !ml-0 flex list-none flex-wrap gap-2">
+              {event.services.map((service) => (
+                <li class="!pl-0 rounded-full border border-white/15 px-3 py-1.5 text-[11px] text-white/50">
+                  {service}
+                </li>
+              ))}
+            </ul>
+          )}
+        </header>
+
+        {event.coverImage && (
+          <figure class="mt-8 overflow-hidden rounded-lg border border-white/10 bg-[#161615]">
+            <img
+              src={portfolioImageUrl(event.coverImage.url, 1600)}
+              srcset={`${portfolioImageUrl(event.coverImage.url, 768)} 768w, ${portfolioImageUrl(event.coverImage.url, 1200)} 1200w, ${portfolioImageUrl(event.coverImage.url, 1600)} 1600w`}
+              sizes="(max-width: 560px) calc(100vw - 40px), (max-width: 1120px) calc(100vw - 64px), 1080px"
+              width={event.coverImage.width}
+              height={event.coverImage.height}
+              alt={event.coverImage.alt}
+              class="max-h-[720px] w-full object-cover"
+              loading="eager"
+              decoding="async"
+              fetchpriority="high"
+            />
+            {event.coverImage.caption && (
+              <figcaption class="border-t border-white/10 px-4 py-3 text-xs text-white/40">
+                {event.coverImage.caption}
+              </figcaption>
+            )}
+          </figure>
+        )}
+
+        {event.highlightVideo && (
+          <section class="mt-20" aria-labelledby="highlight-film">
+            <div class="mb-6 flex items-end justify-between gap-6 border-t border-dashed border-white/10 pt-6">
+              <div>
+                <div class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#E56717]">
+                  // motion
+                </div>
+                <h2 id="highlight-film" class="mt-2 text-xl font-bold">
+                  highlight film
+                </h2>
+              </div>
+              <span class="hidden text-xs text-white/35 sm:block">press play, sound on</span>
+            </div>
+            <MuxPlayer
+              playbackId={event.highlightVideo.playbackId}
+              title={event.highlightVideo.title ?? `${event.title} highlight film`}
+              posterTime={event.highlightVideo.posterTime}
+            />
+          </section>
+        )}
+
+        {selectedImages.length > 0 && (
+          <section class="mt-20" aria-labelledby="selected-frames">
+            <div class="mb-6 border-t border-dashed border-white/10 pt-6">
+              <div class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#E56717]">
+                // a few favourites
+              </div>
+              <h2 id="selected-frames" class="mt-2 text-xl font-bold">
+                the story in stills
+              </h2>
+            </div>
+            <div class="grid gap-3 md:auto-rows-[220px] md:grid-cols-12">
+              {selectedImages.map((image, index) => (
+                <figure
+                  class:list={[
+                    "overflow-hidden rounded-sm border border-white/10 bg-[#161615] max-md:aspect-[4/3]",
+                    index === 0
+                      ? "md:col-span-7 md:row-span-2"
+                      : index < 3
+                        ? "md:col-span-5"
+                        : "md:col-span-6",
+                  ]}
+                >
+                  <img
+                    src={portfolioImageUrl(image.url, 1200)}
+                    srcset={`${portfolioImageUrl(image.url, 480)} 480w, ${portfolioImageUrl(image.url, 768)} 768w, ${portfolioImageUrl(image.url, 1200)} 1200w`}
+                    sizes={
+                      index === 0
+                        ? "(min-width: 768px) 58vw, 100vw"
+                        : "(min-width: 768px) 42vw, 100vw"
+                    }
+                    width={image.width}
+                    height={image.height}
+                    alt={image.alt}
+                    class="h-full w-full object-cover transition duration-300 hover:scale-[1.015]"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </figure>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {event.gallery.length > 0 && (
+          <section class="mt-20" aria-labelledby="full-gallery">
+            <div class="mb-6 flex items-end justify-between gap-6 border-t border-dashed border-white/10 pt-6">
+              <div>
+                <div class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#E56717]">
+                  // all frames
+                </div>
+                <h2 id="full-gallery" class="mt-2 text-xl font-bold">
+                  full gallery
+                </h2>
+              </div>
+              <span class="text-xs text-white/35">
+                {String(event.gallery.length).padStart(2, "0")} photographs
+              </span>
+            </div>
+            <PhotoGallery images={event.gallery} />
+          </section>
+        )}
+
+        <section class="mt-20 flex items-center justify-between gap-8 rounded-lg border border-white/15 bg-[#161615] p-6 max-sm:flex-col max-sm:items-start sm:p-8">
+          <div>
+            <div class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#E56717]">
+              // your event next
+            </div>
+            <h2 class="mt-3 text-xl font-bold">let's make something worth looking back on.</h2>
+          </div>
+          <a
+            href={`mailto:hello@oscarama.dev?subject=${encodeURIComponent(`photo / video enquiry after viewing ${event.title}`)}`}
+            class="shrink-0 rounded-sm bg-[#E56717] px-5 py-3 text-sm font-semibold text-[#101010] transition-colors hover:bg-[#f0782c] max-sm:w-full max-sm:text-center"
+          >
+            start a conversation &rarr;
+          </a>
+        </section>
+      </main>
+    ) : (
+      <main class="mx-auto grid min-h-[60vh] w-full max-w-3xl place-items-center px-6 pb-32 text-center">
+        <div>
+          <div class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#E56717]">
+            // 404
+          </div>
+          <h1 class="mt-4 text-3xl font-bold">this story isn't here.</h1>
+          <p class="mt-4 text-sm text-white/55">
+            it may have moved, or it hasn't been published yet.
+          </p>
+          <a href="/portfolio" class="mt-6 inline-block text-sm text-[#E56717] underline">
+            back to the portfolio &rarr;
+          </a>
+        </div>
+      </main>
+    )
+  }
+</BaseLayout>

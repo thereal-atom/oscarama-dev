@@ -1,0 +1,111 @@
+---
+import { portfolioImageUrl, type PortfolioEvent } from "@/lib/portfolio";
+
+interface Props {
+  event: PortfolioEvent;
+  class?: string;
+}
+
+const { event, class: className } = Astro.props;
+const coverImage = event.coverImage ?? event.gallery[0];
+
+const parsedDate = new Date(event.eventDate);
+const displayDate = Number.isNaN(parsedDate.getTime())
+  ? event.eventDate
+  : new Intl.DateTimeFormat("en-GB", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      timeZone: "UTC",
+    })
+      .format(parsedDate)
+      .toLowerCase();
+---
+
+<a
+  href={`/portfolio/${event.slug}`}
+  aria-label={`View ${event.title} portfolio`}
+  class:list={[
+    "group flex h-full flex-col overflow-hidden rounded-lg border border-[#242321] bg-[#161615] transition duration-200 hover:-translate-y-0.5 hover:border-[#3a3834] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E56717] focus-visible:ring-offset-2 focus-visible:ring-offset-[#101010] motion-reduce:transform-none",
+    className,
+  ]}
+>
+  <div class="relative aspect-[16/10] overflow-hidden bg-[#1a1918]">
+    {
+      coverImage ? (
+        <>
+          {coverImage.lqip && (
+            <img
+              src={coverImage.lqip}
+              alt=""
+              aria-hidden="true"
+              class="absolute inset-0 h-full w-full scale-110 object-cover opacity-50 blur-xl"
+            />
+          )}
+          <img
+            src={portfolioImageUrl(coverImage.url, 960)}
+            srcset={`${portfolioImageUrl(coverImage.url, 480)} 480w, ${portfolioImageUrl(coverImage.url, 768)} 768w, ${portfolioImageUrl(coverImage.url, 960)} 960w`}
+            sizes="(max-width: 767px) calc(100vw - 40px), 520px"
+            alt={coverImage.alt}
+            width={coverImage.width}
+            height={coverImage.height}
+            loading="lazy"
+            decoding="async"
+            class="relative h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.015] group-focus-visible:scale-[1.015] motion-reduce:transform-none"
+          />
+        </>
+      ) : (
+        <div class="flex h-full items-center justify-center text-xs uppercase tracking-[0.16em] text-white/30">
+          // gallery incoming
+        </div>
+      )
+    }
+
+    {
+      event.highlightVideo && (
+        <span class="absolute right-3 top-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-[#101010]/85 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-white backdrop-blur-sm">
+          <span class="flex h-5 w-5 items-center justify-center rounded-full bg-[#E56717] text-[9px] text-[#101010]">
+            ▶
+          </span>
+          highlight film
+        </span>
+      )
+    }
+  </div>
+
+  <div class="flex flex-1 flex-col p-5">
+    <div
+      class="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] uppercase tracking-[0.12em] text-white/40"
+    >
+      {
+        event.client && (
+          <>
+            <span class="text-[#E56717]">{event.client}</span>
+            <span aria-hidden="true">·</span>
+          </>
+        )
+      }
+      <time datetime={event.eventDate}>{displayDate}</time>
+      <span aria-hidden="true">·</span>
+      <span>{event.location}</span>
+    </div>
+
+    <h2 class="mt-3 text-lg font-semibold text-white transition-colors group-hover:text-[#E56717]">
+      {event.title}
+    </h2>
+
+    <p class="mt-2 line-clamp-2 text-sm leading-relaxed text-white/60">{event.summary}</p>
+
+    <div class="mt-auto flex items-end justify-between gap-4 pt-5">
+      <p class="line-clamp-1 text-[11px] text-white/40">
+        {event.services.join(" · ")}
+      </p>
+      <span
+        aria-hidden="true"
+        class="shrink-0 text-sm font-semibold text-[#E56717] transition-transform duration-150 group-hover:translate-x-0.5 motion-reduce:transform-none"
+      >
+        view &rarr;
+      </span>
+    </div>
+  </div>
+</a>

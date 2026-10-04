@@ -1,0 +1,174 @@
+---
+import PageLayout from "@/layouts/PageLayout.astro";
+
+const enquiryHref =
+  "mailto:hello@oscarama.dev?subject=photo%20%2F%20video%20event%20enquiry&body=hey%20oscar%2C%0A%0Aevent%3A%20%0Adate%20%2B%20location%3A%20%0Awhat%20you%20need%3A%20%0A%0A";
+
+const services = [
+  {
+    number: "01",
+    title: "event photography",
+    description:
+      "the people, the room and the moments between the agenda. a considered set of candid, speaker, crowd and detail shots that tells the whole story.",
+    deliverables: "edited high-resolution gallery · web-ready exports",
+  },
+  {
+    number: "02",
+    title: "highlight films",
+    description:
+      "short films that capture how the event actually felt — the energy, conversations and best moments, shaped into something people want to watch and share.",
+    deliverables: "edited highlight film · social-ready versions",
+  },
+  {
+    number: "03",
+    title: "combined coverage",
+    description:
+      "photo and video coverage planned together, with one point of contact and a consistent visual story across your recap, socials and future event pages.",
+    deliverables: "full photo gallery · highlight film · social selects",
+  },
+];
+
+const process = [
+  {
+    number: "01",
+    title: "a quick brief",
+    description:
+      "we'll talk through the event, the moments that matter and where the work needs to live afterwards.",
+  },
+  {
+    number: "02",
+    title: "thoughtful coverage",
+    description:
+      "i'll arrive with a plan, work around the room without getting in the way, and adapt as the event unfolds.",
+  },
+  {
+    number: "03",
+    title: "a polished delivery",
+    description:
+      "you'll get a carefully edited set that's easy to review, download and put straight to work.",
+  },
+];
+---
+
+<PageLayout
+  title="event photography + videography | oscarama"
+  description="photography and highlight films for tech events, communities and teams in London."
+  ogUrl="https://oscarama.dev/photo-video"
+  ogImage="/og-photo-video.png"
+>
+  <div class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#E56717]">
+    // photo + video
+  </div>
+
+  <h1 class="mt-4 max-w-2xl text-3xl font-bold leading-tight sm:text-4xl">
+    I do photos and videos also
+  </h1>
+  <p class="mt-6 max-w-2xl text-sm leading-7 text-white/70">
+    every engineer needs a hobby outside of coding (what? since when?!) and one of mine happens to
+    be cameras
+  </p>
+  <p class="mt-6 max-w-2xl text-sm leading-7 text-white/70">
+    the experience I bring: shot at events for ppl like OpenAI, Vercel Corgi and more; hosted 25+
+    events for 1k+ people; attended ~100 events. I know the room from all sides
+  </p>
+
+  <div class="mt-8 flex flex-wrap items-center gap-4">
+    <a
+      href={enquiryHref}
+      class="rounded-sm bg-[#E56717] px-5 py-3 text-sm font-semibold text-[#101010] transition-colors hover:bg-[#f0782c]"
+    >
+      hire me &rarr;
+    </a>
+    <a
+      href="/portfolio"
+      class="text-sm text-white/70 underline decoration-white/30 underline-offset-4 transition-colors hover:text-white hover:decoration-white"
+    >
+      see selected work
+    </a>
+  </div>
+
+  <div
+    class="mt-12 grid gap-px overflow-hidden rounded-sm border border-white/15 bg-white/15 sm:grid-cols-3"
+  >
+    <div class="bg-[#101010] p-4">
+      <div class="text-[10px] uppercase tracking-[0.16em] text-white/40">based in</div>
+      <div class="mt-2 text-sm">london, available elsewhere</div>
+    </div>
+    <div class="bg-[#101010] p-4">
+      <div class="text-[10px] uppercase tracking-[0.16em] text-white/40">best for</div>
+      <div class="mt-2 text-sm">tech, ai + community events</div>
+    </div>
+    <div class="bg-[#101010] p-4">
+      <div class="text-[10px] uppercase tracking-[0.16em] text-white/40">coverage</div>
+      <div class="mt-2 text-sm">photo, video or both</div>
+    </div>
+  </div>
+
+  <section class="mt-20">
+    <div class="flex items-end justify-between gap-6">
+      <h2 class="text-xl">ways to work together</h2>
+      <span class="hidden text-xs text-white/40 sm:block">built around your event</span>
+    </div>
+
+    <div class="mt-6 grid gap-4">
+      {
+        services.map((service) => (
+          <article class="group rounded-sm border border-white/15 p-5 transition-colors hover:border-white/30 sm:p-6">
+            <div class="flex items-start gap-5 sm:gap-8">
+              <span class="pt-1 text-xs text-[#E56717]">{service.number}</span>
+              <div>
+                <h3 class="text-lg font-semibold">{service.title}</h3>
+                <p class="mt-3 max-w-2xl text-sm leading-6 text-white/65">{service.description}</p>
+                <p class="mt-4 text-xs text-white/40">{service.deliverables}</p>
+              </div>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <a
+    href="/portfolio"
+    class="group mt-12 flex items-center justify-between gap-6 rounded-sm border border-dashed border-white/20 p-6 transition-colors hover:border-[#E56717]/60"
+  >
+    <span>
+      <span class="block text-xs text-[#E56717]">// selected work</span>
+      <span class="mt-2 block text-lg font-semibold">see the events i've covered</span>
+      <span class="mt-2 block text-sm text-white/55"
+        >photos, highlight films and full galleries.</span
+      >
+    </span>
+    <span class="text-[#E56717] transition-transform group-hover:translate-x-1">&rarr;</span>
+  </a>
+
+  <section class="mt-20">
+    <h2 class="text-xl">how it works</h2>
+    <div class="mt-6 grid gap-6 sm:grid-cols-3">
+      {
+        process.map((step) => (
+          <div class="border-t border-white/15 pt-4">
+            <div class="text-xs text-[#E56717]">{step.number}</div>
+            <h3 class="mt-3 text-sm font-semibold">{step.title}</h3>
+            <p class="mt-3 text-xs leading-6 text-white/55">{step.description}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="mt-20 rounded-sm border border-white/15 bg-white/[0.02] p-6 sm:p-8">
+    <div class="text-xs text-[#E56717]">// have something coming up?</div>
+    <h2 class="mt-4 text-2xl font-bold">let's make it look as good as it felt.</h2>
+    <p class="mt-4 max-w-xl text-sm leading-7 text-white/65">
+      send over the date, location and a rough idea of what you need. i'll come back with
+      availability and a straightforward quote.
+    </p>
+    <a
+      href={enquiryHref}
+      class="mt-6 inline-block text-sm font-semibold text-[#E56717] underline decoration-[#E56717]/40 underline-offset-4 hover:decoration-[#E56717]"
+    >
+      hello@oscarama.dev &rarr;
+    </a>
+  </section>
+</PageLayout>
