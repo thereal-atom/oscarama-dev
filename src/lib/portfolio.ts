@@ -32,6 +32,19 @@ export interface PortfolioEvent {
   featured: boolean;
 }
 
+export function portfolioOriginalImageUrl(url: string): string {
+  try {
+    const imageUrl = new URL(url);
+    if (imageUrl.hostname !== "cdn.sanity.io") return url;
+
+    // Serve the uploaded asset without resizing, cropping or recompression.
+    imageUrl.search = "";
+    return imageUrl.toString();
+  } catch {
+    return url;
+  }
+}
+
 export function portfolioImageUrl(url: string, width: number, quality = 88): string {
   const normalizedWidth = Math.round(width);
   const normalizedQuality = Math.round(quality);

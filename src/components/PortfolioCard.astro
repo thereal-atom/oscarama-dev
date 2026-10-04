@@ -1,5 +1,5 @@
 ---
-import { portfolioImageUrl, type PortfolioEvent } from "@/lib/portfolio";
+import { portfolioOriginalImageUrl, type PortfolioEvent } from "@/lib/portfolio";
 
 interface Props {
   event: PortfolioEvent;
@@ -30,7 +30,7 @@ const displayDate = Number.isNaN(parsedDate.getTime())
     className,
   ]}
 >
-  <div class="relative aspect-[16/10] overflow-hidden bg-[#1a1918]">
+  <div class="relative aspect-video overflow-hidden bg-[#1a1918]">
     {
       coverImage ? (
         <>
@@ -43,9 +43,7 @@ const displayDate = Number.isNaN(parsedDate.getTime())
             />
           )}
           <img
-            src={portfolioImageUrl(coverImage.url, 960)}
-            srcset={`${portfolioImageUrl(coverImage.url, 480)} 480w, ${portfolioImageUrl(coverImage.url, 768)} 768w, ${portfolioImageUrl(coverImage.url, 960)} 960w`}
-            sizes="(max-width: 767px) calc(100vw - 40px), 520px"
+            src={portfolioOriginalImageUrl(coverImage.url)}
             alt={coverImage.alt}
             width={coverImage.width}
             height={coverImage.height}

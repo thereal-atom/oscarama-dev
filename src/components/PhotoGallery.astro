@@ -1,5 +1,5 @@
 ---
-import { portfolioImageUrl, type PortfolioImage } from "@/lib/portfolio";
+import { portfolioOriginalImageUrl, type PortfolioImage } from "@/lib/portfolio";
 
 interface Props {
   images: PortfolioImage[];
@@ -19,12 +19,12 @@ const firstImage = images[0]!;
         <div class="columns-1 gap-3.5 sm:columns-2 lg:columns-3">
           {images.map((image, index) => (
             <a
-              href={portfolioImageUrl(image.url, 2000, 92)}
+              href={portfolioOriginalImageUrl(image.url)}
               target="_blank"
               rel="noopener noreferrer"
               data-gallery-trigger
               data-gallery-index={index}
-              data-photo-url={portfolioImageUrl(image.url, 2000, 92)}
+              data-photo-url={portfolioOriginalImageUrl(image.url)}
               data-photo-alt={image.alt}
               data-photo-caption={image.caption ?? ""}
               data-photo-width={image.width}
@@ -41,9 +41,7 @@ const firstImage = images[0]!;
                 />
               )}
               <img
-                src={portfolioImageUrl(image.url, 960)}
-                srcset={`${portfolioImageUrl(image.url, 480)} 480w, ${portfolioImageUrl(image.url, 768)} 768w, ${portfolioImageUrl(image.url, 960)} 960w`}
-                sizes="(max-width: 639px) calc(100vw - 40px), (max-width: 1023px) 50vw, 360px"
+                src={portfolioOriginalImageUrl(image.url)}
                 alt={image.alt}
                 width={image.width}
                 height={image.height}
@@ -101,7 +99,7 @@ const firstImage = images[0]!;
 
               <figure class="flex max-h-full min-h-0 max-w-full flex-col items-center">
                 <img
-                  src={portfolioImageUrl(firstImage.url, 2000, 92)}
+                  src={portfolioOriginalImageUrl(firstImage.url)}
                   alt={firstImage.alt}
                   width={firstImage.width}
                   height={firstImage.height}
