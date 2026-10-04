@@ -1,0 +1,71 @@
+---
+import PageLayout from "@/layouts/PageLayout.astro";
+import ShootCard from "@/components/ShootCard.astro";
+import { getPortfolioEvents } from "@/lib/portfolio";
+
+export const prerender = false;
+
+const events = await getPortfolioEvents(Astro.locals.runtime?.env);
+const shoots = events.filter((event) => event.coverImage || event.gallery.length > 0);
+const selectedShoots = shoots.slice(0, 12);
+---
+
+<PageLayout
+  title="event photography + videography | oscarama"
+  description="photography and highlight films for tech events, communities and teams in London."
+  ogUrl="https://oscarama.dev/photo-video"
+  ogImage="/og-photo-video.png"
+>
+  <div class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#E56717]">
+    // photo + video
+  </div>
+
+  <h1 class="mt-4 max-w-2xl text-3xl font-bold leading-tight sm:text-4xl">
+    I do photos and videos also
+  </h1>
+  <p class="mt-6 max-w-2xl text-sm leading-7 text-white/70">
+    outside of software engineering and hosting events, I also like to take photos and videos.
+  </p>
+  <p class="mt-6 max-w-2xl text-sm leading-7 text-white/70">
+    the experience I bring: shot at events for ppl like OpenAI, Vercel, Corgi and more; hosted 30+
+    events for 2k+ people; attended {">"}100 events, so I know the room from all sides
+  </p>
+  <p class="mt-6 max-w-2xl text-sm leading-7 text-white/70">
+    I can kinda shoot anything you might want, <a
+      href="mailto:me@oscarama.dev"
+      class="text-[#E56717]">get in touch!</a
+    >
+  </p>
+
+  <section
+    class="mt-14 border-t border-dashed border-white/10 pt-8"
+    aria-labelledby="shoots-heading"
+  >
+    <div class="mb-6 flex items-baseline justify-between gap-4">
+      <h2
+        id="shoots-heading"
+        class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#E56717]"
+      >
+        // selected shoots
+      </h2>
+      {
+        shoots.length > 12 && (
+          <a href="/portfolio" class="text-xs text-white/50 transition-colors hover:text-[#E56717]">
+            all shoots &rarr;
+          </a>
+        )
+      }
+    </div>
+    {
+      selectedShoots.length > 0 ? (
+        <div class="grid grid-cols-1 gap-x-4 gap-y-7 sm:grid-cols-2">
+          {selectedShoots.map((event) => (
+            <ShootCard event={event} />
+          ))}
+        </div>
+      ) : (
+        <p class="text-sm leading-7 text-white/50">selected shoots coming soon.</p>
+      )
+    }
+  </section>
+</PageLayout>
