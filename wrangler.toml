@@ -1,11 +1,17 @@
 name = "oscarama-dev"
+main = ".output/server/index.mjs"
 compatibility_date = "2025-11-18"
+compatibility_flags = ["nodejs_compat"]
+
+[assets]
+binding = "ASSETS"
+directory = "./.output/public"
 
 [[d1_databases]]
 binding = "DB"
 database_name = "oscarama-db"
 database_id = "ab36a6c1-d3ca-4a59-835b-f6bb6c024237"
 
-# Secrets (set via: npx wrangler secret put <SECRET_NAME>)
+# Secrets (set via: wrangler secret put <SECRET_NAME>)
 # RESEND_API_KEY
 # TURNSTILE_SECRET_KEY
