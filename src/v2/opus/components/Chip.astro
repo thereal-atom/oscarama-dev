@@ -1,0 +1,39 @@
+---
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+
+interface Props {
+  href: string;
+  logo: ImageMetadata;
+  text: string;
+  /** shrink the logo inside its tile (for logos that are just a glyph) */
+  pad?: boolean;
+  /** trailing punctuation kept on the same line as the chip */
+  after?: string;
+  class?: string;
+}
+
+const { href, logo, text, pad = false, after, class: cls } = Astro.props;
+const external = /^https?:/.test(href);
+---
+
+<span class="nw"
+  ><a
+    href={href}
+    class:list={["chip lnk", cls]}
+    target={external ? "_blank" : undefined}
+    rel={external ? "noopener noreferrer" : undefined}
+    data-ph="chip"
+    data-ph-label={text}
+  >
+    <span class:list={["chip__tile", { pad }]}>
+      <Image src={logo} alt="" width={48} height={48} />
+    </span><span>{text}</span>
+  </a>{after}</span
+>
+
+<style>
+  .nw {
+    white-space: nowrap;
+  }
+</style>

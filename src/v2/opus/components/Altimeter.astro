@@ -1,0 +1,401 @@
+---
+// Fixed altitude instrument. Log scale: 10 m (bottom) -> 1,000 km (top).
+// Sections on the page declare data-alt (altitude at their top edge) and the
+// script interpolates between them in log space as you scroll.
+const MIN = 1; // log10(10 m)
+const MAX = 6; // log10(1,000 km)
+const pos = (m: number) => ((Math.log10(m) - MIN) / (MAX - MIN)) * 100;
+
+const majors = [
+  { m: 10, t: "10 m" },
+  { m: 100, t: "100 m" },
+  { m: 1_000, t: "1 km" },
+  { m: 10_000, t: "10 km" },
+  { m: 100_000, t: "100 km" },
+  { m: 1_000_000, t: "1000 km" },
+];
+const minors: number[] = [];
+for (let d = 1; d < 6; d++) for (let k = 2; k < 10; k++) minors.push(k * 10 ** d);
+---
+
+<aside class="alt" data-alt-hud aria-hidden="true">
+  <div class="alt__tape" aria-hidden="true">
+    <div class="alt__spine"></div>
+    {minors.map((m) => <span class="alt__tick" style={`bottom:${pos(m)}%`} />)}
+    {
+      majors.map((x) => (
+        <span class="alt__tick alt__tick--major" style={`bottom:${pos(x.m)}%`}>
+          <span class="alt__num">{x.t}</span>
+        </span>
+      ))
+    }
+    <div class="alt__ptr" data-alt-ptr style="bottom:0%">
+      <span class="alt__tri"></span>
+    </div>
+  </div>
+
+  <div class="alt__read">
+    <div class="alt__k label">alt · m</div>
+    <div class="alt__v tnum" data-alt-v><span class="z">000,0</span>11</div>
+    <div class="alt__z label" data-alt-zone>ground · london</div>
+    <div class="alt__s label tnum" data-alt-speed>v/s 0 m/s</div>
+    <div class="alt__next label" data-alt-next>next ▲<br />drone ceiling<br />120 m</div>
+  </div>
+</aside>
+
+<div class="alt-pill label tnum" aria-hidden="true">
+  <span class="alt-pill__tri">▲</span>
+  <span data-alt-pill>11 m</span>
+  <span class="alt-pill__z" data-alt-pill-zone>ground</span>
+</div>
+
+<style>
+  .alt {
+    --c: var(--ink);
+    --c2: var(--ink-2);
+    position: fixed;
+    right: 22px;
+    top: 50%;
+    z-index: 40;
+    width: 92px;
+    transform: translateY(-50%);
+    color: var(--c);
+    pointer-events: none;
+    transition: color 0.6s;
+    display: none;
+  }
+  :global(html[data-hud-alt="dark"]) .alt {
+    --c: var(--star);
+    --c2: var(--star-2);
+  }
+  @media (min-width: 1100px) {
+    .alt {
+      display: block;
+    }
+  }
+
+  .alt__tape {
+    position: relative;
+    height: min(48vh, 420px);
+    margin-left: auto;
+    width: 100%;
+  }
+  .alt__spine {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--c);
+    opacity: 0.5;
+  }
+  .alt__tick {
+    position: absolute;
+    right: 0;
+    width: 5px;
+    height: 1px;
+    background: var(--c);
+    opacity: 0.4;
+  }
+  .alt__tick--major {
+    width: 12px;
+    opacity: 0.9;
+  }
+  .alt__num {
+    position: absolute;
+    right: 16px;
+    top: -6px;
+    font-size: 9px;
+    font-stretch: 75%;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--c2);
+  }
+  .alt__ptr {
+    position: absolute;
+    right: -1px;
+    width: 34px;
+    height: 0;
+    transform: translateY(50%);
+    will-change: bottom;
+  }
+  .alt__ptr::before {
+    content: "";
+    position: absolute;
+    right: 0;
+    left: 0;
+    top: -1px;
+    height: 2px;
+    background: var(--orange);
+  }
+  .alt__tri {
+    position: absolute;
+    left: -7px;
+    top: -5px;
+    width: 0;
+    height: 0;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-left: 7px solid var(--orange);
+  }
+
+  .alt__read {
+    margin-top: 18px;
+    text-align: right;
+  }
+  .alt__k {
+    color: var(--c2);
+  }
+  .alt__v {
+    font-family: var(--f-display);
+    font-weight: 800;
+    font-size: 22px;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    margin-top: 4px;
+  }
+  .alt__v :global(small) {
+    font-size: 12px;
+    color: var(--c2);
+  }
+  .alt__v :global(.z) {
+    opacity: 0.28;
+  }
+  .alt__z {
+    margin-top: 8px;
+    font-size: 9px;
+    color: var(--c);
+  }
+  .alt__s {
+    margin-top: 4px;
+    font-size: 9px;
+    color: var(--c2);
+  }
+  .alt__next {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid currentColor;
+    font-size: 8.5px;
+    color: var(--orange-ink);
+  }
+  :global(html[data-hud-alt="dark"]) .alt__next {
+    color: var(--orange);
+  }
+  :global(body.in-space) .alt__v {
+    color: var(--orange);
+  }
+
+  /* mobile: a compact pill */
+  .alt-pill {
+    position: fixed;
+    right: 12px;
+    bottom: 12px;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px 7px;
+    border-radius: 999px;
+    background: rgb(22 19 15 / 0.88);
+    color: var(--paper);
+    font-size: 10px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    pointer-events: none;
+    transition:
+      background 0.5s,
+      color 0.5s;
+  }
+  :global(html[data-hud-alt="dark"]) .alt-pill {
+    background: rgb(236 232 223 / 0.12);
+    color: var(--star);
+    box-shadow: inset 0 0 0 1px rgb(236 232 223 / 0.18);
+  }
+  .alt-pill__tri {
+    color: var(--orange);
+    font-size: 9px;
+  }
+  .alt-pill__z {
+    opacity: 0.6;
+  }
+  @media (min-width: 1100px) {
+    .alt-pill {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  type Anchor = { top: number; alt: number; theme: string; zone: string };
+
+  const root = document.documentElement;
+  const hud = document.querySelector<HTMLElement>("[data-alt-hud]");
+  const ptr = document.querySelector<HTMLElement>("[data-alt-ptr]");
+  const valEl = document.querySelector<HTMLElement>("[data-alt-v]");
+  const zoneEl = document.querySelector<HTMLElement>("[data-alt-zone]");
+  const speedEl = document.querySelector<HTMLElement>("[data-alt-speed]");
+  const pillEl = document.querySelector<HTMLElement>("[data-alt-pill]");
+  const pillZoneEl = document.querySelector<HTMLElement>("[data-alt-pill-zone]");
+  const nextEl = document.querySelector<HTMLElement>("[data-alt-next]");
+  const waypoints: [number, string][] = [
+    [120, "drone ceiling"],
+    [8_849, "everest"],
+    [11_000, "cruising alt"],
+    [50_000, "stratopause"],
+    [100_000, "kármán line"],
+    [408_000, "the iss"],
+  ];
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  let anchors: Anchor[] = [];
+  let endAlt = 408_000;
+
+  function measure() {
+    const els = Array.from(document.querySelectorAll<HTMLElement>("[data-alt]"));
+    anchors = els.map((el) => ({
+      top: el.getBoundingClientRect().top + window.scrollY,
+      alt: Number(el.dataset.alt),
+      theme: el.dataset.theme || "light",
+      zone: el.dataset.zone || "",
+    }));
+    const last = els[els.length - 1];
+    if (last?.dataset.altEnd) endAlt = Number(last.dataset.altEnd);
+    anchors.push({
+      top: document.documentElement.scrollHeight,
+      alt: endAlt,
+      theme: anchors[anchors.length - 1]?.theme ?? "dark",
+      zone: anchors[anchors.length - 1]?.zone ?? "",
+    });
+  }
+
+  function sample(y: number) {
+    if (!anchors.length) return { alt: 11, a: undefined as Anchor | undefined };
+    if (y <= anchors[0].top) return { alt: anchors[0].alt, a: anchors[0] };
+    for (let i = 0; i < anchors.length - 1; i++) {
+      const a = anchors[i];
+      const b = anchors[i + 1];
+      if (y >= a.top && y < b.top) {
+        const t = (y - a.top) / (b.top - a.top || 1);
+        const la = Math.log10(a.alt);
+        const lb = Math.log10(b.alt);
+        return { alt: 10 ** (la + (lb - la) * t), a };
+      }
+    }
+    const l = anchors[anchors.length - 1];
+    return { alt: l.alt, a: anchors[anchors.length - 2] };
+  }
+
+  function layer(m: number) {
+    if (m < 12_000) return "troposphere";
+    if (m < 50_000) return "stratosphere";
+    if (m < 80_000) return "mesosphere";
+    if (m < 100_000) return "thermosphere";
+    return "space";
+  }
+
+  const fmt6 = (m: number) => {
+    const s = Math.round(m).toString().padStart(6, "0");
+    const str = `${s.slice(0, 3)},${s.slice(3)}`;
+    // dim the leading zeros like a real instrument
+    const firstSig = str.search(/[1-9]/);
+    if (firstSig <= 0) return str;
+    return `<span class="z">${str.slice(0, firstSig)}</span>${str.slice(firstSig)}`;
+  };
+  const human = (m: number) =>
+    m >= 10_000
+      ? `${(m / 1000).toFixed(m >= 100_000 ? 0 : 1)} km`
+      : `${Math.round(m).toLocaleString("en-GB")} m`;
+
+  let shown = 11;
+  let target = 11;
+  let lastT = performance.now();
+  let lastShown = 11;
+  let vs = 0;
+  let raf = 0;
+  let lastZone = "";
+
+  function update() {
+    // the probe slides from the top of the viewport (page start) to the bottom
+    // (page end), so the readout starts at exactly 11 m and ends in orbit
+    const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    const prog = Math.min(1, Math.max(0, window.scrollY / max));
+    const { alt } = sample(window.scrollY + window.innerHeight * prog);
+    const a = sample(window.scrollY + window.innerHeight * 0.5).a;
+    target = alt;
+
+    // theme under the top bar and under the instrument
+    const top = sample(window.scrollY + 40).a;
+    if (top) root.dataset.hud = top.theme;
+    if (a) {
+      root.dataset.hudAlt = a.theme;
+      lastZone = a.zone;
+    }
+    document.body.classList.toggle("in-space", alt >= 100_000);
+    if (!raf) raf = requestAnimationFrame(tick);
+  }
+
+  function tick(now: number) {
+    raf = 0;
+    const dt = Math.max(1, now - lastT) / 1000;
+    lastT = now;
+    // ease the readout toward the target in log space so it "rolls"
+    const ls = Math.log10(shown);
+    const lt = Math.log10(target);
+    const k = reduce ? 1 : 1 - Math.pow(0.0008, dt);
+    const next = 10 ** (ls + (lt - ls) * k);
+    shown = Math.abs(lt - ls) < 0.0004 ? target : next;
+
+    const v = (shown - lastShown) / dt;
+    lastShown = shown;
+    vs += (v - vs) * Math.min(1, dt * 6);
+
+    render();
+    if (shown !== target || Math.abs(vs) > 0.5) raf = requestAnimationFrame(tick);
+    else {
+      vs = 0;
+      render();
+    }
+  }
+
+  function render() {
+    const p = Math.min(100, Math.max(0, ((Math.log10(shown) - 1) / 5) * 100));
+    if (ptr) ptr.style.bottom = `${p}%`;
+    if (valEl) valEl.innerHTML = fmt6(shown);
+    const lay = layer(shown);
+    const zoneTxt = !lastZone || lastZone === lay ? lay : `${lastZone} · ${lay}`;
+    if (zoneEl && zoneEl.textContent !== zoneTxt) zoneEl.textContent = zoneTxt;
+    if (speedEl) {
+      const s = Math.round(vs);
+      speedEl.textContent = `v/s ${s > 0 ? "↑" : s < 0 ? "↓" : ""} ${Math.abs(s).toLocaleString("en-GB")} m/s`;
+    }
+    if (pillEl) pillEl.textContent = human(shown);
+    if (pillZoneEl) pillZoneEl.textContent = layer(shown);
+    if (nextEl) {
+      const nx = waypoints.find(([m]) => m > shown * 1.02);
+      const html = nx ? `next ▲<br>${nx[1]}<br>${human(nx[0])}` : "orbit<br>achieved ✦";
+      if (nextEl.innerHTML !== html) nextEl.innerHTML = html;
+    }
+  }
+
+  if (hud || pillEl) {
+    measure();
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", () => {
+      measure();
+      update();
+    });
+    // fonts/images can shift layout after first paint
+    window.addEventListener("load", () => {
+      measure();
+      update();
+    });
+    if ("ResizeObserver" in window) {
+      new ResizeObserver(() => {
+        measure();
+        update();
+      }).observe(document.body);
+    }
+  }
+</script>

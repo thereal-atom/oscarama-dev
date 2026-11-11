@@ -1,0 +1,52 @@
+---
+import Layout from "../../../../v4/astra/Layout.astro";
+import { Image } from "astro:assets";
+import { eventSeriesList } from "../../../../data/eventSeries";
+export function getStaticPaths() {
+  return eventSeriesList.map((series) => ({ params: { slug: series.slug }, props: { series } }));
+}
+const { series } = Astro.props;
+---
+
+<Layout
+  page="events"
+  title={`${series.name.toLowerCase()} — oscar.workspace`}
+  description={series.description}
+>
+  <div class="document-heading">
+    <span class="mono"><span class="purple-text">#</span> people.irl / calendar</span><span
+      class="document-note"><span class="status-dot"></span> come along</span
+    >
+  </div>
+  <header class="event-detail-header">
+    <a class="back-link" href="/v4/astra/events">← all calendars</a><div class="event-detail-title">
+      <Image src={series.logo} alt="" width={80} height={80} /><h1>{series.name.toLowerCase()}</h1>
+    </div><p>
+      {
+        series.slug === "demo-nights"
+          ? "a community of engineers, builders, and very early founders. curated nights where builders show what they have been working on in AI."
+          : series.description
+      }
+    </p>
+  </header>
+  <div class="embed-toolbar">
+    <span>UPCOMING / {series.name.toLowerCase()}</span><a
+      href={series.lumaUrl}
+      target="_blank"
+      rel="noreferrer">open in luma ↗</a
+    >
+  </div>
+  <iframe
+    class="calendar-embed"
+    src={`https://luma.com/embed/calendar/${series.lumaCalendarId}/events`}
+    title={`${series.name} upcoming events on Luma`}
+    allow="fullscreen; payment"
+    loading="lazy"></iframe>
+  <p class="embed-note">
+    events and registration are handled by luma. calendar not appearing? <a
+      href={series.lumaUrl}
+      target="_blank"
+      rel="noreferrer">open it directly ↗</a
+    >
+  </p>
+</Layout>

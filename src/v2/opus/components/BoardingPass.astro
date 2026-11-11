@@ -1,0 +1,360 @@
+---
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+
+interface Props {
+  flight: string;
+  from: string;
+  fromName: string;
+  to: string;
+  toName: string;
+  event: string;
+  eventHref?: string;
+  project: string;
+  projectHref?: string;
+  logo?: ImageMetadata;
+  stamp: string;
+  seat: string;
+  body: string;
+  tilt?: number;
+  index?: number;
+}
+
+const p = Astro.props;
+
+// deterministic "barcode" from the flight code
+let h = 2166136261;
+for (const c of p.flight + p.to) h = Math.imul(h ^ c.charCodeAt(0), 16777619) >>> 0;
+const bars: { x: number; w: number }[] = [];
+let x = 0;
+for (let i = 0; i < 46; i++) {
+  h = Math.imul(h ^ (h >>> 13), 1274126177) >>> 0;
+  const w = 1 + (h % 3);
+  const gap = 1 + ((h >>> 8) % 2);
+  bars.push({ x, w });
+  x += w + gap;
+}
+const bw = x;
+---
+
+<article class="bp" style={`--tilt:${p.tilt ?? 0}deg;--d:${(p.index ?? 0) * 90}`} data-reveal>
+  <div class="bp__main">
+    <header class="bp__band label">
+      <span>boarding pass</span>
+      <span class="bp__air">oscarama air <span aria-hidden="true">✈</span></span>
+      <span class="bp__cls">class: hacker</span>
+    </header>
+
+    <div class="bp__body">
+      <div class="bp__route" aria-label={`from ${p.fromName} to ${p.toName}`}>
+        <div class="bp__end">
+          <span class="bp__code stencil">{p.from}</span>
+          <span class="label">{p.fromName}</span>
+        </div>
+        <div class="bp__path" aria-hidden="true">
+          <span class="bp__dash"></span>
+          <span class="bp__plane">✈</span>
+          <span class="bp__dash"></span>
+        </div>
+        <div class="bp__end bp__end--to">
+          <span class="bp__code stencil">{p.to}</span>
+          <span class="label">{p.toName}</span>
+        </div>
+      </div>
+
+      <dl class="bp__fields">
+        <div>
+          <dt class="label">passenger</dt>
+          <dd>falemara / oscar</dd>
+        </div>
+        <div>
+          <dt class="label">event</dt>
+          <dd>
+            {
+              p.eventHref ? (
+                <a class="lnk" href={p.eventHref} target="_blank" rel="noopener noreferrer">
+                  {p.event}
+                </a>
+              ) : (
+                p.event
+              )
+            }
+          </dd>
+        </div>
+        <div>
+          <dt class="label">project</dt>
+          <dd class="bp__proj">
+            {
+              p.logo && (
+                <span class="chip__tile">
+                  <Image src={p.logo} alt="" width={40} height={40} />
+                </span>
+              )
+            }
+            {
+              p.projectHref ? (
+                <a class="lnk" href={p.projectHref} target="_blank" rel="noopener noreferrer">
+                  {p.project}
+                </a>
+              ) : (
+                p.project
+              )
+            }
+          </dd>
+        </div>
+        <div>
+          <dt class="label">seat</dt>
+          <dd>{p.seat}</dd>
+        </div>
+      </dl>
+
+      <p class="bp__note" set:html={p.body} />
+    </div>
+  </div>
+
+  <div class="bp__stub">
+    <div>
+      <span class="label bp__k">flight</span>
+      <span class="bp__flight stencil">{p.flight}</span>
+    </div>
+    <div class="bp__mini label">{p.from} → {p.to}</div>
+    <span class="bp__stamp" aria-label={`result: ${p.stamp}`}>{p.stamp}</span>
+    <svg class="bp__bar" viewBox={`0 0 ${bw} 30`} preserveAspectRatio="none" aria-hidden="true">
+      {bars.map((b) => <rect x={b.x} y="0" width={b.w} height="30" />)}
+    </svg>
+  </div>
+</article>
+
+<style>
+  .bp {
+    --stub: 220px;
+    --notch: 11px;
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) var(--stub);
+    color: var(--ink);
+    background: #f3eee3;
+    border-radius: 10px;
+    rotate: var(--tilt);
+    transition:
+      rotate 0.6s var(--ease-out),
+      translate 0.6s var(--ease-out);
+    -webkit-mask:
+      radial-gradient(circle var(--notch) at calc(100% - var(--stub)) 0, transparent 98%, #000)
+        top / 100% 51% no-repeat,
+      radial-gradient(circle var(--notch) at calc(100% - var(--stub)) 100%, transparent 98%, #000)
+        bottom / 100% 51% no-repeat;
+    mask:
+      radial-gradient(circle var(--notch) at calc(100% - var(--stub)) 0, transparent 98%, #000)
+        top / 100% 51% no-repeat,
+      radial-gradient(circle var(--notch) at calc(100% - var(--stub)) 100%, transparent 98%, #000)
+        bottom / 100% 51% no-repeat;
+    filter: drop-shadow(0 24px 30px rgb(3 6 20 / 0.35));
+  }
+  .bp:hover {
+    rotate: 0deg;
+    translate: 0 -4px;
+  }
+
+  .bp__main {
+    min-width: 0;
+  }
+  .bp__band {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 11px 22px 10px;
+    background: var(--orange);
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .bp__air {
+    font-weight: 700;
+  }
+  .bp__body {
+    padding: 20px 22px 22px;
+  }
+
+  .bp__route {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 18px;
+  }
+  .bp__end {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .bp__end--to {
+    text-align: right;
+  }
+  .bp__end .label {
+    color: var(--ink-2);
+  }
+  .bp__code {
+    font-size: clamp(52px, 6vw, 84px);
+    line-height: 0.8;
+  }
+  .bp__path {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--orange-ink);
+  }
+  .bp__dash {
+    flex: 1;
+    height: 0;
+    border-top: 2px dashed currentColor;
+    opacity: 0.6;
+  }
+  .bp__plane {
+    font-size: 22px;
+    line-height: 1;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    :global(html.js) .bp .bp__plane {
+      transform: translateX(-40px);
+      opacity: 0;
+      transition:
+        transform 1.4s var(--ease-out) 0.3s,
+        opacity 0.6s 0.3s;
+    }
+    :global(html.js) .bp:global(.is-in) .bp__plane {
+      transform: none;
+      opacity: 1;
+    }
+  }
+
+  .bp__fields {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, auto));
+    gap: 6px 28px;
+    margin: 20px 0 0;
+    padding: 14px 0;
+    border-top: 1px dashed var(--rule-strong);
+    border-bottom: 1px dashed var(--rule-strong);
+  }
+  .bp__fields dt {
+    color: var(--ink-2);
+    font-size: 9px;
+  }
+  .bp__fields dd {
+    margin: 3px 0 0;
+    font-size: 12px;
+  }
+  .bp__proj {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .bp__proj .chip__tile {
+    font-size: 14px;
+  }
+  .bp__note {
+    margin-top: 14px;
+    font-size: 12.5px;
+    max-width: 66ch;
+  }
+
+  .bp__stub {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 18px 20px 18px;
+    border-left: 2px dashed rgb(22 19 15 / 0.28);
+    background: #ebe4d5;
+  }
+  .bp__k {
+    display: block;
+    color: var(--ink-2);
+    font-size: 9px;
+  }
+  .bp__flight {
+    font-size: 40px;
+    line-height: 0.9;
+  }
+  .bp__mini {
+    color: var(--ink-2);
+  }
+  .bp__stamp {
+    align-self: flex-start;
+    margin: 6px 0 4px;
+    padding: 7px 10px 6px;
+    border: 2.5px double var(--orange-ink);
+    border-radius: 4px;
+    color: var(--orange-ink);
+    font-family: var(--f-stencil);
+    font-weight: 900;
+    font-size: 22px;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    transform: rotate(-7deg);
+    mix-blend-mode: multiply;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    :global(html.js) .bp .bp__stamp {
+      transform: rotate(-16deg) scale(1.8);
+      opacity: 0;
+      transition:
+        transform 0.45s cubic-bezier(0.2, 1.6, 0.4, 1) 0.9s,
+        opacity 0.2s 0.9s;
+    }
+    :global(html.js) .bp:global(.is-in) .bp__stamp {
+      transform: rotate(-7deg) scale(1);
+      opacity: 1;
+    }
+  }
+  .bp__bar {
+    width: 100%;
+    height: 34px;
+    margin-top: auto;
+    fill: var(--ink);
+  }
+
+  @media (max-width: 760px) {
+    .bp {
+      --stub: 0px;
+      grid-template-columns: 1fr;
+      -webkit-mask: none;
+      mask: none;
+    }
+    .bp__band {
+      padding-inline: 16px;
+    }
+    .bp__cls {
+      display: none;
+    }
+    .bp__body {
+      padding: 16px;
+    }
+    .bp__fields {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .bp__stub {
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      border-left: 0;
+      border-top: 2px dashed rgb(22 19 15 / 0.28);
+      padding: 14px 16px;
+    }
+    .bp__flight {
+      font-size: 30px;
+    }
+    .bp__mini {
+      display: none;
+    }
+    .bp__stamp {
+      font-size: 17px;
+      margin: 0;
+    }
+    .bp__bar {
+      flex-basis: 100%;
+      height: 26px;
+    }
+  }
+</style>

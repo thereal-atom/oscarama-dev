@@ -1,0 +1,131 @@
+---
+import { Image } from "astro:assets";
+import Slate from "./Slate.astro";
+import { links, logos } from "../content";
+
+const rnd = (i: number) => {
+  const x = Math.sin(i * 12.9898 + 4.1) * 43758.5453;
+  return x - Math.floor(x);
+};
+const hues = ["#f0a254", "#4fb3c7", "#f6c445", "#e0392d", "#eeede9"];
+const bokeh = Array.from({ length: 22 }, (_, i) => ({
+  x: rnd(i) * 100,
+  y: rnd(i + 30) * 100,
+  s: 30 + rnd(i + 60) * 150,
+  c: hues[i % hues.length],
+  z: rnd(i + 90) > 0.5 ? 1 : 0,
+}));
+const marks = ["0.3", "0.5", "0.7", "1", "1.5", "2", "3", "5", "10", "∞"];
+---
+
+<section
+  id="rack-focus"
+  class="scene rack"
+  data-scene
+  data-no="07"
+  data-title="behind the camera"
+  data-rack
+  aria-labelledby="rack-title"
+>
+  <div class="rack__sticky">
+    <div class="rack__bokeh" aria-hidden="true">
+      {
+        bokeh.map((b) => (
+          <span
+            class={`bk bk--${b.z ? "near" : "far"}`}
+            style={`left:${b.x.toFixed(1)}%;top:${b.y.toFixed(1)}%;--s:${b.s.toFixed(0)}px;--c:${b.c}`}
+          />
+        ))
+      }
+    </div>
+
+    <header class="rack__head">
+      <Slate scene="07" take="2" note="o. falemara (finally)" />
+      <div>
+        <h2 class="rack__title" id="rack-title">behind the camera</h2>
+        <p class="rack__dek">he loves photography and videography. scroll to pull focus.</p>
+      </div>
+    </header>
+
+    <div class="rack__planes">
+      <div class="plane plane--a">
+        <p class="plane__age"><span>age</span>16</p>
+        <div>
+          <h3 class="plane__title">the drone</h3>
+          <p class="plane__copy">
+            started <a href={links.capturedAbove} target="_blank" rel="noopener noreferrer"
+              >captured above</a
+            >, a drone videography business, with a friend. mostly as an economic excuse to buy a
+            drone.
+          </p>
+          <a
+            class="plane__link"
+            href={links.capturedAbove}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Image src={logos.capturedAbove} alt="" width={28} height={28} /> captured above ↗
+          </a>
+        </div>
+      </div>
+      <div class="plane plane--b">
+        <p class="plane__age"><span>age</span>19</p>
+        <div>
+          <h3 class="plane__title">the camera</h3>
+          <p class="plane__copy">
+            bought a camera. had his first clients within two months of starting.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="ring" aria-hidden="true">
+      <span class="ring__index"></span>
+      <div class="ring__tape" data-ring>
+        {
+          marks.map((m) => (
+            <span class="ring__mark">
+              <b>{m}</b>
+            </span>
+          ))
+        }
+      </div>
+      <span class="ring__label">focus · m</span>
+    </div>
+
+    <aside class="dc rack__dc">
+      <b>director's commentary</b>
+      a rack focus shifts focus from one subject to another mid-shot. tonight, your scroll wheel is the
+      focus puller.
+    </aside>
+  </div>
+</section>
+
+<script>
+  const rack = document.querySelector<HTMLElement>("[data-rack]");
+  if (rack && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      const r = rack.getBoundingClientRect();
+      const span = Math.max(1, rack.offsetHeight - innerHeight);
+      const p = Math.min(1, Math.max(0, -r.top / span));
+      // hold sharp on A, rack across the middle, hold on B
+      const f = Math.min(1, Math.max(0, (p - 0.22) / 0.5));
+      const e = f * f * (3 - 2 * f);
+      rack.style.setProperty("--f", e.toFixed(4));
+    };
+    addEventListener(
+      "scroll",
+      () => {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(update);
+        }
+      },
+      { passive: true }
+    );
+    update();
+    rack.classList.add("is-live");
+  }
+</script>

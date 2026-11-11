@@ -1,0 +1,106 @@
+---
+import { links } from "../content";
+---
+
+<section
+  id="cold-open"
+  class="scene cold"
+  data-scene
+  data-no="01"
+  data-title="cold open"
+  aria-labelledby="cold-title"
+>
+  <div class="cold__shot" data-dawn-host>
+    <div class="cold__fallback" aria-hidden="true"></div>
+    <canvas class="cold__canvas" data-dawn aria-hidden="true"></canvas>
+    <div class="cold__bars" aria-hidden="true"></div>
+
+    <p class="cold__slug" aria-hidden="true">
+      <span>sc.01</span> ext. a ridge, somewhere &mdash; dawn
+    </p>
+    <p class="cold__tk" aria-hidden="true">a cam · tk.1 · <span class="cold__rec">rec</span></p>
+
+    <h1 class="cold__h" id="cold-title">
+      <span class="cold__star">oscar falemara <em>in</em></span>
+      <span class="cold__title">oscarama</span>
+    </h1>
+
+    <p class="subtitle cold__sub">
+      <span class="subtitle__who">[oscar, v.o.]</span> i'm a self-taught software engineer from london.
+      i write code at coloop ai (yc s21) and run outpost, a community for people building at the frontier.
+    </p>
+
+    <aside class="dc cold__dc">
+      <b>director's commentary</b>
+      not real footage. this "drone shot" is a fragment shader. old habits from the drone business die
+      hard.
+    </aside>
+  </div>
+
+  <p class="cold__fmt">
+    this film has been modified from its original version. it has been formatted to fit your screen.
+  </p>
+
+  <div class="cold__below">
+    <p class="billing" aria-label="credits">
+      <span class="billing__line">
+        <span class="bs">oscarama pictures presents</span>
+        <span class="bs">in association with</span>
+        <a class="bb" href={links.coloop} target="_blank" rel="noopener noreferrer">coloop ai</a>
+        <span class="bs">(yc s21)</span>
+        <span class="bs">and</span>
+        <a class="bb" href={links.luma} target="_blank" rel="noopener noreferrer">outpost</a>
+        <span class="bs">a</span>
+        <span class="bb">captured above</span>
+        <span class="bs">production</span>
+        <span class="bs">starring</span>
+        <span class="bb">oscar falemara</span>
+      </span>
+      <span class="billing__line">
+        <span class="bs">with</span>
+        <span class="bb">5,000+ outpost members</span>
+        <span class="bs">and</span>
+        <span class="bb">2,000+ event guests</span>
+        <span class="bs">original stack</span>
+        <span class="bb">typescript · bun · svelte · rust · python</span>
+        <span class="bs">shot on</span>
+        <span class="bb">one drone</span>
+        <span class="bs">and</span>
+        <span class="bb">one camera</span>
+      </span>
+      <span class="billing__line">
+        <span class="bs">edited by</span>
+        <span class="bb">nobody, clearly</span>
+        <span class="bs">degree by</span>
+        <span class="bb">none</span>
+        <span class="bs">written, directed &amp; self-taught by</span>
+        <span class="bb">oscar falemara</span>
+      </span>
+    </p>
+
+    <div class="cold__ctas">
+      <button class="btn btn--sub" type="button" data-play-trailer>
+        <span class="btn__play" aria-hidden="true"></span> play the trailer <span class="btn__time"
+          >0:30</span
+        >
+      </button>
+      <button class="btn" type="button" data-open-scenes>scene selection</button>
+      <a class="btn btn--ghost" href={links.luma} target="_blank" rel="noopener noreferrer"
+        >come to an event ↗</a
+      >
+    </div>
+  </div>
+</section>
+
+<script>
+  import { mountDawn } from "../scripts/dawn";
+  const canvas = document.querySelector<HTMLCanvasElement>("[data-dawn]");
+  const host = document.querySelector<HTMLElement>("[data-dawn-host]");
+  if (canvas && host) {
+    try {
+      mountDawn(canvas, host);
+    } catch (e) {
+      console.warn("dawn shader unavailable", e);
+    }
+  }
+</script>

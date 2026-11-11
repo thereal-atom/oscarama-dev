@@ -1,0 +1,82 @@
+---
+import Layout from "@/v3/fable/Layout.astro";
+import Lanyard from "@/v3/fable/Lanyard.astro";
+import Logo from "@/v3/fable/Logo.astro";
+import { eventSeriesList } from "@/data/eventSeries";
+
+export const prerender = true;
+
+export function getStaticPaths() {
+  return eventSeriesList.map((s) => ({ params: { slug: s.slug } }));
+}
+
+const straps = ["pink", "lime", "blue", "white"];
+const { slug } = Astro.params;
+const index = eventSeriesList.findIndex((s) => s.slug === slug);
+const series = eventSeriesList[index];
+const others = eventSeriesList.filter((s) => s.slug !== slug);
+const ext = { target: "_blank", rel: "noopener noreferrer" };
+---
+
+<Layout
+  current="events"
+  title={`${series.name.toLowerCase()}: events with oscar falemara`}
+  description={series.description}
+>
+  <main id="wall" class="page">
+    <div class="holes" aria-hidden="true"></div>
+
+    <header class="page-head">
+      <p class="crumb">
+        <a href="/v3/fable">the wall</a> / <a href="/v3/fable/events">the rack</a> / {
+          series.name.toLowerCase()
+        }
+      </p>
+      <h1 class="paint label">{series.name.toLowerCase()}</h1>
+    </header>
+
+    <div class="detail">
+      <Lanyard
+        big
+        name={series.name}
+        description={series.description}
+        logo={series.logo}
+        href="#upcoming"
+        lumaUrl={series.lumaUrl}
+        strap={straps[index % straps.length]}
+        kicker="you are here"
+        style="--w:300px;--rest:-1.4deg"
+      />
+
+      <section class="board" id="upcoming" aria-label="upcoming events">
+        <i class="clip" aria-hidden="true"></i>
+        <iframe
+          src={`https://luma.com/embed/calendar/${series.lumaCalendarId}/events`}
+          title={`${series.name} upcoming events on Luma`}
+          loading="lazy"
+          allowfullscreen></iframe>
+        <p class="board-foot">
+          <span>rsvps happen on luma.</span>
+          <a href={series.lumaUrl} {...ext}>open the full calendar ↗</a>
+        </p>
+      </section>
+    </div>
+
+    <nav class="others" aria-label="other series">
+      <span>more lanyards:</span>
+      {
+        others.map((s) => (
+          <a href={`/v3/fable/events/${s.slug}`}>
+            <Logo src={s.logo} size={22} tile="light" />
+            {s.name.toLowerCase()}
+          </a>
+        ))
+      }
+    </nav>
+  </main>
+</Layout>
+
+<script>
+  import { initSwing } from "@/v3/fable/wall";
+  initSwing();
+</script>

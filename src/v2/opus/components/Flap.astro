@@ -1,0 +1,60 @@
+---
+// A run of split-flap tiles. Server-renders the final text; the board script
+// scrambles and settles it on load (unless reduced motion is on).
+interface Props {
+  text: string;
+  len?: number;
+  class?: string;
+  hot?: boolean;
+}
+const { text, len, class: cls, hot = false } = Astro.props;
+const t = text.toUpperCase();
+const chars = (len ? t.padEnd(len, " ").slice(0, len) : t).split("");
+---
+
+<span class:list={["flap", cls, { "flap--hot": hot }]} aria-hidden="true" data-flap={t}>
+  {
+    chars.map((c) => (
+      <span class="flap__c" data-c={c}>
+        {c === " " ? " " : c}
+      </span>
+    ))
+  }
+</span>
+
+<style>
+  .flap {
+    display: inline-flex;
+    gap: 2px;
+  }
+  .flap__c {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    width: 1em;
+    height: 1.42em;
+    border-radius: 2px;
+    background: linear-gradient(to bottom, #262931 0%, #1d2027 49.5%, #121418 50.5%, #1b1d23 100%);
+    color: #f1ece1;
+    font-family: var(--f-mono);
+    font-stretch: 75%;
+    font-weight: 600;
+    line-height: 1;
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.05),
+      0 1px 0 rgb(0 0 0 / 0.6);
+    transform-origin: 50% 50%;
+  }
+  .flap__c::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 1px;
+    background: rgb(0 0 0 / 0.85);
+  }
+  .flap--hot .flap__c {
+    color: var(--orange);
+  }
+</style>

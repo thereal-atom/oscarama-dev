@@ -1,0 +1,39 @@
+---
+interface Props {
+  name: string;
+  size?: number;
+}
+const { name, size = 18 } = Astro.props;
+const paths: Record<string, string> = {
+  grid: "M3 3h7v7H3z M14 3h7v7h-7z M3 14h7v7H3z M14 14h7v7h-7z",
+  file: "M14 2H5v20h14V7z M14 2v6h5 M8 12h8 M8 16h6",
+  code: "m8 6-6 6 6 6 M16 6l6 6-6 6 M14 3l-4 18",
+  people:
+    "M16 21v-3a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v3 M15 4a4 4 0 0 1 0 8 M21 21v-3a4 4 0 0 0-3-4 M13 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0",
+  clock: "M12 8v5l3 2 M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0",
+  arrow: "M5 12h14 M13 6l6 6-6 6",
+  external: "M7 17 17 7 M7 7h10v10",
+  search: "M21 21l-5-5 M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0",
+  branch:
+    "M6 6v12 M6 12c12 0 12-2 12-6 M8 4a2 2 0 1 1-4 0 2 2 0 0 1 4 0 M8 20a2 2 0 1 1-4 0 2 2 0 0 1 4 0 M20 4a2 2 0 1 1-4 0 2 2 0 0 1 4 0",
+  mountain: "m2 20 7-15 5 10 3-6 5 11z M6 12l3 2 3-2",
+  copy: "M9 9h12v12H9z M15 9V3H3v12h6",
+  check: "m5 12 4 4L19 6",
+  calendar: "M3 5h18v16H3z M7 2v6 M17 2v6 M3 11h18 M7 15h2 M13 15h2",
+  coffee: "M3 8h14v8a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5z M17 9h2a3 3 0 0 1 0 6h-2 M7 2v3 M12 2v3",
+  terminal: "m4 5 6 7-6 7 M13 19h7",
+  close: "m6 6 12 12 M18 6 6 18",
+};
+---
+
+<svg
+  width={size}
+  height={size}
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.5"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"><path d={paths[name] || paths.file}></path></svg
+>

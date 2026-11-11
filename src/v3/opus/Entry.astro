@@ -1,0 +1,55 @@
+---
+// One run-in dictionary entry with a hanging indent.
+import type { Entry } from "./entries";
+
+interface Props {
+  e: Entry;
+}
+
+const { e } = Astro.props;
+const many = e.senses.length > 1;
+// dictionary swung dash: "~" stands in for the headword
+const swing = (h: string) => h.replaceAll("~", "<span class='swung'>~</span>");
+const isExternal = (href: string) => href.startsWith("http");
+// built as a string so template formatting can never slip a space before the commas
+const seeHtml = e.see
+  ? `<span class="see-k">→&nbsp;see</span> ` +
+    e.see.map((s) => `<a class="xr" href="#${s.id}">${s.label}</a>`).join(", ")
+  : "";
+---
+
+<article class:list={["entry", { "is-star": e.star }]} id={e.id} data-hw={e.hw}>
+  <p>
+    <dfn class="hw d">{e.hw}</dfn>{
+      e.star && (
+        <span class="star" title="a big deal">
+          ✦
+        </span>
+      )
+    }
+    {e.pr && <span class="pr m">\ {e.pr} \</span>}
+    <i class="pos">{e.pos}</i>
+    {
+      e.senses.map((s, i) => (
+        <span class="sense">
+          {many && <b class="sn d">{i + 1}</b>}
+          <Fragment set:html={swing(s)} />
+        </span>
+      ))
+    }
+    {e.ex && <span class="ex" set:html={swing(e.ex)} />}
+    {e.see && <span class="see" set:html={seeHtml} />}
+    {
+      e.link && (
+        <a
+          class="ext m"
+          href={e.link.href}
+          target={isExternal(e.link.href) ? "_blank" : undefined}
+          rel={isExternal(e.link.href) ? "noopener noreferrer" : undefined}
+        >
+          {e.link.label} {isExternal(e.link.href) ? "↗" : "→"}
+        </a>
+      )
+    }
+  </p>
+</article>

@@ -1,0 +1,188 @@
+---
+import { contours, type ContourOptions } from "../lib/terrain";
+
+interface Props extends ContourOptions {
+  class?: string;
+  /** index of the level to draw in orange */
+  hot?: number;
+  /** animate the lines drawing in */
+  draw?: boolean;
+  /** show a "you are here" marker at this viewBox point */
+  marker?: [number, number];
+  markerLabel?: string;
+  /** pin a label to the generated summit */
+  summitLabel?: string;
+}
+
+const {
+  class: cls,
+  hot = -1,
+  draw = false,
+  marker,
+  markerLabel = "you are here",
+  summitLabel,
+  ...opts
+} = Astro.props;
+const topo = contours(opts);
+// the "hot" level only highlights its loop nearest the summit; the rest stay ink
+const hotLevel = topo.levels[hot];
+let hotPart: { d: string } | undefined;
+if (hotLevel) {
+  const [sx, sy] = topo.summit;
+  hotPart = [...hotLevel.parts].sort(
+    (a, b) => Math.hypot(a.cx - sx, a.cy - sy) - Math.hypot(b.cx - sx, b.cy - sy)
+  )[0];
+}
+---
+
+<svg
+  class:list={["topo", cls, { "topo--draw": draw }]}
+  viewBox={`0 0 ${topo.width} ${topo.height}`}
+  preserveAspectRatio="xMidYMid slice"
+  aria-hidden="true"
+  focusable="false"
+>
+  {
+    topo.levels.map((l, i) => (
+      <path
+        d={l.d}
+        pathLength="1"
+        class:list={["topo__l", { "topo__l--index": i % 4 === 3 }]}
+        style={`--i:${i}`}
+      />
+    ))
+  }
+  {
+    hotPart && (
+      <path
+        d={hotPart.d}
+        pathLength="1"
+        class="topo__l topo__l--hot"
+        style={`--i:${topo.levels.length}`}
+      />
+    )
+  }
+  {
+    summitLabel && (
+      <g class="topo__pin" transform={`translate(${topo.summit[0]} ${topo.summit[1]})`}>
+        <path d="M0 0 L-7 -12 L7 -12 Z" />
+        <rect
+          x={-(summitLabel.length * 6.2 + 16) / 2}
+          y="-38"
+          width={summitLabel.length * 6.2 + 16}
+          height="24"
+          rx="2"
+        />
+        <text x="0" y="-22" text-anchor="middle">
+          {summitLabel}
+        </text>
+      </g>
+    )
+  }
+  {
+    marker && (
+      <g class="topo__marker" transform={`translate(${marker[0]} ${marker[1]})`}>
+        <circle r="5" class="topo__dot" />
+        <circle r="5" class="topo__ping" />
+        <line x1="-22" y1="0" x2="-10" y2="0" />
+        <line x1="10" y1="0" x2="22" y2="0" />
+        <line x1="0" y1="-22" x2="0" y2="-10" />
+        <line x1="0" y1="10" x2="0" y2="22" />
+        <text x="30" y="4">
+          {markerLabel}
+        </text>
+      </g>
+    )
+  }
+</svg>
+
+<style>
+  .topo {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .topo__l {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+    opacity: 0.22;
+  }
+  .topo__l--index {
+    stroke-width: 1.6;
+    opacity: 0.32;
+  }
+  .topo__l--hot {
+    stroke: var(--orange);
+    stroke-width: 1.6;
+    opacity: 1;
+  }
+
+  .topo__pin path,
+  .topo__pin rect {
+    fill: var(--ink);
+  }
+  .topo__pin text {
+    fill: var(--paper);
+    font-family: var(--f-mono);
+    font-size: 9.5px;
+    font-stretch: 75%;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .topo__marker {
+    color: var(--orange);
+  }
+  .topo__marker line {
+    stroke: var(--orange);
+    stroke-width: 1.5;
+    vector-effect: non-scaling-stroke;
+  }
+  .topo__dot {
+    fill: var(--orange);
+  }
+  .topo__ping {
+    fill: none;
+    stroke: var(--orange);
+    stroke-width: 1.5;
+    vector-effect: non-scaling-stroke;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: ping 2.4s var(--ease-out) infinite;
+  }
+  .topo__marker text {
+    fill: currentColor;
+    font-family: var(--f-mono);
+    font-size: 13px;
+    font-stretch: 75%;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  @keyframes ping {
+    from {
+      transform: scale(1);
+      opacity: 1;
+    }
+    to {
+      transform: scale(5);
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .topo--draw .topo__l {
+      stroke-dasharray: 1;
+      stroke-dashoffset: 1;
+      animation: draw 2.6s var(--ease-out) forwards;
+      animation-delay: calc(var(--i) * 70ms + 150ms);
+    }
+  }
+  @keyframes draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+</style>

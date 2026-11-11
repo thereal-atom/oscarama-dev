@@ -1,0 +1,156 @@
+---
+// A viewport-sized fixed canvas, clipped to its parent (which must set
+// `clip-path: inset(0)`), so stars only appear inside the space sections.
+---
+
+<canvas class="stars" data-stars aria-hidden="true"></canvas>
+
+<style>
+  .stars {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0;
+    transition: opacity 0.4s linear;
+  }
+</style>
+
+<script>
+  const canvas = document.querySelector<HTMLCanvasElement>("[data-stars]");
+  const host = canvas?.parentElement;
+  const ctx = canvas?.getContext("2d");
+
+  if (canvas && host && ctx) {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    type Star = {
+      x: number;
+      y: number;
+      z: number;
+      r: number;
+      tw: number;
+      sp: number;
+      warm: boolean;
+    };
+    let stars: Star[] = [];
+    let w = 0;
+    let h = 0;
+    let dpr = 1;
+    let visible = false;
+    let raf = 0;
+    let shoot: { x: number; y: number; vx: number; vy: number; life: number } | null = null;
+    let nextShoot = performance.now() + 2500;
+
+    const rand = (() => {
+      let s = 1337;
+      return () => {
+        s = (s * 16807) % 2147483647;
+        return (s - 1) / 2147483646;
+      };
+    })();
+
+    const resize = () => {
+      dpr = Math.min(2, window.devicePixelRatio || 1);
+      w = window.innerWidth;
+      h = Math.min(window.innerHeight, 2400);
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+      canvas.style.height = `${h}px`;
+      const n = Math.min(520, Math.round((w * h) / 2600));
+      stars = Array.from({ length: n }, () => {
+        const z = Math.pow(rand(), 2.2); // most stars far away
+        return {
+          x: rand() * w,
+          y: rand() * h,
+          z,
+          r: 0.35 + z * 1.5,
+          tw: rand() * Math.PI * 2,
+          sp: 0.6 + rand() * 2.2,
+          warm: rand() < 0.12,
+        };
+      });
+    };
+
+    const intensity = () => {
+      // fade stars in as you climb through the space wrapper
+      const r = host.getBoundingClientRect();
+      const f = (window.innerHeight - r.top) / (r.height + window.innerHeight);
+      return Math.max(0, Math.min(1, f * 2.4 - 0.1));
+    };
+
+    const draw = (now: number) => {
+      raf = 0;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, w, h);
+      const sy = window.scrollY;
+      const k = intensity();
+      canvas.style.opacity = String(k);
+
+      for (const s of stars) {
+        const y = (((s.y - sy * (0.04 + s.z * 0.22)) % h) + h) % h;
+        const tw = reduce ? 1 : 0.6 + 0.4 * Math.sin(s.tw + (now / 1000) * s.sp);
+        ctx.globalAlpha = (0.25 + s.z * 0.75) * tw;
+        ctx.fillStyle = s.warm ? "#ffd2b0" : "#ece8df";
+        ctx.beginPath();
+        ctx.arc(s.x, y, s.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+
+      if (!reduce) {
+        if (!shoot && now > nextShoot && k > 0.4) {
+          shoot = {
+            x: rand() * w * 0.7,
+            y: rand() * h * 0.4,
+            vx: 9 + rand() * 6,
+            vy: 3 + rand() * 3,
+            life: 0,
+          };
+        }
+        if (shoot) {
+          shoot.life++;
+          shoot.x += shoot.vx;
+          shoot.y += shoot.vy;
+          const g = ctx.createLinearGradient(
+            shoot.x,
+            shoot.y,
+            shoot.x - shoot.vx * 10,
+            shoot.y - shoot.vy * 10
+          );
+          const a = Math.max(0, 1 - shoot.life / 45);
+          g.addColorStop(0, `rgba(255,255,255,${a})`);
+          g.addColorStop(1, "rgba(255,255,255,0)");
+          ctx.strokeStyle = g;
+          ctx.lineWidth = 1.4;
+          ctx.beginPath();
+          ctx.moveTo(shoot.x, shoot.y);
+          ctx.lineTo(shoot.x - shoot.vx * 10, shoot.y - shoot.vy * 10);
+          ctx.stroke();
+          if (shoot.life > 45) {
+            shoot = null;
+            nextShoot = now + 4000 + rand() * 7000;
+          }
+        }
+        if (visible) raf = requestAnimationFrame(draw);
+      }
+    };
+
+    const kick = () => {
+      if (!raf) raf = requestAnimationFrame(draw);
+    };
+
+    resize();
+    window.addEventListener("resize", () => {
+      resize();
+      kick();
+    });
+    if (reduce) window.addEventListener("scroll", kick, { passive: true });
+
+    new IntersectionObserver((entries) => {
+      visible = entries[0].isIntersecting;
+      if (visible) kick();
+    }).observe(host);
+  }
+</script>

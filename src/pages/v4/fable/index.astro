@@ -1,0 +1,557 @@
+---
+import { Image, getImage } from "astro:assets";
+import Layout from "@/v4/fable/Layout.astro";
+import Door from "@/v4/fable/Door.astro";
+import Ln from "@/v4/fable/Ln.astro";
+import { eventSeriesList } from "@/data/eventSeries";
+
+import avatar from "@/assets/oscarama.png";
+import coloopLogo from "@/assets/logos/coloop.png";
+import outpostLogo from "@/assets/logos/outpost.png";
+import expLogo from "@/assets/logos/exp.png";
+import helioLogo from "@/assets/logos/helio.png";
+import omisphereLogo from "@/assets/logos/omisphere.png";
+import archieLogo from "@/assets/logos/archie.png";
+import basedHackLogo from "@/assets/logos/basedhack.png";
+import basedLogo from "@/assets/logos/based.png";
+import umLogo from "@/assets/logos/um.png";
+import ycLogo from "@/assets/logos/yc.png";
+import capturedAboveLogo from "@/assets/logos/capturedabove.png";
+import vercelLogo from "@/assets/logos/vercel.png";
+import openaiLogo from "@/assets/logos/openai.png";
+import corgiLogo from "@/assets/logos/corgi.png";
+import coderabbitLogo from "@/assets/logos/coderabbit.png";
+import brightdataLogo from "@/assets/logos/brightdata.png";
+import mubitLogo from "@/assets/logos/mubit.png";
+import fanksLogo from "@/assets/logos/fanks.png";
+import spacexaiLogo from "@/assets/logos/spacexai.svg?url";
+import daytonaLogo from "@/assets/logos/daytona.svg?url";
+
+import typescriptIcon from "@/assets/techs/typescript.svg";
+import bunIcon from "@/assets/techs/bun.svg";
+import nextjsIcon from "@/assets/techs/nextjs.svg";
+import svelteIcon from "@/assets/techs/svelte.svg";
+import rustIcon from "@/assets/techs/rust.svg";
+import tailwindIcon from "@/assets/techs/tailwindcss.svg";
+import pythonIcon from "@/assets/techs/python.svg";
+import awsIcon from "@/assets/techs/aws.svg";
+
+const stack = [
+  { name: "typescript", icon: typescriptIcon },
+  { name: "bun", icon: bunIcon },
+  { name: "svelte / sveltekit", icon: svelteIcon },
+  { name: "next.js", icon: nextjsIcon },
+  { name: "rust", icon: rustIcon, dark: true },
+  { name: "python", icon: pythonIcon },
+  { name: "tailwind", icon: tailwindIcon },
+  { name: "aws", icon: awsIcon, dark: true },
+];
+const repos = [
+  "docdepot",
+  "alertbots",
+  "openai.js",
+  "papr",
+  "notes ai",
+  "solana arb bot",
+  "project liquid",
+  "saasalytics",
+];
+const offDuty = [
+  "running",
+  "hiking",
+  "camping",
+  "mountaineering",
+  "bouldering",
+  "climbing",
+  "skiing",
+  "photography",
+  "flying drones",
+];
+const gameAvatar = await getImage({ src: avatar, width: 256 });
+const blobs = ["", "v", "t", "r", "k"];
+---
+
+<Layout
+  title="oscar falemara | plus one"
+  description="oscar falemara: self-taught software engineer from london, at coloop ai (yc s21), running outpost. a small game about getting people in a room. or skip it and read everything."
+  path="/v4/fable"
+  nav="play"
+>
+  <main>
+    <section class="arena" id="play" aria-labelledby="game-title">
+      <h2 class="sr" id="game-title">plus one: a small game about getting people in a room</h2>
+      <p class="sr">
+        this part of the page is a game played with a mouse, a finger or the arrow keys. you walk
+        around collecting people, then bring the crowd to nine doors, and each door opens a chapter
+        of oscar's story. everything it unlocks is written out in full in the
+        <a href="#everything">everything section</a> below, so you can skip it.
+      </p>
+
+      <div class="stage js-only" id="stage" data-avatar={gameAvatar.src} data-phase="play">
+        <canvas
+          id="g"
+          tabindex="0"
+          aria-label="game area. arrow keys or w a s d to walk. bump into people to collect them."
+        ></canvas>
+
+        <div class="hud" data-g="hud">
+          <div class="hud-count" aria-live="off">
+            <strong data-g="count">0</strong>
+            <span>in your<br />crew</span>
+          </div>
+          <div class="hud-obj" role="status">
+            <span data-g="obj">door 1 · first client: bring 1</span>
+            <i class="hud-bar"><b data-g="bar"></b></i>
+          </div>
+          <div class="hud-right">
+            <div class="pips" data-g="pips" role="group" aria-label="doors unlocked">
+              {
+                Array.from({ length: 9 }, (_, i) => (
+                  <button type="button" data-n={i + 1} data-state="locked" disabled />
+                ))
+              }
+            </div>
+            <span class="hud-time" data-g="time" aria-label="time">0:00</span>
+            <button
+              class="icon-btn"
+              type="button"
+              data-g="sound"
+              data-on="true"
+              aria-pressed="true"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.4"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M4 9.5v5h4l5 4v-13l-5 4z" fill="currentColor"></path>
+                <path class="wave" d="M16.5 9a4.2 4.2 0 0 1 0 6M19 6.5a7.6 7.6 0 0 1 0 11"></path>
+                <path class="mute" d="M17 9.5l4.5 5M21.5 9.5l-4.5 5"></path>
+              </svg>
+            </button>
+            <button class="icon-btn" type="button" data-g="restart" aria-label="start again">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.4"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M4.5 12a7.5 7.5 0 1 0 2.4-5.5"></path>
+                <path d="M4 4.5v4h4"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="card" data-g="card" role="dialog" aria-label="door unlocked" hidden>
+          <div class="card-in">
+            <div class="card-flag">door unlocked</div>
+            <div class="card-body prose" data-g="card-body"></div>
+            <div class="card-foot">
+              <small>enter / esc</small>
+              <button class="btn" type="button" data-g="card-go">keep going →</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="end" data-g="end" hidden>
+          <h2>that's everyone.</h2>
+          <p>
+            you got <b data-g="end-n">0</b> people in a room in <b data-g="end-t">0:00</b>. the real
+            numbers are 30+ events and 2,000+ people, and they took a bit longer.
+          </p>
+          <div class="end-btns">
+            <a
+              class="btn"
+              href="https://luma.com/londonmaxxing-ai"
+              target="_blank"
+              rel="noopener noreferrer">come to a real one ↗</a
+            >
+            <a class="btn sun" href="#everything">read everything ↓</a>
+            <button class="btn alt" type="button" data-g="again">play again</button>
+          </div>
+        </div>
+
+        <div class="gate" data-g="gate" hidden>
+          <h2>the game is parked.</h2>
+          <p>
+            you've asked your device for less motion, and this is a lot of little people running
+            about. everything it unlocks is written out below.
+          </p>
+          <div class="end-btns">
+            <a class="btn" href="#everything">just show me everything ↓</a>
+            <button class="btn alt" type="button" data-g="gate-play">play anyway</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="nojs-only nojs">
+        <p>
+          <b>plus one</b> is a small game about getting people in a room, and it needs javascript. everything
+          it unlocks is written out right below.
+        </p>
+      </div>
+
+      <div class="skipbar">
+        <span class="title">plus one <small>a game about getting people in a room</small></span>
+        <a class="skip" href="#everything">skip: just show me everything <i>↓</i></a>
+        <span class="keys">mouse · touch · arrow keys</span>
+      </div>
+    </section>
+
+    <section class="everything" id="everything" aria-labelledby="ev-title">
+      <div class="wrap">
+        <div class="intro">
+          <div>
+            <span class="eyebrow"
+              ><span class="blob v" style="width:14px;height:14px;border-width:2px"
+              ></span>everything, no playing required</span
+            >
+            <h1 id="ev-title">oscar <em>falemara</em></h1>
+            <p class="lead prose">
+              i'm a self-taught software engineer from london. i write code at
+              <Ln href="https://coloop.ai" logo={coloopLogo}>coloop ai</Ln> (yc s21), where i also do
+              events, growth engineering and lots of other fun stuff.
+            </p>
+            <p class="lead prose">
+              i run <Ln href="https://outpostcrew.co" logo={outpostLogo}>outpost</Ln>, a community
+              for those building at the frontier. mostly, i get people in a room and see what
+              happens.
+            </p>
+            <div class="cta">
+              <a
+                class="btn"
+                href="https://luma.com/londonmaxxing-ai"
+                target="_blank"
+                rel="noopener noreferrer">come to an event ↗</a
+              >
+              <a class="btn alt" href="#doors">the story, door by door ↓</a>
+            </div>
+          </div>
+          <figure class="portrait">
+            <Image
+              src={avatar}
+              alt="illustrated portrait of oscar at a desk, grinning, both thumbs up"
+              width={760}
+              height={760}
+              loading="lazy"
+            />
+            <figcaption>player one</figcaption>
+          </figure>
+        </div>
+
+        <ul class="score" aria-label="the scoreboard">
+          <li><b>14</b> age i started coding (and got my first client)</li>
+          <li><b>18</b> age i joined a yc startup, full-time</li>
+          <li><b>30+</b> events hosted or helped organise</li>
+          <li><b>2,000+</b> people through the door</li>
+          <li><b>5k+</b> members in outpost</li>
+          <li><b>0</b> university degrees</li>
+        </ul>
+
+        <div class="block" id="doors">
+          <h2 class="h2">the nine doors</h2>
+          <p class="sub">
+            in the game, each of these opens when you turn up with enough people. here they're just
+            open.
+          </p>
+
+          <div class="doors">
+            <Door
+              n={1}
+              name="first client"
+              kicker="age 14"
+              need={1}
+              note="(the client.)"
+              glyph="14"
+              bg="#ffc833"
+            >
+              <p>
+                i started coding at 14. less than five months later, still 14, i had my first
+                freelance client.
+              </p>
+              <p>self-taught the whole way. no course, no bootcamp, just a lot of tabs open.</p>
+            </Door>
+
+            <Door
+              n={2}
+              name="exp"
+              kicker="discord, but serious"
+              need={10}
+              note="the real one went from 2k to 45k+."
+              logo={expLogo}
+            >
+              <p>
+                built the bot systems for <Ln href="https://discord.gg/exp">EXP</Ln> from the ground up,
+                including bank systems handling $100,000s of in-game value.
+              </p>
+              <p>helped it grow from 2k to 45k+ members. my first taste of a crowd.</p>
+            </Door>
+
+            <Door
+              n={3}
+              name="captured above"
+              kicker="age 16"
+              need={25}
+              note="drone not included."
+              logo={capturedAboveLogo}
+            >
+              <p>
+                i love photography and videography, so at 16 i started a drone videography business
+                with a friend,
+                <Ln href="https://capturedabove-website.vercel.app">captured above</Ln>, as an
+                economic excuse to buy a drone.
+              </p>
+              <p>then i bought a camera at 19 and had my first clients within 2 months.</p>
+            </Door>
+
+            <Door
+              n={4}
+              name="helio"
+              kicker="freelance"
+              need={45}
+              note="no equity was harmed."
+              logo={helioLogo}
+            >
+              <p>
+                spent a few months freelancing at <Ln href="https://hel.io">helio</Ln>, a crypto
+                payments startup.
+              </p>
+              <p>
+                it later
+                <Ln href="https://www.moonpay.com/en-gb/newsroom/helio-acquisition"
+                  >sold to moonpay for $175m</Ln
+                >. i'm claiming none of the credit and all of the anecdote.
+              </p>
+            </Door>
+
+            <Door
+              n={5}
+              name="coloop"
+              kicker="age 18"
+              need={70}
+              note="no degree required."
+              logo={coloopLogo}
+            >
+              <p>
+                at 18, before i'd finished high school, i joined
+                <Ln href="https://coloop.ai">coloop ai</Ln>, a
+                <Ln href="https://www.ycombinator.com/companies/coloop" logo={ycLogo}
+                  >yc s21 startup</Ln
+                >, as a full-time software engineer.
+              </p>
+              <p>
+                i never went to uni. these days i also do events and growth engineering there, plus
+                lots of other fun stuff.
+              </p>
+            </Door>
+
+            <Door
+              n={6}
+              name="hackathons"
+              kicker="won one, got flown to two"
+              need={100}
+              note="toboggans optional."
+              logo={omisphereLogo}
+            >
+              <ul>
+                <li>
+                  won my first ever hackathon with
+                  <Ln href="https://github.com/omisphere/omisphere">OmiSphere</Ln>, a project that
+                  aims to turn every conversation into part of a collective consciousness.
+                </li>
+                <li>
+                  got flown out to lithuania for
+                  <Ln href="https://www.basedhack.com/" logo={basedHackLogo} dark>based hack</Ln>,
+                  where we built <Ln href="https://archie.to" logo={archieLogo}>archie</Ln> and were one
+                  of the teams chosen to pitch to 100+ people in the room.
+                </li>
+                <li>
+                  got flown out to finland by
+                  <Ln href="https://www.basedcollective.ai/" logo={basedLogo} dark
+                    >based collective</Ln
+                  >
+                  and <Ln href="https://www.unicornmafia.ai/" logo={umLogo} dark>unicorn mafia</Ln> for
+                  <Ln href="https://sunsteadhack.com/">sunstead hack</Ln>. we didn't win, but we
+                  vibe coded while tobogganing.
+                </li>
+              </ul>
+            </Door>
+
+            <Door
+              n={7}
+              name="outpost"
+              kicker="5k+ members"
+              need={140}
+              note="the real count is 2,000+."
+              logo={outpostLogo}
+              class="wide"
+            >
+              <p>
+                i run <Ln href="https://outpostcrew.co">outpost</Ln>, a community for those building
+                at the frontier. hackathons, meetups, dinners, coworking, run clubs, cafes, demo
+                nights, bouldering and much more.
+              </p>
+              <p>
+                so far i've hosted or helped organise 30+ events with 2,000+ people attending,
+                working with
+                <Ln href="https://luma.com/codex-ldn-1" logo={openaiLogo} dark>openai</Ln>,
+                <Ln href="/events/zero-to-agent" logo={vercelLogo} dark>vercel</Ln>,
+                <Ln href="https://x.ai" logo={spacexaiLogo} dark>spacexai</Ln>,
+                <Ln href="https://www.daytona.io" logo={daytonaLogo} dark>daytona</Ln>,
+                <Ln href="https://corgi.insure" logo={corgiLogo}>corgi</Ln> and more.
+              </p>
+              <p>
+                i also spoke at
+                <Ln href="https://techsummit.kcltech.co.uk/">kcl tech summit 2026</Ln>, on the panel
+                "how to break into london's tech scene", about community building as a full-time
+                engineer who's never been to uni.
+              </p>
+              <p>
+                <Ln href="https://luma.com/londonmaxxing-ai">come to an event!</Ln>
+              </p>
+            </Door>
+
+            <Door
+              n={8}
+              name="zero to agent"
+              kicker="sat 2 may 2026"
+              need={190}
+              note="the real one had about 100, all of them real."
+              logo={vercelLogo}
+              bg="#1b1525"
+              pad={0.5}
+            >
+              <p>
+                i ran my first ever hackathon: the london stop of
+                <Ln href="https://vercel.com">vercel</Ln>'s zero to agent. about 100 of london's
+                most talented builders, 3 tracks, £5.8k in cash and $1m+ in credits.
+              </p>
+              <p>
+                organised it all by myself, sponsored by
+                <Ln href="https://coderabbit.ai" logo={coderabbitLogo}>coderabbit</Ln>,
+                <Ln href="https://brightdata.com" logo={brightdataLogo}>bright data</Ln> and
+                <Ln href="https://mubit.ai" logo={mubitLogo}>mubit</Ln>.
+              </p>
+              <p><Ln href="/events/zero-to-agent">see the recap →</Ln></p>
+            </Door>
+
+            <Door
+              n={9}
+              name="what's next"
+              kicker="the big one"
+              need={250}
+              note="bring everyone."
+              logo="/v4/fable/rocket.svg"
+              bg="#6c47ff"
+              pad={0.62}
+              class="final wide"
+            >
+              <p>
+                my passion is aerospace. space, rockets, all of it. i want to start an aerospace
+                company soon.
+              </p>
+              <p>
+                until then you'll find me outside: running, hiking, camping, mountaineering,
+                bouldering, climbing and skiing.
+              </p>
+              <p>
+                if you're building something, or just want to talk rockets and climbing walls,
+                <Ln href="https://x.com/oscarfalll">say hi on x</Ln> or
+                <Ln href="https://linkedin.com/in/oscarfalemara">linkedin</Ln>. dms are open.
+              </p>
+            </Door>
+          </div>
+        </div>
+
+        <div class="block">
+          <h2 class="h2">side quests</h2>
+          <div class="trio">
+            <div class="panel v prose">
+              <h3>things on my github</h3>
+              <ul class="chips">
+                {repos.map((r) => <li>{r}</li>)}
+              </ul>
+              <p>
+                notes ai is obsidian plus an llm. the rest are on
+                <a href="https://github.com/thereal-atom" target="_blank" rel="noopener noreferrer"
+                  >github.com/thereal-atom</a
+                >. i also helped build better community-brand matching at
+                <Ln href="https://fanks.co" logo={fanksLogo}>fanks</Ln>.
+              </p>
+            </div>
+            <div class="panel">
+              <h3>what i build with</h3>
+              <ul class="chips">
+                {
+                  stack.map((t) => (
+                    <li>
+                      <Image
+                        src={t.icon}
+                        alt=""
+                        width={18}
+                        height={18}
+                        loading="lazy"
+                        class:list={{ dark: "dark" in t }}
+                      />
+                      {t.name}
+                    </li>
+                  ))
+                }
+                <li>genai</li>
+              </ul>
+            </div>
+            <div class="panel s">
+              <h3>off duty</h3>
+              <ul class="chips">
+                {offDuty.map((o) => <li>{o}</li>)}
+              </ul>
+              <p>anything that involves being outside and slightly out of breath.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="block" id="events">
+          <h2 class="h2">real doors, real people</h2>
+          <p class="sub">
+            four regular things i run or help run in london. pick a door. <a
+              href="/v4/fable/events"
+              style="font-weight:800">all events →</a
+            >
+          </p>
+          <div class="series">
+            {
+              eventSeriesList.map((s, i) => (
+                <a href={`/v4/fable/events/${s.slug}`}>
+                  <Image src={s.logo} alt="" width={184} height={184} loading="lazy" />
+                  <h3>{s.name.toLowerCase()}</h3>
+                  <p>{s.description}</p>
+                  <span class="go">
+                    <span class="q" aria-hidden="true">
+                      {[0, 1, 2, 3, 4].map((k) => (
+                        <span class={`blob ${blobs[(k + i) % 5]}`} />
+                      ))}
+                    </span>
+                    join the queue →
+                  </span>
+                </a>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<script>
+  import { boot } from "@/v4/fable/game";
+  boot();
+</script>

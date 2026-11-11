@@ -1,0 +1,158 @@
+---
+// The Concise Oscarama: shared document shell for every /v3/opus page.
+import "./styles.css";
+import { allLetters, usedLetters } from "./entries";
+
+interface Props {
+  title: string;
+  description: string;
+  path: string;
+  guide?: string;
+  home?: boolean;
+}
+
+const { title, description, path, guide = "", home = false } = Astro.props;
+const url = new URL(path, "https://oscarama.dev").href;
+const og = "https://oscarama.dev/og.png";
+const azHref = (l: string) => (home ? `#letter-${l}` : `/v3/opus#letter-${l}`);
+
+const socials = [
+  { href: "https://github.com/thereal-atom", label: "github" },
+  { href: "https://x.com/oscarfalll", label: "x" },
+  { href: "https://linkedin.com/in/oscarfalemara", label: "linkedin" },
+];
+---
+
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content="noindex" />
+    <link rel="canonical" href={url} />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta name="theme-color" content="#ffffff" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="oscarama.dev" />
+    <meta property="og:url" content={url} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={og} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={og} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Anybody:wdth,wght@50..150,100..900&family=Fragment+Mono&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&display=swap"
+    />
+    <script is:inline>
+      document.documentElement.classList.add("js");
+    </script>
+  </head>
+  <body class={home ? "is-home" : ""}>
+    <a class="skip" href="#main">skip to content</a>
+
+    <header class="rh" data-rh>
+      <div class="rh-l">
+        <a class="rh-title d" href="/v3/opus"><span class="rh-the">the concise</span> oscarama</a>
+        <a class="rh-ed m" href="/v3" title="all the v3 drafts">v3 · 1st ed.</a>
+      </div>
+      <p class="rh-guide" aria-hidden="true">
+        <span class="rh-letter d" data-rh-letter></span>
+        <span class="rh-words" data-rh-words>{guide}</span>
+      </p>
+      <nav class="rh-nav m" aria-label="site">
+        {
+          home && (
+            <button class="rh-rand" type="button" data-random>
+              open at random
+            </button>
+          )
+        }
+        <a href="/v3/opus/events">events</a>
+        {
+          socials.map((s) => (
+            <a class="rh-soc" href={s.href} target="_blank" rel="noopener noreferrer">
+              {s.label} ↗
+            </a>
+          ))
+        }
+        <button class="rh-az" type="button" data-az-open aria-expanded="false" aria-controls="az">
+          a–z
+        </button>
+      </nav>
+    </header>
+
+    {
+      home && (
+        <nav class="ti" aria-label="thumb index">
+          {allLetters.map((l) =>
+            usedLetters.has(l) ? (
+              <a href={`#letter-${l}`} data-ti={l} aria-label={`jump to ${l}`}>
+                {l}
+              </a>
+            ) : (
+              <span aria-hidden="true">{l}</span>
+            )
+          )}
+        </nav>
+      )
+    }
+
+    <div class="az" id="az" data-az hidden>
+      <div class="az-top">
+        <p class="m">thumb index</p>
+        <button class="az-close m" type="button" data-az-close>close ✕</button>
+      </div>
+      <nav class="az-grid" aria-label="jump to letter">
+        {
+          allLetters.map((l) =>
+            usedLetters.has(l) ? (
+              <a class="d" href={azHref(l)} data-az-link>
+                {l}
+              </a>
+            ) : (
+              <span class="d" aria-hidden="true">
+                {l}
+              </span>
+            )
+          )
+        }
+      </nav>
+      <div class="az-links m">
+        {
+          home && (
+            <button type="button" data-random data-az-link>
+              open at random ↻
+            </button>
+          )
+        }
+        <a href="/v3/opus/events" data-az-link>appendix a: events</a>
+        {
+          socials.map((s) => (
+            <a href={s.href} target="_blank" rel="noopener noreferrer">
+              {s.label} ↗
+            </a>
+          ))
+        }
+      </div>
+    </div>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <script>
+      import "./lexicon";
+    </script>
+  </body>
+</html>

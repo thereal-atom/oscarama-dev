@@ -1,0 +1,27 @@
+---
+import { getImage } from "astro:assets";
+import mark from "@/assets/oscarama.png";
+
+interface Props {
+  current?: "home" | "events";
+  alt?: string;
+  phase?: string;
+}
+const { current = "home", alt = "0 m", phase = "on the pad" } = Astro.props;
+const img = await getImage({ src: mark, width: 64, height: 64 });
+---
+
+<header class="hud">
+  <a class="hud__home" href="/v2/fable" aria-label="oscarama, home">
+    <img src={img.src} alt="" width="26" height="26" />
+    <span>oscarama</span>
+  </a>
+  <div class="hud__alt" aria-hidden="true">
+    <span>alt</span>
+    <b data-alt>{alt}</b>
+    <span class="hud__phase" data-phase>{phase}</span>
+  </div>
+  <nav class="hud__nav" aria-label="main">
+    <a href="/v2/fable/events" aria-current={current === "events" ? "page" : undefined}>events</a>
+  </nav>
+</header>
