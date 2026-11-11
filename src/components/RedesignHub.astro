@@ -1,0 +1,169 @@
+---
+// Redesign hub, rendered at both /v2 and /v3. Each variant lives in its own namespace:
+//   /vN/<name> -> src/pages/vN/<name>, src/vN/<name>
+const rounds = [
+  {
+    label: "round 2",
+    variants: [
+      {
+        href: "/v2/opus",
+        name: "opus",
+        model: "claude opus 5.5",
+        idea: "ascent: ground to orbit, scroll down",
+      },
+      {
+        href: "/v2/fable",
+        name: "fable",
+        model: "claude fable 5.2",
+        idea: "ascent: london to orbit, scroll up",
+      },
+    ],
+  },
+  {
+    label: "round 3",
+    variants: [
+      { href: "/v3/opus", name: "opus", model: "claude opus 5.5", idea: "editorial & typographic" },
+      {
+        href: "/v3/fable",
+        name: "fable",
+        model: "claude fable 5.2",
+        idea: "spatial & interactive",
+      },
+    ],
+  },
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <link rel="icon" href="/favicon.png" />
+    <title>oscarama redesigns</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0b0b0b;
+        --fg: #f2f0eb;
+        --dim: #8a8781;
+        --line: #2a2927;
+        --accent: #e56717;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: ui-monospace, "SF Mono", Menlo, monospace;
+        display: grid;
+        place-items: center;
+        padding: 32px 16px;
+      }
+      main {
+        width: 100%;
+        max-width: 720px;
+      }
+      h1 {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--dim);
+        margin: 0 0 24px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      @media (max-width: 560px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      a.card {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 180px;
+        padding: 24px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        color: inherit;
+        text-decoration: none;
+        transition:
+          border-color 0.2s,
+          transform 0.2s;
+      }
+      a.card:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+      }
+      .name {
+        font-size: 40px;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+      }
+      .model {
+        font-size: 12px;
+        color: var(--dim);
+      }
+      h2 {
+        font-size: 12px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--accent);
+        margin: 32px 0 12px;
+      }
+      section:first-of-type h2 {
+        margin-top: 0;
+      }
+      .idea {
+        font-size: 12px;
+        color: var(--fg);
+        margin-top: 12px;
+      }
+      .arrow {
+        color: var(--accent);
+        font-size: 13px;
+      }
+      footer {
+        margin-top: 24px;
+        font-size: 12px;
+        color: var(--dim);
+      }
+      footer a {
+        color: var(--dim);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>oscarama.dev redesigns: four takes, pick the bits you like</h1>
+      {
+        rounds.map((r) => (
+          <section>
+            <h2>{r.label}</h2>
+            <div class="grid">
+              {r.variants.map((v) => (
+                <a class="card" href={v.href}>
+                  <div>
+                    <div class="name">{v.name}</div>
+                    <div class="model">{v.model}</div>
+                    <div class="idea">{v.idea}</div>
+                  </div>
+                  <span class="arrow">{v.href} &rarr;</span>
+                </a>
+              ))}
+            </div>
+          </section>
+        ))
+      }
+      <footer>or go back to <a href="/">the current site (v1)</a></footer>
+    </main>
+  </body>
+</html>
