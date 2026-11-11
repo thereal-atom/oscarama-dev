@@ -1,0 +1,94 @@
+---
+import { getImage } from "astro:assets";
+import Layout from "@/v2/fable/Layout.astro";
+import Hud from "@/v2/fable/Hud.astro";
+import Stars from "@/v2/fable/Stars.astro";
+import { series as eventSeriesList } from "@/v2/fable/series";
+
+export const prerender = true;
+
+export function getStaticPaths() {
+  return eventSeriesList.map((s) => ({ params: { slug: s.slug } }));
+}
+
+const { slug } = Astro.params;
+const data = eventSeriesList.find((s) => s.slug === slug)!;
+const others = eventSeriesList.filter((s) => s.slug !== slug);
+const patch = (await getImage({ src: data.logo, width: 256, height: 256 })).src;
+const lumaDisplayUrl = data.lumaUrl.replace("https://", "");
+const n = String(eventSeriesList.findIndex((s) => s.slug === slug) + 1).padStart(2, "0");
+---
+
+<Layout
+  title={`${data.name.toLowerCase()} — events — oscar falemara`}
+  description={data.description}
+  path={`/v2/fable/events/${slug}`}
+  bodyClass="ev"
+>
+  <Hud current="events" alt="408 km" phase="low earth orbit" />
+  <Stars />
+  <main class="evmain" id="content">
+    <div class="evwrap">
+      <div class="mission">
+        <div class="mission__info">
+          <a class="mono ul" href="/v2/fable/events" data-back={slug}>← all events</a>
+          <img class="mission__patch" src={patch} alt="" width="128" height="128" />
+          <div class="head">
+            <p class="mono"><span class="o">mission {n}</span> &nbsp;of {eventSeriesList.length}</p>
+            <h1 class="big">{data.name.toLowerCase()}</h1>
+          </div>
+          <p class="lede">{data.description}</p>
+          <p>
+            <a
+              class="btn btn--solid"
+              href={data.lumaUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-luma={slug}>{lumaDisplayUrl} ↗</a
+            >
+          </p>
+        </div>
+
+        <div>
+          <div class="mission__frame">
+            <div class="mission__bar mono">
+              <span><i class="blink"></i>upcoming launches</span>
+              <span class="dim">live from luma</span>
+            </div>
+            <iframe
+              src={`https://luma.com/embed/calendar/${data.lumaCalendarId}/events`}
+              title={`upcoming ${data.name} events on luma`}
+              loading="lazy"
+              allowfullscreen></iframe>
+          </div>
+          <p class="mono dim" style="margin-top:1rem">
+            nothing loading? view everything and rsvp on
+            <a
+              class="ul"
+              href={data.lumaUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-luma={slug}>luma ↗</a
+            >
+          </p>
+        </div>
+      </div>
+
+      <footer class="evfoot mono" style="opacity:1">
+        <nav class="others" aria-label="other event series">
+          {others.map((o) => <a href={`/v2/fable/events/${o.slug}`}>{o.name.toLowerCase()} →</a>)}
+        </nav>
+        <a class="dim" href={`/events/${slug}`}>this page on v1</a>
+      </footer>
+    </div>
+  </main>
+  <script>
+    document
+      .querySelectorAll<HTMLElement>("[data-luma]")
+      .forEach((a) =>
+        a.addEventListener("click", () =>
+          window.posthog?.capture("event_luma_link_clicked", { series: a.dataset.luma, v: "fable" })
+        )
+      );
+  </script>
+</Layout>

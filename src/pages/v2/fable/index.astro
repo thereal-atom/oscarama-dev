@@ -1,0 +1,1149 @@
+---
+import { getImage } from "astro:assets";
+import Layout from "@/v2/fable/Layout.astro";
+import Hud from "@/v2/fable/Hud.astro";
+import Stars from "@/v2/fable/Stars.astro";
+import Chip from "@/v2/fable/Chip.astro";
+import { series as eventSeriesList } from "@/v2/fable/series";
+
+import coloopLogo from "@/assets/logos/coloop.png";
+import outpostLogo from "@/assets/logos/outpost.png";
+import fanksLogo from "@/assets/logos/fanks.png";
+import expLogo from "@/assets/logos/exp.png";
+import helioLogo from "@/assets/logos/helio.png";
+import omisphereLogo from "@/assets/logos/omisphere.png";
+import archieLogo from "@/assets/logos/archie.png";
+import basedHackLogo from "@/assets/logos/basedhack.png";
+import basedLogo from "@/assets/logos/based.png";
+import umLogo from "@/assets/logos/um.png";
+import ycLogo from "@/assets/logos/yc.png";
+import capturedAboveLogo from "@/assets/logos/capturedabove.png";
+import vercelLogo from "@/assets/logos/vercel.png";
+import openaiLogo from "@/assets/logos/openai.png";
+import corgiLogo from "@/assets/logos/corgi.png";
+import coderabbitLogo from "@/assets/logos/coderabbit.png";
+import brightdataLogo from "@/assets/logos/brightdata.png";
+import mubitLogo from "@/assets/logos/mubit.png";
+import spacexaiLogo from "@/assets/logos/spacexai.svg?url";
+import daytonaLogo from "@/assets/logos/daytona.svg?url";
+
+import typescriptIcon from "@/assets/techs/typescript.svg";
+import bunIcon from "@/assets/techs/bun.svg";
+import nextjsIcon from "@/assets/techs/nextjs.svg";
+import svelteIcon from "@/assets/techs/svelte.svg";
+import rustIcon from "@/assets/techs/rust.svg";
+import tailwindIcon from "@/assets/techs/tailwindcss.svg";
+import pythonIcon from "@/assets/techs/python.svg";
+import awsIcon from "@/assets/techs/aws.svg";
+
+const stack = [
+  { name: "typescript", icon: typescriptIcon },
+  { name: "bun", icon: bunIcon },
+  { name: "sveltekit", icon: svelteIcon },
+  { name: "next.js", icon: nextjsIcon },
+  { name: "rust", icon: rustIcon },
+  { name: "python", icon: pythonIcon },
+  { name: "tailwind", icon: tailwindIcon },
+  { name: "aws", icon: awsIcon },
+];
+
+const projects = [
+  "docdepot",
+  "alertbots",
+  "openai.js",
+  "papr",
+  "notes ai",
+  "a solana arb bot",
+  "project liquid",
+  "saasalytics",
+];
+
+const gear = [
+  "running",
+  "hiking",
+  "camping",
+  "mountaineering",
+  "bouldering",
+  "rock climbing",
+  "skiing",
+  "photography",
+  "videography",
+  "flying drones",
+];
+
+const small = async (src: ImageMetadata, w = 160) =>
+  (await getImage({ src, width: w, height: w })).src;
+
+const series = await Promise.all(
+  eventSeriesList.map(async (s) => ({ ...s, img: await small(s.logo) }))
+);
+const outpostImg = await small(outpostLogo, 320);
+const stageLogos = {
+  fanks: await small(fanksLogo, 96),
+  exp: await small(expLogo, 96),
+  helio: await small(helioLogo, 96),
+};
+
+// ── generated scenery (deterministic, so builds are stable) ──
+let seed = 31;
+const rnd = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
+
+const ridge = (base: number, amp: number, step: number, phase: number) => {
+  let d = `M0 600 L0 ${base}`;
+  for (let x = 0; x <= 1440; x += step) {
+    const y =
+      base -
+      amp *
+        (0.55 * Math.sin(x * 0.0043 + phase) +
+          0.3 * Math.sin(x * 0.011 + phase * 2.3) +
+          0.5 * Math.abs(Math.sin(x * 0.0021 + phase * 0.7))) -
+      rnd() * amp * 0.22;
+    d += ` L${x} ${y.toFixed(1)}`;
+  }
+  return d + " L1440 600 Z";
+};
+const ridges = [
+  { d: ridge(250, 150, 48, 0.4), fill: "#a8324f", k: 0.16 },
+  { d: ridge(330, 120, 40, 2.1), fill: "#de5a36", k: 0.11 },
+  { d: ridge(415, 95, 34, 4.0), fill: "#f2a676", k: 0.06 },
+  { d: ridge(505, 70, 30, 5.6), fill: "#ece5d5", k: 0 },
+];
+
+const blocks = (n: number, minH: number, maxH: number) => {
+  const out: { x: number; w: number; h: number }[] = [];
+  let x = -10;
+  while (x < 1450 && out.length < n) {
+    const w = 18 + rnd() * 44;
+    out.push({ x, w, h: minH + rnd() * (maxH - minH) });
+    x += w + rnd() * 6 - 2;
+  }
+  return out;
+};
+const cityBack = blocks(60, 34, 92);
+const cityFront = blocks(60, 12, 50);
+
+// topo map: a few gaussian hills, contoured with marching squares
+const hills = Array.from({ length: 9 }, () => ({
+  x: rnd() * 1440,
+  y: rnd() * 810,
+  r: 150 + rnd() * 260,
+  h: 0.5 + rnd() * 0.9,
+}));
+const elev = (x: number, y: number) =>
+  hills.reduce((a, c) => a + c.h * Math.exp(-((x - c.x) ** 2 + (y - c.y) ** 2) / (c.r * c.r)), 0);
+const GX = 96;
+const GY = 54;
+const cell = 15;
+const grid = Array.from({ length: GY + 1 }, (_, j) =>
+  Array.from({ length: GX + 1 }, (_, i) => elev(i * cell, j * cell))
+);
+let topo = "";
+for (let lv = 0.16; lv < 2.2; lv += 0.115) {
+  for (let j = 0; j < GY; j++) {
+    for (let i = 0; i < GX; i++) {
+      const a = grid[j][i],
+        b = grid[j][i + 1],
+        c = grid[j + 1][i + 1],
+        d = grid[j + 1][i];
+      const pts: string[] = [];
+      const cut = (v1: number, v2: number, x1: number, y1: number, x2: number, y2: number) => {
+        if (v1 > lv !== v2 > lv) {
+          const t = (lv - v1) / (v2 - v1);
+          pts.push(
+            `${((x1 + (x2 - x1) * t) * cell).toFixed(1)} ${((y1 + (y2 - y1) * t) * cell).toFixed(1)}`
+          );
+        }
+      };
+      cut(a, b, i, j, i + 1, j);
+      cut(b, c, i + 1, j, i + 1, j + 1);
+      cut(d, c, i, j + 1, i + 1, j + 1);
+      cut(a, d, i, j, i, j + 1);
+      if (pts.length >= 2) topo += `M${pts[0]}L${pts[1]}`;
+      if (pts.length === 4) topo += `M${pts[2]}L${pts[3]}`;
+    }
+  }
+}
+const karman = "100 km · kármán line · you are now, officially, in space · ";
+---
+
+<Layout>
+  <noscript slot="head">
+    <style>
+      .fable .ascent,
+      .fable .wrap,
+      .fable .log__list,
+      .fable .stages,
+      .fable .orbit__txt {
+        flex-direction: column !important;
+      }
+    </style>
+  </noscript>
+
+  <Hud />
+  <Stars />
+
+  <nav class="rail" aria-label="altitude">
+    <div class="rail__line"></div>
+    <div class="rail__dot"></div>
+  </nav>
+
+  <!--
+    this page is stacked bottom → top. the DOM runs in logical order
+    (pad first), flex-direction: column-reverse does the rest.
+  -->
+  <main class="ascent" id="content">
+    <!-- 00 · pad -->
+    <section class="sec pad light" id="pad" data-alt="0" data-phase="on the pad" data-label="pad">
+      <svg
+        class="pad__topo"
+        viewBox="0 0 1440 810"
+        preserveAspectRatio="xMidYMid slice"
+        aria-hidden="true"
+      >
+        <path
+          d={topo}
+          fill="none"
+          stroke="#15130e"
+          stroke-width="1"
+          stroke-linecap="round"
+          vector-effect="non-scaling-stroke"></path>
+      </svg>
+
+      <div class="pad__in">
+        <p class="pad__eyebrow mono">
+          <span>flight plan of-001</span>
+          <span>london, earth</span>
+          <span><i class="blink"></i>go for launch</span>
+        </p>
+        <h1 aria-label="oscar falemara">
+          <span aria-hidden="true"
+            >{
+              "oscar".split("").map((ch, i) => (
+                <span class="ch" style={`--n:${i}`}>
+                  {ch}
+                </span>
+              ))
+            }</span
+          >
+          <span class="l2" aria-hidden="true"
+            >{
+              "falemara".split("").map((ch, i) => (
+                <span class="ch" style={`--n:${i + 5}`}>
+                  {ch}
+                </span>
+              ))
+            }</span
+          >
+        </h1>
+        <div class="pad__row">
+          <p class="lede">
+            self-taught software engineer. community organiser.
+            <span class="serif">future rocket company person.</span>
+          </p>
+          <div class="pad__cta">
+            <p class="pad__hint serif">this site goes up. scroll&nbsp;↑ or hit the button.</p>
+            <button class="btn btn--solid" type="button" data-launch>
+              <span data-launch-label>launch</span>
+              <span aria-hidden="true">↑</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="pad__city" aria-hidden="true">
+        <svg viewBox="0 0 1440 200" preserveAspectRatio="xMidYMax slice">
+          <g fill="#15130e" opacity="0.28">
+            {cityBack.map((b) => <rect x={b.x} y={190 - b.h} width={b.w} height={b.h} />)}
+          </g>
+          <g fill="#15130e">
+            {cityFront.map((b) => <rect x={b.x} y={190 - b.h} width={b.w} height={b.h} />)}
+            <!-- elizabeth tower -->
+            <path d="M176 190V84h3l1-10h2l5-26 5 26h2l1 10h3v106z"></path>
+            <circle cx="187" cy="98" r="6" fill="#ece5d5"></circle>
+            <!-- the eye -->
+            <g fill="none" stroke="#15130e">
+              <circle cx="330" cy="118" r="62" stroke-width="3.5"></circle>
+              <circle cx="330" cy="118" r="52" stroke-width="1"></circle>
+              {
+                Array.from({ length: 16 }, (_, i) => {
+                  const a = (i / 16) * Math.PI * 2;
+                  return (
+                    <line
+                      x1="330"
+                      y1="118"
+                      x2={(330 + Math.cos(a) * 62).toFixed(1)}
+                      y2={(118 + Math.sin(a) * 62).toFixed(1)}
+                      stroke-width="0.8"
+                    />
+                  );
+                })
+              }
+              <path d="M330 118 L300 190 M330 118 L360 190" stroke-width="3.5"></path>
+            </g>
+            <!-- gherkin -->
+            <path d="M556 190C544 140 552 78 574 60c22 18 30 80 18 130z"></path>
+            <!-- shard -->
+            <path d="M872 190 898 14h5l26 176z"></path>
+            <!-- tower bridge -->
+            <path
+              d="M1150 190V112l9-26 9 26v78zM1232 190V112l9-26 9 26v78zM1168 120h64v5h-64zM1070 158h260v7h-260z"
+            ></path>
+            <path
+              d="M1150 116Q1105 150 1070 158M1250 116Q1295 150 1330 158"
+              fill="none"
+              stroke="#15130e"
+              stroke-width="2"></path>
+            <rect x="-10" y="188" width="1460" height="14"></rect>
+          </g>
+        </svg>
+        <div class="pad__rocket">
+          <svg viewBox="0 0 40 150" width="100%" height="100%">
+            <g class="flame">
+              <path d="M11 129Q20 190 29 129z" fill="#ff4d00"></path>
+              <path d="M15 129Q20 162 25 129z" fill="#ffd08a"></path>
+            </g>
+            <path d="M10 98 0 128h10zM30 98l10 30H30z" fill="#ff4d00"></path>
+            <path d="M20 2c8 16 10 34 10 56v62H10V58C10 36 12 18 20 2z" fill="#15130e"></path>
+            <path d="M10 76h20v7H10z" fill="#ff4d00"></path>
+            <circle cx="20" cy="50" r="5" fill="#ece5d5"></circle>
+            <path d="M13 120h14l3 10H10z" fill="#15130e"></path>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- 01 · ground crew -->
+    <section
+      class="sec light"
+      id="crew"
+      data-alt="0"
+      data-phase="pre-flight checks"
+      data-label="now"
+    >
+      <div class="wrap">
+        <p class="marker"><b>▲ 0 m</b> <span>pre-flight</span> <i>who's flying this thing</i></p>
+        <div class="head rv">
+          <h2 class="big">
+            hi, i'm oscar. <span class="serif">i build things</span> & gather people.
+          </h2>
+        </div>
+        <div class="crew__grid">
+          <div class="crew__card rv">
+            <span class="mono">day job</span>
+            <p>
+              i'm a self-taught software engineer from london, currently at
+              <Chip href="https://coloop.ai" src={coloopLogo} text="coloop ai" /> (yc s21). i also do
+              events, growth engineering and lots of other fun stuff there.
+            </p>
+          </div>
+          <div class="crew__card rv" style="--i:1">
+            <span class="mono">the other full-time job</span>
+            <p>
+              i run
+              <Chip href="https://luma.com/londonmaxxing-ai" src={outpostLogo} text="outpost" />, a
+              community for those building at the frontier. hackathons, dinners, run clubs, demo
+              nights and much more. <a class="ul" href="#orbit" data-jump>more ↑</a>
+            </p>
+          </div>
+        </div>
+        <ul class="stats rv">
+          <li><b>30+</b><span class="mono">events hosted</span></li>
+          <li><b>2,000+</b><span class="mono">people through the door</span></li>
+          <li><b>5k+</b><span class="mono">outpost members</span></li>
+          <li><b>0</b><span class="mono">university degrees</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 02 · flight log -->
+    <section class="sec light log" id="log" data-alt="150" data-phase="liftoff" data-label="log">
+      <div class="wrap">
+        <p class="marker"><b>▲ 150 m</b> <span>liftoff</span> <i>read upwards</i></p>
+        <div class="head rv">
+          <h2 class="big">the flight log, <span class="serif">so far.</span></h2>
+        </div>
+        <ol class="log__list">
+          <li class="log__item rv">
+            <span class="log__age" aria-hidden="true">14</span>
+            <div class="log__txt">
+              <span class="mono">age 14 · ignition</span>
+              <p>
+                started writing code. got my first freelance client less than 5 months later, still
+                14.
+              </p>
+            </div>
+          </li>
+          <li class="log__item rv">
+            <span class="log__age" aria-hidden="true">16</span>
+            <div class="log__txt">
+              <span class="mono">age 16 · first aircraft</span>
+              <p>
+                started a drone videography business with a friend,
+                <Chip
+                  href="https://capturedabove.vercel.app"
+                  src={capturedAboveLogo}
+                  text="captured above"
+                />, as an economic excuse to buy a drone.
+              </p>
+            </div>
+          </li>
+          <li class="log__item rv">
+            <span class="log__age" aria-hidden="true">18</span>
+            <div class="log__txt">
+              <span class="mono">age 18 · skipped a stage</span>
+              <p>
+                joined a
+                <Chip
+                  href="https://www.ycombinator.com/companies/coloop"
+                  src={ycLogo}
+                  text="yc startup"
+                /> as a full-time software engineer before i'd finished high school. never did get round
+                to uni.
+              </p>
+            </div>
+          </li>
+          <li class="log__item rv">
+            <span class="log__age" aria-hidden="true">19</span>
+            <div class="log__txt">
+              <span class="mono">age 19 · new optics</span>
+              <p>
+                bought a camera. had my first photo and video clients within 2 months of starting.
+              </p>
+            </div>
+          </li>
+          <li class="log__item log__item--now rv">
+            <span class="log__age" aria-hidden="true">now</span>
+            <div class="log__txt">
+              <span class="mono">present · nominal</span>
+              <p>
+                shipping at coloop, running outpost, and reading far too much about rocket engines.
+              </p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- 03 · highlights -->
+    <section
+      class="sec light"
+      id="highlights"
+      data-alt="1500"
+      data-phase="climbing"
+      data-label="cool stuff"
+    >
+      <div class="wrap">
+        <p class="marker"><b>▲ 1,500 m</b> <span>climbing</span> <i>cool stuff i've done</i></p>
+        <div class="head rv">
+          <h2 class="big">payload: <span class="serif">the highlights.</span></h2>
+        </div>
+        <div class="hl__grid">
+          <article class="card card--z2a rv">
+            <div class="card__top">
+              <span class="mono">sat 2 may 2026 · london · my first ever hackathon</span>
+              <h3>zero to agent: london</h3>
+              <p>
+                i ran the london stop of
+                <Chip href="https://vercel.com" src={vercelLogo} text="vercel" />'s zero to agent
+                for 100 of london's most talented builders. organised the whole thing by myself.
+              </p>
+            </div>
+            <div class="card__top">
+              <ul class="z2a__nums">
+                <li><b>~100</b><span class="mono">builders</span></li>
+                <li><b>3</b><span class="mono">tracks</span></li>
+                <li><b>£5.8k</b><span class="mono">cash prizes</span></li>
+                <li><b>$1m+</b><span class="mono">in credits</span></li>
+              </ul>
+              <p>
+                sponsored by
+                <Chip href="https://coderabbit.ai" src={coderabbitLogo} text="coderabbit" />,
+                <Chip href="https://brightdata.com" src={brightdataLogo} text="bright data" /> and
+                <Chip href="https://mubit.ai" src={mubitLogo} text="mubit" />.
+                <a class="ul" href="/events/zero-to-agent">read the recap →</a>
+              </p>
+            </div>
+          </article>
+          <article class="card card--kcl rv" style="--i:1">
+            <div class="card__top">
+              <span class="mono">sat 31 oct 2026 · king's college london</span>
+              <h3>spoke at kcl tech summit</h3>
+            </div>
+            <p>
+              on the
+              <a
+                class="ul"
+                href="https://techsummit.kcltech.co.uk/"
+                target="_blank"
+                rel="noopener noreferrer">kcl tech summit 2026</a
+              > panel “how to break into london's tech scene”, about community building as a full-time
+              software engineer who's never been to uni.
+            </p>
+          </article>
+          <article class="card card--ev rv" style="--i:2">
+            <div class="card__top">
+              <span class="mono">ongoing</span>
+              <h3>30+ events, 2,000+ humans</h3>
+            </div>
+            <div class="card__top">
+              <p>hosted and helped organise them, working with companies like</p>
+              <p class="logos">
+                <Chip href="https://luma.com/codex-ldn-1" src={openaiLogo} text="openai" />
+                <Chip href="/events/zero-to-agent" src={vercelLogo} text="vercel" internal />
+                <Chip href="https://x.ai" src={spacexaiLogo} text="spacexai" />
+                <Chip href="https://www.daytona.io" src={daytonaLogo} text="daytona" />
+                <Chip href="https://corgi.insure" src={corgiLogo} text="corgi" />
+                <span class="dim">and more!</span>
+              </p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 · treeline -->
+    <section
+      class="sec peaks"
+      id="peaks"
+      data-alt="4000"
+      data-phase="above the treeline"
+      data-label="off the clock"
+    >
+      <div class="peaks__sun" aria-hidden="true"></div>
+      <svg
+        class="peaks__ridges"
+        viewBox="0 0 1440 600"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+      >
+        {ridges.map((r) => <path d={r.d} fill={r.fill} data-k={r.k} />)}
+      </svg>
+      <div class="peaks__in">
+        <div class="wrap">
+          <div class="head rv">
+            <h2 class="big">off the clock, <span class="serif">i go outside.</span></h2>
+            <p class="lede">
+              mountains, mostly. if it involves going uphill slowly or downhill quickly, i'm
+              probably into it. there's usually a camera in the bag.
+            </p>
+          </div>
+          <ul class="gear rv">
+            {gear.map((g) => <li>{g}</li>)}
+          </ul>
+          <p class="mono rv">
+            <span class="o">▲ 8,849 m</span> &nbsp;everest tops out about here. included for scale, not
+            as a brag.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 · cruising altitude -->
+    <section
+      class="sec dark cruise"
+      id="hacks"
+      data-alt="10000"
+      data-phase="cruising altitude"
+      data-label="hacks"
+    >
+      <div class="wrap">
+        <p class="marker"><b>▲ 10 km</b> <span>cruising altitude</span> <i>hackathons</i></p>
+        <div class="head rv">
+          <h2 class="big">people keep <span class="serif">flying me</span> to hackathons.</h2>
+        </div>
+        <ul class="passes">
+          <li class="pass rv">
+            <div class="pass__top">
+              <span class="mono">boarding pass · hack 001</span>
+              <div class="pass__route">
+                <span>0</span>
+                <svg viewBox="0 0 60 12" preserveAspectRatio="none" aria-hidden="true"
+                  ><path
+                    d="M0 6h56M50 1l6 5-6 5"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"></path></svg
+                >
+                <span>1st</span>
+              </div>
+              <p>
+                won my first ever hackathon with
+                <Chip
+                  href="https://github.com/omisphere/omisphere"
+                  src={omisphereLogo}
+                  text="omisphere"
+                />, a project that aims to turn every conversation into part of a collective
+                consciousness.
+              </p>
+            </div>
+            <div class="pass__stub">
+              <dl>
+                <div><dt>class</dt><dd>first timer</dd></div>
+                <div><dt>result</dt><dd>won it</dd></div>
+              </dl>
+              <span class="pass__code" aria-hidden="true"></span>
+            </div>
+          </li>
+          <li class="pass rv" style="--i:1">
+            <div class="pass__top">
+              <span class="mono">boarding pass · hack 002</span>
+              <div class="pass__route">
+                <span>ldn</span>
+                <svg viewBox="0 0 60 12" preserveAspectRatio="none" aria-hidden="true"
+                  ><path
+                    d="M0 6h56M50 1l6 5-6 5"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"></path></svg
+                >
+                <span>lt 🇱🇹</span>
+              </div>
+              <p>
+                we got flown out to lithuania for
+                <Chip href="https://www.basedhack.com/" src={basedHackLogo} text="based hack" />,
+                where we built <Chip href="https://archie.to" src={archieLogo} text="archie." /> and were
+                one of the teams chosen to pitch to 100+ people in the room.
+              </p>
+            </div>
+            <div class="pass__stub">
+              <dl>
+                <div><dt>fare</dt><dd>flown out</dd></div>
+                <div><dt>result</dt><dd>pitched</dd></div>
+              </dl>
+              <span class="pass__code" aria-hidden="true"></span>
+            </div>
+          </li>
+          <li class="pass rv" style="--i:2">
+            <div class="pass__top">
+              <span class="mono">boarding pass · hack 003</span>
+              <div class="pass__route">
+                <span>ldn</span>
+                <svg viewBox="0 0 60 12" preserveAspectRatio="none" aria-hidden="true"
+                  ><path
+                    d="M0 6h56M50 1l6 5-6 5"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"></path></svg
+                >
+                <span>fi 🇫🇮</span>
+              </div>
+              <p>
+                flown out to finland by
+                <Chip
+                  href="https://www.basedcollective.ai/"
+                  src={basedLogo}
+                  text="based collective"
+                />
+                and <Chip href="https://www.unicornmafia.ai/" src={umLogo} text="unicorn mafia" /> for
+                <a
+                  class="ul"
+                  href="https://sunsteadhack.com/"
+                  target="_blank"
+                  rel="noopener noreferrer">sunstead hack</a
+                >. we didn't win, but we vibe coded while tobogganing.
+              </p>
+            </div>
+            <div class="pass__stub">
+              <dl>
+                <div><dt>fare</dt><dd>flown out</dd></div>
+                <div><dt>result</dt><dd>tobogganed</dd></div>
+              </dl>
+              <span class="pass__code" aria-hidden="true"></span>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 06 · stage separation -->
+    <section
+      class="sec dark sep"
+      id="past"
+      data-alt="60000"
+      data-phase="stage separation"
+      data-label="past"
+    >
+      <div class="wrap">
+        <p class="marker"><b>▲ 60 km</b> <span>stage separation</span> <i>past work</i></p>
+        <div class="head rv">
+          <h2 class="big">spent stages. <span class="serif">they got me here.</span></h2>
+        </div>
+        <ol class="stages">
+          <li class="stage rv">
+            <span class="mono dim">stage 01 · jettisoned</span>
+            <h3>
+              <a href="https://hel.io" target="_blank" rel="noopener noreferrer"
+                ><img src={stageLogos.helio} alt="" width="40" height="40" loading="lazy" />helio</a
+              >
+            </h3>
+            <p>
+              spent a few months freelancing at a crypto payments startup, which later
+              <a
+                class="ul"
+                href="https://www.moonpay.com/en-gb/newsroom/helio-acquisition"
+                target="_blank"
+                rel="noopener noreferrer">sold to moonpay for $175m</a
+              >.
+            </p>
+          </li>
+          <li class="stage rv">
+            <span class="mono dim">stage 02 · jettisoned</span>
+            <h3>
+              <a href="https://discord.gg/exp" target="_blank" rel="noopener noreferrer"
+                ><img src={stageLogos.exp} alt="" width="40" height="40" loading="lazy" />exp</a
+              >
+            </h3>
+            <p>
+              built the bot systems from the ground up, including bank systems handling $100,000s of
+              in-game value, and helped it grow from 2k to 45k+ members.
+            </p>
+          </li>
+          <li class="stage rv">
+            <span class="mono dim">stage 03 · jettisoned</span>
+            <h3>
+              <a href="https://fanks.co" target="_blank" rel="noopener noreferrer"
+                ><img src={stageLogos.fanks} alt="" width="40" height="40" loading="lazy" />fanks</a
+              >
+            </h3>
+            <p>helped build better community-brand matching.</p>
+          </li>
+        </ol>
+        <div class="side rv">
+          <div>
+            <h3 class="mono">side boosters · built for fun</h3>
+            <ul class="projects">
+              {projects.map((p) => <li>{p}</li>)}
+            </ul>
+            <p style="margin-top:1.2rem">
+              <a
+                class="ul"
+                href="https://github.com/thereal-atom"
+                target="_blank"
+                rel="noopener noreferrer">all on github →</a
+              >
+            </p>
+          </div>
+          <div>
+            <h3 class="mono">propellant · the stack</h3>
+            <ul class="stack">
+              {
+                stack.map((t) => (
+                  <li>
+                    <img src={t.icon.src} alt="" width="16" height="16" loading="lazy" />
+                    {t.name}
+                  </li>
+                ))
+              }
+              <li>genai · multi-agent · rag</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- kármán line -->
+    <div
+      class="karman"
+      id="karman"
+      data-alt="100000"
+      data-phase="approaching space"
+      aria-hidden="true"
+    >
+      <div class="karman__line mono">
+        <div>{Array.from({ length: 4 }, () => <span>{karman}</span>)}</div>
+        <div>{Array.from({ length: 4 }, () => <span>{karman}</span>)}</div>
+      </div>
+    </div>
+
+    <!-- 07 · orbit -->
+    <section
+      class="sec dark orbit"
+      id="orbit"
+      data-alt="408000"
+      data-phase="low earth orbit"
+      data-label="outpost"
+    >
+      <div class="wrap">
+        <div class="orbit__txt">
+          <p class="marker"><b>▲ 408 km</b> <span>low earth orbit</span> <i>community</i></p>
+          <div class="head rv">
+            <h2 class="big">outpost is <span class="serif">in orbit.</span></h2>
+            <p class="lede">
+              a community for those building at the frontier. 5k+ members who'd rather build
+              something than swap business cards.
+            </p>
+          </div>
+          <div class="orbit__body rv">
+            <p class="body">
+              we host hackathons, meetups, dinners, coworking, run clubs, cafes, demo nights,
+              bouldering and much more. four event series currently in orbit:
+            </p>
+            <ul class="series">
+              {
+                series.map((s) => (
+                  <li>
+                    <a href={`/v2/fable/events/${s.slug}`}>
+                      <span>{s.name.toLowerCase()}</span>
+                      <span aria-hidden="true">→</span>
+                    </a>
+                  </li>
+                ))
+              }
+            </ul>
+            <p class="pad__cta">
+              <a
+                class="btn btn--solid"
+                href="https://luma.com/londonmaxxing-ai"
+                target="_blank"
+                rel="noopener noreferrer">come to an event ↗</a
+              >
+              <a class="btn" href="/v2/fable/events">all events</a>
+            </p>
+          </div>
+        </div>
+        <div class="sys rv" aria-hidden="true">
+          <div class="sys__ring sys__ring--1"></div>
+          <div class="sys__ring sys__ring--2"></div>
+          <div class="sys__core">
+            <img src={outpostImg} alt="" width="160" height="160" loading="lazy" />
+          </div>
+          {
+            series.map((s, i) => (
+              <div
+                class={`sys__arm sys__arm--${(i % 2) + 1}`}
+                style={`--t:${i % 2 ? 80 : 46}s;--d:-${i * 17 + 4}s`}
+              >
+                <div class="sys__sat">
+                  <a href={`/v2/fable/events/${s.slug}`} tabindex="-1" title={s.name}>
+                    <img src={s.img} alt="" width="58" height="58" loading="lazy" />
+                  </a>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- 08 · next mission -->
+    <section
+      class="sec dark next"
+      id="next"
+      data-alt="384400000"
+      data-phase="lunar distance"
+      data-label="next"
+    >
+      <div class="next__planet" aria-hidden="true"></div>
+      <div class="wrap">
+        <p class="marker">
+          <b>▲ 384,400 km</b>
+          <span>next mission</span>
+          <i>the moon is about this far</i>
+        </p>
+        <h2 class="next__h rv">next: <span class="serif">actual</span> rockets.</h2>
+        <div class="next__row rv">
+          <p class="lede">
+            my passion is aerospace. rockets, space, and the engineering of leaving the ground. i
+            want to start an aerospace company soon.
+          </p>
+          <ul class="checklist" aria-label="mission checklist">
+            <li class="go"><span>learn to code</span><span>done · age 14</span></li>
+            <li class="go"><span>join a startup</span><span>done · age 18</span></li>
+            <li class="go"><span>gather the builders</span><span>ongoing · 5k+</span></li>
+            <li><span>start an aerospace company</span><span>soon</span></li>
+            <li><span>leave the planet</span><span>tbd</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 09 · comms -->
+    <footer
+      class="sec dark comms"
+      id="comms"
+      data-alt="54600000000"
+      data-alt-end="149597870700"
+      data-phase="deep space comms"
+      data-label="say hi"
+    >
+      <div class="wrap">
+        <p class="marker">
+          <b>▲ 54.6m km</b>
+          <span>comms</span>
+          <i>about as close as mars ever gets</i>
+        </p>
+        <div class="head rv">
+          <h2 class="lede">
+            that's the top. <span class="serif">say hi before i lose signal:</span>
+          </h2>
+        </div>
+        <ul class="comms__links rv">
+          <li>
+            <a
+              href="https://x.com/oscarfalll"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-social="X"><span>x</span><span class="mono">@oscarfalll ↗</span></a
+            >
+          </li>
+          <li>
+            <a
+              href="https://linkedin.com/in/oscarfalemara"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-social="LinkedIn"
+              ><span>linkedin</span><span class="mono">in/oscarfalemara ↗</span></a
+            >
+          </li>
+          <li>
+            <a
+              href="https://github.com/thereal-atom"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-social="GitHub"><span>github</span><span class="mono">thereal-atom ↗</span></a
+            >
+          </li>
+          <li>
+            <a
+              href="https://luma.com/oscarama"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-social="Luma"><span>luma</span><span class="mono">my london events ↗</span></a
+            >
+          </li>
+        </ul>
+        <div class="comms__foot mono">
+          <span>oscar falemara · london, 51.5° n · no rockets were harmed</span>
+          <span>
+            <button type="button" data-land>↓ return to pad</button> &nbsp;·&nbsp;
+            <a href="/v2/fable/lost">lost?</a> &nbsp;·&nbsp;
+            <a href="/">back to v1</a>
+          </span>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    const doc = document.documentElement;
+    const body = document.body;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const secs = Array.from(document.querySelectorAll<HTMLElement>(".ascent > [data-alt]"));
+    const altEl = document.querySelector<HTMLElement>("[data-alt].hud__alt b, .hud [data-alt]");
+    const phaseEl = document.querySelector<HTMLElement>(".hud [data-phase]");
+    const rail = document.querySelector<HTMLElement>(".rail")!;
+    const dot = document.querySelector<HTMLElement>(".rail__dot")!;
+    const ridgePaths = Array.from(document.querySelectorAll<SVGPathElement>(".peaks__ridges path"));
+    const peaks = document.getElementById("peaks")!;
+
+    const maxScroll = () => doc.scrollHeight - window.innerHeight;
+    const jump = (y: number, smooth = false) =>
+      window.scrollTo({ top: y, behavior: smooth && !reduce ? "smooth" : "instant" });
+    // in a page that climbs, "going to a section" means parking its floor on the viewport floor
+    const floorOf = (el: HTMLElement) =>
+      Math.max(0, el.getBoundingClientRect().bottom + window.scrollY - window.innerHeight);
+
+    // ── start on the ground ──
+    history.scrollRestoration = "manual";
+    let touched = false;
+    const settle = () => {
+      if (touched) return;
+      const target = location.hash ? document.getElementById(location.hash.slice(1)) : null;
+      jump(target ? floorOf(target) : maxScroll());
+    };
+    settle();
+    // the browser's own #hash jump lands late and aims for section tops; we want floors
+    window.addEventListener("load", () => {
+      settle();
+      setTimeout(settle, 60);
+      setTimeout(settle, 400);
+    });
+    window.addEventListener("hashchange", () => {
+      const t = document.getElementById(location.hash.slice(1));
+      if (t) jump(floorOf(t));
+    });
+    // fonts and images shift the stack while it loads; stay parked until the visitor takes over
+    new ResizeObserver(settle).observe(document.querySelector(".ascent")!);
+    document.fonts?.ready.then(settle);
+    ["wheel", "touchstart", "keydown", "pointerdown"].forEach((e) =>
+      window.addEventListener(e, () => (touched = true), { passive: true, once: true })
+    );
+
+    // ── rail ticks ──
+    const ticks: { el: HTMLElement; sec: HTMLElement }[] = [];
+    for (const sec of secs) {
+      if (!sec.dataset.label) continue;
+      const t = document.createElement("div");
+      t.className = "rail__tick";
+      const a = document.createElement("a");
+      a.href = `#${sec.id}`;
+      a.textContent = sec.dataset.label;
+      a.dataset.jump = "";
+      t.append(a);
+      rail.append(t);
+      ticks.push({ el: t, sec });
+    }
+    const placeTicks = () => {
+      const m = maxScroll() || 1;
+      for (const t of ticks) t.el.style.bottom = `${(1 - floorOf(t.sec) / m) * 100}%`;
+    };
+
+    // ── altitude ──
+    const fmt = (m: number) => {
+      if (m >= 1.4e11) return "1 au";
+      if (m >= 1e9) return `${(m / 1e9).toFixed(1)}m km`;
+      if (m >= 1e5) return `${Math.round(m / 1000).toLocaleString("en-GB")} km`;
+      if (m >= 1e4) return `${(m / 1000).toFixed(1)} km`;
+      return `${Math.round(m).toLocaleString("en-GB")} m`;
+    };
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      const vh = window.innerHeight;
+      const m = maxScroll() || 1;
+      const up = 1 - window.scrollY / m; // 0 on the pad, 1 at the top
+
+      let alt = 0;
+      let phase = secs[0].dataset.phase!;
+      let active = secs[0];
+      for (let i = 0; i < secs.length; i++) {
+        const r = secs[i].getBoundingClientRect();
+        // at the very top the final section may be shorter than the viewport; it still counts
+        const last = i === secs.length - 1;
+        if (window.scrollY <= 1 && !last) continue;
+        // sections run bottom → top in DOM order: the first one whose ceiling is above the viewport floor is where we are
+        if (r.top < vh - 1 || last) {
+          const a = Number(secs[i].dataset.alt);
+          const b = Number(secs[i].dataset.altEnd ?? secs[i + 1]?.dataset.alt ?? a);
+          const span = last ? Math.max(1, r.height - vh) : r.height;
+          const g = window.scrollY <= 1 ? 1 : Math.min(1, Math.max(0, (r.bottom - vh) / span));
+          alt = a > 0 && b / a > 20 ? a * Math.pow(b / a, g) : a + (b - a) * g;
+          phase = secs[i].dataset.phase!;
+          active = secs[i];
+          break;
+        }
+      }
+      if (altEl) altEl.textContent = fmt(alt);
+      if (phaseEl) phaseEl.textContent = phase;
+      dot.style.transform = `translateY(${-up * (rail.clientHeight - 11)}px)`;
+      for (const t of ticks) t.el.classList.toggle("on", t.sec === active);
+      body.classList.toggle("flying", window.scrollY < m - 40);
+
+      if (!reduce) {
+        const pr = peaks.getBoundingClientRect();
+        if (pr.bottom > 0 && pr.top < vh) {
+          const d = pr.bottom - vh; // 0 when the foot of the mountains meets the viewport floor
+          for (const p of ridgePaths) {
+            p.style.transform = `translateY(${(d * Number(p.dataset.k)).toFixed(1)}px)`;
+          }
+        }
+      }
+    };
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", () => {
+      placeTicks();
+      onScroll();
+    });
+    window.addEventListener("load", () => {
+      placeTicks();
+      update();
+    });
+    placeTicks();
+    update();
+
+    // ── in-page jumps ──
+    document.addEventListener("click", (e) => {
+      const a = (e.target as HTMLElement).closest<HTMLAnchorElement>("a[data-jump]");
+      if (!a) return;
+      const target = document.getElementById(a.hash.slice(1));
+      if (!target) return;
+      e.preventDefault();
+      stopBurn();
+      jump(floorOf(target), true);
+      history.replaceState(null, "", a.hash);
+    });
+
+    // ── reveal ──
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const en of entries) {
+          if (en.isIntersecting) {
+            en.target.classList.add("in");
+            io.unobserve(en.target);
+          }
+        }
+      },
+      { rootMargin: "0px 0px -8% 0px", threshold: 0.08 }
+    );
+    document.querySelectorAll(".rv").forEach((el) => io.observe(el));
+
+    // ── launch: countdown, then a slow burn all the way up ──
+    const btn = document.querySelector<HTMLButtonElement>("[data-launch]")!;
+    const label = document.querySelector<HTMLElement>("[data-launch-label]")!;
+    let burn = 0;
+    let timers: number[] = [];
+    function stopBurn() {
+      cancelAnimationFrame(burn);
+      burn = 0;
+      timers.forEach(clearTimeout);
+      timers = [];
+      body.classList.remove("counting");
+      label.textContent = "launch";
+    }
+    const ignite = () => {
+      body.classList.remove("counting");
+      label.textContent = "liftoff";
+      let last = performance.now();
+      let v = 60;
+      const step = (now: number) => {
+        const dt = Math.min(50, now - last) / 1000;
+        last = now;
+        v = Math.min(520, v + 260 * dt);
+        const y = window.scrollY - v * dt;
+        window.scrollTo(0, y);
+        if (y <= 0) return stopBurn();
+        burn = requestAnimationFrame(step);
+      };
+      burn = requestAnimationFrame(step);
+    };
+    btn.addEventListener("click", () => {
+      window.posthog?.capture("v2_fable_launch");
+      if (burn || timers.length) return stopBurn();
+      if (reduce) return jump(0);
+      body.classList.add("counting");
+      ["t-3", "t-2", "t-1"].forEach((t, i) =>
+        timers.push(window.setTimeout(() => (label.textContent = t), i * 650))
+      );
+      timers.push(
+        window.setTimeout(() => {
+          timers = [];
+          ignite();
+        }, 3 * 650)
+      );
+    });
+    ["wheel", "touchstart", "keydown"].forEach((e) =>
+      window.addEventListener(e, () => burn && stopBurn(), { passive: true })
+    );
+    document.querySelector("[data-land]")?.addEventListener("click", () => jump(maxScroll(), true));
+
+    document
+      .querySelectorAll<HTMLElement>("[data-social]")
+      .forEach((a) =>
+        a.addEventListener("click", () =>
+          window.posthog?.capture("social_link_clicked", { platform: a.dataset.social, v: "fable" })
+        )
+      );
+
+    console.log(
+      "%c▲ oscarama / fable %c\nyou opened the hatch. respect. → https://github.com/thereal-atom",
+      "background:#ff4d00;color:#15130e;font-weight:bold;padding:4px 8px",
+      "color:inherit"
+    );
+  </script>
+</Layout>

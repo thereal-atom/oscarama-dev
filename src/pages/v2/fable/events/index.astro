@@ -1,0 +1,84 @@
+---
+import { getImage } from "astro:assets";
+import Layout from "@/v2/fable/Layout.astro";
+import Hud from "@/v2/fable/Hud.astro";
+import Stars from "@/v2/fable/Stars.astro";
+import { series as eventSeriesList } from "@/v2/fable/series";
+
+const series = await Promise.all(
+  eventSeriesList.map(async (s) => ({
+    ...s,
+    img: (await getImage({ src: s.logo, width: 160, height: 160 })).src,
+  }))
+);
+---
+
+<Layout
+  title="events — oscar falemara"
+  description="bouldering, dinners, coworking, hackathons. i like to run events in london."
+  path="/v2/fable/events"
+  bodyClass="ev"
+>
+  <Hud current="events" alt="408 km" phase="low earth orbit" />
+  <Stars />
+  <main class="evmain" id="content">
+    <div class="evwrap">
+      <header class="evhead">
+        <div class="head">
+          <p class="mono"><span class="o">▲ 408 km</span> &nbsp;launch manifest · london</p>
+          <h1 class="big">events, <span class="serif">currently in orbit.</span></h1>
+        </div>
+        <p class="lede">
+          bouldering, dinners, coworking, hackathons. i like to run events in london. pick a series
+          and sign up for something :)
+        </p>
+      </header>
+
+      <div class="board">
+        <div class="board__cols mono" aria-hidden="true">
+          <span>patch</span><span>series</span><span>what happens</span><span
+            style="justify-self:end">status</span
+          >
+        </div>
+        {
+          series.map((s) => (
+            <a class="board__row" href={`/v2/fable/events/${s.slug}`}>
+              <img src={s.img} alt="" width="58" height="58" />
+              <span class="board__name">{s.name.toLowerCase()}</span>
+              <span class="board__desc">{s.description}</span>
+              <span class="board__go mono">
+                <i />
+                boarding →
+              </span>
+            </a>
+          ))
+        }
+      </div>
+
+      <div class="evextra">
+        <a class="hot" href="/events/zero-to-agent">
+          <span class="mono">mission report · sat 2 may 2026</span>
+          <div class="head">
+            <h2>zero to agent: london</h2>
+            <p>
+              the london stop of vercel's zero to agent. ~100 builders shipped agents in a day, with
+              £5.8k cash and $1m+ in credits awarded. read the recap →
+            </p>
+          </div>
+        </a>
+        <a href="/events/subscribe">
+          <span class="mono">ground comms</span>
+          <div class="head">
+            <h2>stay in the loop</h2>
+            <p>get notified about upcoming events. no spam, just good times. subscribe →</p>
+          </div>
+        </a>
+      </div>
+
+      <footer class="evfoot mono">
+        <a href="/v2/fable">↓ back down to earth</a>
+        <a href="/events">events on v1</a>
+      </footer>
+    </div>
+  </main>
+</Layout>
