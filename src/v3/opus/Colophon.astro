@@ -1,0 +1,59 @@
+---
+// Back cover: closing line, contact, colophon, and the quiet way back to /v3.
+const say = [
+  { href: "https://x.com/oscarfalll", label: "x", note: "@oscarfalll" },
+  { href: "https://linkedin.com/in/oscarfalemara", label: "linkedin", note: "in/oscarfalemara" },
+  { href: "https://github.com/thereal-atom", label: "github", note: "@thereal-atom" },
+  { href: "https://luma.com/oscarama", label: "luma", note: "luma.com/oscarama" },
+];
+---
+
+<footer class="back" id="colophon" data-guide="back cover">
+  <p class="back-big d" data-fit-lines>
+    <span style="--w: 62">that's the whole</span>
+    <span style="--w: 150">alphabet.</span>
+    <span style="--w: 96"><em class="t">now</em> go outside.</span>
+  </p>
+
+  <div class="back-grid">
+    <section>
+      <h2 class="m">say hello</h2>
+      <ul class="back-list">
+        {
+          say.map((s) => (
+            <li>
+              <a href={s.href} target="_blank" rel="noopener noreferrer">
+                <span class="d">{s.label}</span>
+                <span class="m">{s.note} ↗</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+    <section>
+      <h2 class="m">colophon</h2>
+      <p class="back-p">
+        set in <span class="d">anybody</span>, <i>newsreader</i> and <span class="m"
+          >fragment mono</span
+        >. printed in one blue, one lime and one pink. no university was involved in the making of
+        this dictionary.
+      </p>
+    </section>
+    <section>
+      <h2 class="m">elsewhere</h2>
+      <ul class="back-list back-list-sm">
+        <li><a href="/v3/opus">front matter →</a></li>
+        <li><a href="/v3/opus/events">appendix a: events →</a></li>
+        <li><a href="/">the current site (v1) →</a></li>
+        <li><a href="/v3">other drafts of this site →</a></li>
+      </ul>
+    </section>
+  </div>
+
+  <p class="back-foot m">
+    <span>© oscar falemara</span>
+    <span>the concise oscarama · 1st edition · london</span>
+    <a href="#top">back to the top ↑</a>
+  </p>
+</footer>

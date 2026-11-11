@@ -1,0 +1,89 @@
+---
+import { Image } from "astro:assets";
+import Layout from "@/v3/opus/Layout.astro";
+import Colophon from "@/v3/opus/Colophon.astro";
+import { eventSeriesList } from "@/data/eventSeries";
+import { blurb, lumaEmbed } from "@/v3/opus/series";
+
+export function getStaticPaths() {
+  return eventSeriesList.map((series, i) => ({
+    params: { slug: series.slug },
+    props: { index: i },
+  }));
+}
+
+const { index } = Astro.props;
+const s = eventSeriesList[index];
+const prev = eventSeriesList[(index - 1 + eventSeriesList.length) % eventSeriesList.length];
+const next = eventSeriesList[(index + 1) % eventSeriesList.length];
+const lumaDisplay = s.lumaUrl.replace("https://", "");
+---
+
+<Layout
+  title={`${s.name.toLowerCase()} · appendix a · the concise oscarama`}
+  description={blurb(s.slug, s.description)}
+  path={`/v3/opus/events/${s.slug}`}
+  guide={`appendix a.${index + 1} — ${s.name.toLowerCase()}`}
+>
+  <section class="ev-hero" id="top">
+    <nav class="sx-nav m" aria-label="series">
+      <a href="/v3/opus/events">← appendix a: all events</a>
+      <span class="hide-sm">a.{index + 1} of {eventSeriesList.length}</span>
+      <a href={`/v3/opus/events/${next.slug}`}>next: {next.name.toLowerCase()} →</a>
+    </nav>
+
+    <header class="sx-head">
+      <Image src={s.logo} width={264} height={264} alt="" class="sx-logo" loading="eager" />
+      <div class="sx-name-wrap">
+        <p class="m">appendix a.{index + 1}</p>
+        <h1 class="sx-name d" style={`--len:${s.name.length}`} data-fit>
+          {s.name.toLowerCase()}
+        </h1>
+      </div>
+    </header>
+
+    <div class="sx-body">
+      <div class="hero-side">
+        <p class="pos-big"><i>n.</i> · an event series</p>
+        <p class="origin">
+          <span class="sc m">where</span>
+          london, mostly. rsvp on luma.
+        </p>
+        <p>
+          <a class="btn" href={s.lumaUrl} target="_blank" rel="noopener noreferrer">
+            {lumaDisplay} ↗
+          </a>
+        </p>
+      </div>
+      <div>
+        <ol class="senses-big">
+          <li>
+            <b class="sn d">1</b>
+            <span>{blurb(s.slug, s.description)}</span>
+          </li>
+        </ol>
+
+        <figure class="sx-fig">
+          <div class="sx-cal">
+            <iframe
+              src={lumaEmbed(s.lumaCalendarId)}
+              title={`${s.name} upcoming events on luma`}
+              loading="lazy"
+              allowfullscreen></iframe>
+          </div>
+          <figcaption class="sx-cal-cap m">
+            <span>fig. — what's coming up, live from luma.</span>
+            <a href={s.lumaUrl} target="_blank" rel="noopener noreferrer">open on luma ↗</a>
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <nav class="sx-nav sx-nav-foot m" aria-label="more series">
+      <a href={`/v3/opus/events/${prev.slug}`}>← {prev.name.toLowerCase()}</a>
+      <a href={`/v3/opus/events/${next.slug}`}>{next.name.toLowerCase()} →</a>
+    </nav>
+  </section>
+
+  <Colophon />
+</Layout>
