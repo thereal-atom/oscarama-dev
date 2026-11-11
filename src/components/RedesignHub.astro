@@ -1,5 +1,5 @@
 ---
-// Redesign hub, rendered at both /v2 and /v3. Each variant lives in its own namespace:
+// Redesign hub, rendered at /v2, /v3 and /v4. Each variant lives in its own namespace:
 //   /vN/<name> -> src/pages/vN/<name>, src/vN/<name>
 const rounds = [
   {
@@ -22,13 +22,26 @@ const rounds = [
   {
     label: "round 3",
     variants: [
-      { href: "/v3/opus", name: "opus", model: "claude opus 5.5", idea: "editorial & typographic" },
+      {
+        href: "/v3/opus",
+        name: "opus",
+        model: "claude opus 5.5",
+        idea: "the concise oscarama: a dictionary of one person",
+      },
       {
         href: "/v3/fable",
         name: "fable",
         model: "claude fable 5.2",
-        idea: "spatial & interactive",
+        idea: "the wall: a pannable pegboard of objects",
       },
+    ],
+  },
+  {
+    label: "round 4",
+    variants: [
+      { href: "/v4/opus", name: "opus", model: "claude opus 5.5", idea: "cinematic" },
+      { href: "/v4/fable", name: "fable", model: "claude fable 5.2", idea: "playable" },
+      { href: "/v4/astra", name: "astra", model: "gpt-6 astra", idea: "software-native" },
     ],
   },
 ];
@@ -66,7 +79,7 @@ const rounds = [
       }
       main {
         width: 100%;
-        max-width: 720px;
+        max-width: 960px;
       }
       h1 {
         font-size: 14px;
@@ -76,7 +89,7 @@ const rounds = [
       }
       .grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
         gap: 16px;
       }
       @media (max-width: 560px) {
@@ -143,7 +156,7 @@ const rounds = [
   </head>
   <body>
     <main>
-      <h1>oscarama.dev redesigns: four takes, pick the bits you like</h1>
+      <h1>oscarama.dev redesigns: pick the bits you like</h1>
       {
         rounds.map((r) => (
           <section>
