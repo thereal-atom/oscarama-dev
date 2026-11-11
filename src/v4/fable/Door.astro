@@ -1,0 +1,52 @@
+---
+// one chapter of the story. rendered once on the page; the game reads its
+// data-* attributes to build a venue and shows its contents when unlocked.
+import { getImage } from "astro:assets";
+import type { ImageMetadata } from "astro";
+
+interface Props {
+  n: number;
+  name: string;
+  kicker: string;
+  need: number;
+  note?: string;
+  logo?: ImageMetadata | string;
+  glyph?: string;
+  bg?: string;
+  pad?: number;
+  class?: string;
+}
+const { n, name, kicker, need, note, logo, glyph, bg, pad, class: cls } = Astro.props;
+const src = logo
+  ? typeof logo === "string"
+    ? logo
+    : (await getImage({ src: logo, width: 160 })).src
+  : undefined;
+---
+
+<article
+  class:list={["door", cls]}
+  id={`door-${n}`}
+  data-door={n}
+  data-name={name}
+  data-need={need}
+  data-logo={src}
+  data-glyph={glyph}
+  data-bg={bg}
+  data-pad={pad}
+>
+  <header class="door-head">
+    <span class="door-n">door {n}</span>
+    <span class="door-kicker">{kicker}</span>
+  </header>
+  <div class="door-title">
+    <span class="mark" data-pad={pad} aria-hidden="true">
+      {src ? <img src={src} alt="" width="46" height="46" loading="lazy" /> : glyph}
+    </span>
+    <h3>{name}</h3>
+  </div>
+  <div class="door-body">
+    <slot />
+  </div>
+  <p class="door-need">in the game: bring {need}. {note}</p>
+</article>
