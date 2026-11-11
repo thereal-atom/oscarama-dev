@@ -1,0 +1,90 @@
+---
+import Layout from "@/v4/opus/Layout.astro";
+import Poster from "@/v4/opus/components/Poster.astro";
+import { screenings } from "@/v4/opus/events";
+import { links } from "@/v4/opus/content";
+import "@/v4/opus/styles/events.css";
+
+const bulbs = Array.from({ length: 4 });
+---
+
+<Layout
+  title="now showing · events · oscarama"
+  description="bouldering, dinners, coworking, hackathons: oscar runs events in london. four series, showtimes on luma."
+  path="/v4/opus/events"
+  label="the foyer"
+>
+  <section class="foyer" aria-labelledby="marquee-title">
+    <div class="marquee" data-bulbs>
+      {
+        bulbs.map((_, i) => (
+          <span class={`marquee__bulbs marquee__bulbs--${i}`} aria-hidden="true" />
+        ))
+      }
+      <div class="marquee__panel">
+        <p class="marquee__kicker" aria-hidden="true">oscarama pictures · london</p>
+        <h1 class="marquee__title" id="marquee-title">
+          <span class="lb">now</span>
+          <span class="lb">showing</span>
+        </h1>
+        <p class="marquee__sub">
+          <span class="lb lb--sm">4 series</span>
+          <span class="lb lb--sm lb--dot">·</span>
+          <span class="lb lb--sm">showtimes on luma</span>
+        </p>
+      </div>
+    </div>
+    <p class="foyer__copy">
+      bouldering, dinners, coworking, hackathons: i like to run events in london. pick a screening
+      and grab a seat.
+    </p>
+  </section>
+
+  <section class="program" aria-label="the four event series">
+    <ol class="program__grid">
+      {
+        screenings.map((s) => (
+          <li class="program__item">
+            <Poster
+              slug={s.slug}
+              name={s.name}
+              logo={s.logo}
+              tagline={s.tagline}
+              billing={s.billing}
+              screen={s.screen}
+              href={`/v4/opus/events/${s.slug}`}
+            />
+            <p class="program__meta">
+              <a href={s.lumaUrl} target="_blank" rel="noopener noreferrer">
+                {s.lumaUrl.replace("https://", "")} ↗
+              </a>
+            </p>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <section class="extras" aria-label="special screenings">
+    <a class="extra extra--recap" href={links.z2aRecap}>
+      <span class="extra__k">special screening · that's a wrap</span>
+      <span class="extra__t">zero to agent: london</span>
+      <span class="extra__d"
+        >~100 builders, 3 tracks, £5.8k cash + $1m+ in credits. sat 2 may 2026.</span
+      >
+      <span class="extra__cta">see the recap →</span>
+    </a>
+    <a class="extra" href="/events/subscribe">
+      <span class="extra__k">mailing list</span>
+      <span class="extra__t">stay in the loop</span>
+      <span class="extra__d">get notified about upcoming events. no spam, just good times.</span>
+      <span class="extra__cta">subscribe →</span>
+    </a>
+    <a class="extra" href="/v4/opus">
+      <span class="extra__k">the feature presentation</span>
+      <span class="extra__t">oscarama</span>
+      <span class="extra__d">who's running all this? a film in ten scenes.</span>
+      <span class="extra__cta">← back to the feature</span>
+    </a>
+  </section>
+</Layout>

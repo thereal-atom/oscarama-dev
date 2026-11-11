@@ -1,0 +1,97 @@
+---
+import { trailer, links } from "../content";
+const n = trailer.length;
+---
+
+<section
+  id="trailer"
+  class="scene trailer"
+  data-scene
+  data-no="02"
+  data-title="the trailer"
+  style={`--cards:${n}`}
+  aria-label="the trailer: the whole story in twelve cuts"
+  data-trailer
+>
+  <div class="trailer__sticky">
+    <div class="trailer__frame" data-trailer-frame>
+      {
+        trailer.map((c, i) => (
+          <div
+            class={`tcard tcard--${c.kind} ${c.kind === "line" ? `tcard--${c.size ?? "l"}` : ""}`}
+            data-card={i}
+          >
+            {c.kind === "rating" && (
+              <div class="rating">
+                <p class="rating__top">the following preview has been approved for</p>
+                <p class="rating__big">all builders</p>
+                <p class="rating__by">by the oscarama board of review</p>
+                <div class="rating__box">
+                  <span class="rating__r" aria-hidden="true">
+                    B
+                  </span>
+                  <p>
+                    <b>rated b for builders.</b> contains hackathons, late nights, live demos and
+                    mild tobogganing.
+                  </p>
+                </div>
+              </div>
+            )}
+            {c.kind === "line" && (
+              <div class="tline">
+                {c.lead && <p class="tline__lead">{c.lead}</p>}
+                <p class="tline__big">{c.big}</p>
+                {c.foot && <p class="tline__foot">{c.foot}</p>}
+              </div>
+            )}
+            {c.kind === "title" && (
+              <div class="ttitle">
+                <p class="ttitle__pre">oscar falemara in</p>
+                <p class="ttitle__name">oscarama</p>
+                <p class="ttitle__now">now showing in london</p>
+                <p class="ttitle__ctas">
+                  <a
+                    class="btn btn--sub"
+                    href={links.luma}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    get tickets (they're free) ↗
+                  </a>
+                  <a class="btn btn--ghost" href="#screenplay">
+                    keep watching ↓
+                  </a>
+                </p>
+              </div>
+            )}
+          </div>
+        ))
+      }
+      <div class="trailer__flash" aria-hidden="true"></div>
+    </div>
+
+    <div class="trailer__hud">
+      <p class="trailer__count" aria-hidden="true">
+        cut <span data-card-no>01</span> / {String(n).padStart(2, "0")}
+      </p>
+      <div class="trailer__ticks" aria-hidden="true">
+        {trailer.map((_, i) => <i data-tick={i} />)}
+      </div>
+      <button class="trailer__btn" type="button" data-play-trailer>
+        <span class="trailer__btn-play">▶ autoplay</span><span class="trailer__btn-pause"
+          >❚❚ pause</span
+        >
+      </button>
+      <a class="trailer__btn trailer__skip" href="#screenplay">skip trailer ↓</a>
+    </div>
+
+    <aside class="dc trailer__dc">
+      <b>director's commentary</b>
+      scroll is the editor here. every notch of the wheel is a hard cut.
+    </aside>
+  </div>
+</section>
+
+<script>
+  import "../scripts/trailer";
+</script>

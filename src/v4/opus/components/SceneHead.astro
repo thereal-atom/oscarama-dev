@@ -1,0 +1,20 @@
+---
+import Slate from "./Slate.astro";
+interface Props {
+  scene: string;
+  title: string;
+  dek?: string;
+  take?: string;
+  roll?: string;
+  id?: string;
+}
+const { scene, title, dek, take, roll, id } = Astro.props;
+---
+
+<header class="scene-head">
+  <Slate scene={scene} take={take} roll={roll} />
+  <div>
+    <h2 class="scene-head__title" id={id}>{title}</h2>
+    {dek && <p class="scene-head__dek" set:html={dek} />}
+  </div>
+</header>

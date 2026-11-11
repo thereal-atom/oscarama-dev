@@ -1,0 +1,127 @@
+---
+import { Image } from "astro:assets";
+import avatar from "@/assets/oscarama.png";
+import SceneHead from "./SceneHead.astro";
+import { links } from "../content";
+---
+
+<section
+  id="screenplay"
+  class="scene screenplay"
+  data-scene
+  data-no="03"
+  data-title="the screenplay"
+>
+  <SceneHead
+    scene="03"
+    title="the screenplay"
+    dek="the origin story, as a shooting script. every line of dialogue is lifted from the old homepage, so it's all true."
+  />
+
+  <div class="script">
+    <article class="page" aria-label="screenplay excerpt">
+      <span class="page__brad page__brad--1" aria-hidden="true"></span>
+      <span class="page__brad page__brad--2" aria-hidden="true"></span>
+      <p class="page__no" aria-hidden="true">1.</p>
+
+      <p class="sp-trans sp-trans--in">fade in:</p>
+
+      <h3 class="sp-head">
+        <span class="sp-n">1</span>ext. london &mdash; night<span class="sp-n">1</span>
+      </h3>
+      <p class="sp-action">
+        A city of nine-to-fives. Somewhere in it, a fourteen-year-old <span class="sp-cast"
+          >oscar falemara</span
+        >
+        starts teaching himself to code. No syllabus. Just the internet and an alarming number of open
+        tabs.
+      </p>
+      <div class="sp-dia">
+        <p class="sp-char">oscar (v.o.)</p>
+        <p class="sp-line">i'm a self-taught software engineer from london.</p>
+      </div>
+      <p class="sp-action">
+        Less than <strong>five months</strong> later, someone pays him to build something. His first freelance
+        client.
+      </p>
+      <div class="sp-dia">
+        <p class="sp-char">oscar (v.o.)</p>
+        <p class="sp-paren">(still fourteen)</p>
+        <p class="sp-line">
+          i got my first freelance client less than 5 months after i started code.
+        </p>
+      </div>
+
+      <p class="sp-trans">cut to:</p>
+
+      <h3 class="sp-head">
+        <span class="sp-n">2</span>int. high school &mdash; day<span class="sp-n">2</span>
+      </h3>
+      <p class="sp-action">
+        Eighteen. Exams not finished. A <a
+          href={links.coloopYc}
+          target="_blank"
+          rel="noopener noreferrer">y combinator</a
+        > startup wants him full-time anyway.
+      </p>
+      <div class="sp-dia">
+        <p class="sp-char">oscar (v.o.)</p>
+        <p class="sp-line">
+          at age 18, before i finished high school, i joined a yc startup as a full time software
+          engineer.
+        </p>
+      </div>
+
+      <p class="sp-trans">match cut to:</p>
+
+      <h3 class="sp-head">
+        <span class="sp-n">3</span>int. <a
+          href={links.coloop}
+          target="_blank"
+          rel="noopener noreferrer">coloop ai (yc s21)</a
+        > &mdash; continuous<span class="sp-n">3</span>
+      </h3>
+      <p class="sp-action">
+        He ships software. Then, because one job is apparently not enough, he starts running the
+        events too.
+      </p>
+      <div class="sp-dia">
+        <p class="sp-char">oscar (v.o.)</p>
+        <p class="sp-paren">(counting on fingers)</p>
+        <p class="sp-line">
+          i also do events, growth engineering and lots of other fun stuff there.
+        </p>
+      </div>
+      <p class="sp-action">He has never been to uni. Nobody in this scene seems bothered.</p>
+
+      <p class="sp-trans">smash cut to:</p>
+    </article>
+
+    <figure class="headshot">
+      <svg class="headshot__clip" viewBox="0 0 30 90" aria-hidden="true">
+        <path
+          d="M10 86 V18 a8 8 0 0 1 16 0 V74 a5 5 0 0 1 -10 0 V24"
+          fill="none"
+          stroke="#b9bcc0"
+          stroke-width="3"
+          stroke-linecap="round"></path>
+      </svg>
+      <Image
+        src={avatar}
+        alt="an illustrated portrait of oscar at a desk, grinning, two thumbs up"
+        width={420}
+        height={420}
+        class="headshot__img"
+      />
+      <figcaption>
+        <span>headshot</span>
+        oscar falemara <em>as himself</em>
+      </figcaption>
+    </figure>
+
+    <aside class="dc script__dc">
+      <b>director's commentary</b>
+      scene numbers on both margins: that's how you know it's a shooting script and not a first draft.
+    </aside>
+  </div>
+</section>
