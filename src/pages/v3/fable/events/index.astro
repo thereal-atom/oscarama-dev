@@ -1,0 +1,98 @@
+---
+import Layout from "@/v3/fable/Layout.astro";
+import Lanyard from "@/v3/fable/Lanyard.astro";
+import Logo from "@/v3/fable/Logo.astro";
+import { eventSeriesList } from "@/data/eventSeries";
+import vercelLogo from "@/assets/logos/vercel.png";
+
+const straps = ["pink", "lime", "blue", "white"];
+const rests = [-1.2, 0.8, -0.5, 1.4];
+const ext = { target: "_blank", rel: "noopener noreferrer" };
+---
+
+<Layout
+  current="events"
+  title="events: oscar falemara's lanyard rack"
+  description="the event series oscar falemara hosts around london: hackathons, demo nights, coworking, dinners and getting outside. pick a lanyard."
+>
+  <main id="wall" class="page">
+    <div class="holes" aria-hidden="true"></div>
+
+    <header class="page-head">
+      <p class="crumb"><a href="/v3/fable">← back to the wall</a></p>
+      <h1 class="paint label">the rack</h1>
+      <p class="paint sub">
+        four event series, one lanyard each. 30+ events hosted or helped organise so far, 2,000+
+        people through the door. pick one to see what's coming up.
+      </p>
+    </header>
+
+    <div class="rail" aria-hidden="true"></div>
+    <div class="rack">
+      {
+        eventSeriesList.map((s, i) => (
+          <Lanyard
+            big
+            name={s.name}
+            description={s.description}
+            logo={s.logo}
+            href={`/v3/fable/events/${s.slug}`}
+            lumaUrl={s.lumaUrl}
+            strap={straps[i % straps.length]}
+            style={`--rest:${rests[i % rests.length]}deg`}
+          />
+        ))
+      }
+    </div>
+
+    <div class="page-foot">
+      <article class="hang" data-hang style="--w:360px;--rest:-1.2deg">
+        <i class="pin pin-lime" aria-hidden="true"></i>
+        <div class="body poster">
+          <p class="poster-top">
+            <Logo src={vercelLogo} size={18} tile="none" class="invert" /> vercel presents
+            <span>london stop</span>
+          </p>
+          <h3>zero<br />to agent</h3>
+          <p class="poster-date">sat 2 may 2026</p>
+          <ul class="poster-stats">
+            <li><b>~100</b> builders</li>
+            <li><b>3</b> tracks</li>
+            <li><b>£5.8k</b> cash</li>
+            <li><b>$1m+</b> credits</li>
+          </ul>
+          <p class="poster-body" style="margin-bottom:16px">
+            the hackathon i organised by myself. sponsored by CodeRabbit, Bright Data and Mubit.
+          </p>
+          <a class="btn btn-lime" href="/events/zero-to-agent"
+            >read the recap <span aria-hidden="true">→</span></a
+          >
+        </div>
+      </article>
+
+      <div class="hang" data-hang style="--w:230px;--rest:2.4deg">
+        <i class="pin pin-pink" aria-hidden="true"></i>
+        <div class="body sticky">
+          <p class="hand">want all of it in one calendar?</p>
+          <a class="sticky-btn" href="https://luma.com/londonmaxxing-ai" {...ext}
+            >outpost on luma ↗</a
+          >
+          <p class="hand small">come say hi.</p>
+        </div>
+      </div>
+
+      <div class="hang tag tag-lime" data-hang style="--w:180px;--rest:-2deg">
+        <i class="pin" aria-hidden="true"></i>
+        <div class="body">
+          <b class="tag-word">get the emails</b>
+          <a href="/events/subscribe">subscribe <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  import { initSwing } from "@/v3/fable/wall";
+  initSwing();
+</script>
