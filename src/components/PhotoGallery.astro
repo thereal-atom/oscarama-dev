@@ -1,0 +1,291 @@
+---
+import { portfolioOriginalImageUrl, type PortfolioImage } from "@/lib/portfolio";
+
+interface Props {
+  images: PortfolioImage[];
+  title?: string;
+  class?: string;
+}
+
+const { images, title = "event gallery", class: className } = Astro.props;
+const galleryId = `photo-gallery-${Math.random().toString(36).slice(2, 10)}`;
+const firstImage = images[0]!;
+---
+
+<section class:list={["photo-gallery", className]} data-photo-gallery aria-label={title}>
+  {
+    images.length > 0 ? (
+      <>
+        <div class="columns-1 gap-3.5 sm:columns-2 lg:columns-3">
+          {images.map((image, index) => (
+            <a
+              href={portfolioOriginalImageUrl(image.url)}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-gallery-trigger
+              data-gallery-index={index}
+              data-photo-url={portfolioOriginalImageUrl(image.url)}
+              data-photo-alt={image.alt}
+              data-photo-caption={image.caption ?? ""}
+              data-photo-width={image.width}
+              data-photo-height={image.height}
+              aria-label={`Open photo ${index + 1} of ${images.length}: ${image.alt}`}
+              class="group relative mb-3.5 block w-full break-inside-avoid overflow-hidden rounded-lg border border-[#242321] bg-[#161615] text-left transition duration-200 hover:border-[#3a3834] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E56717] focus-visible:ring-offset-2 focus-visible:ring-offset-[#101010]"
+            >
+              {image.lqip && (
+                <img
+                  src={image.lqip}
+                  alt=""
+                  aria-hidden="true"
+                  class="absolute inset-0 h-full w-full scale-110 object-cover opacity-50 blur-xl"
+                />
+              )}
+              <img
+                src={portfolioOriginalImageUrl(image.url)}
+                alt={image.alt}
+                width={image.width}
+                height={image.height}
+                loading={index < 3 ? "eager" : "lazy"}
+                decoding="async"
+                class="relative z-[1] h-auto w-full transition-transform duration-300 group-hover:scale-[1.01] group-focus-visible:scale-[1.01] motion-reduce:transform-none"
+              />
+              {image.caption && (
+                <span class="absolute inset-x-0 bottom-0 z-[2] bg-gradient-to-t from-black/85 to-transparent px-4 pb-3 pt-10 text-xs leading-relaxed text-white/80 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100">
+                  {image.caption}
+                </span>
+              )}
+            </a>
+          ))}
+        </div>
+
+        <dialog
+          class="photo-lightbox fixed inset-0 m-0 h-[100dvh] max-h-none w-screen max-w-none border-0 bg-transparent p-0 text-white"
+          aria-labelledby={`${galleryId}-title`}
+          aria-modal="true"
+        >
+          <div class="relative flex h-full min-h-0 w-full flex-col bg-[#0b0b0b]/95">
+            <div class="flex h-16 shrink-0 items-center justify-between gap-4 border-b border-white/10 px-4 sm:px-6">
+              <p
+                id={`${galleryId}-title`}
+                class="truncate text-xs uppercase tracking-[0.16em] text-white/50"
+              >
+                {title}
+              </p>
+              <form method="dialog">
+                <button
+                  type="submit"
+                  value="close"
+                  data-lightbox-close
+                  class="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/5 text-xl text-white/80 transition-colors hover:border-white/30 hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E56717]"
+                  aria-label="Close gallery"
+                >
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </form>
+            </div>
+
+            <div
+              data-lightbox-stage
+              class="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden px-3 py-4 sm:px-20 sm:py-6"
+            >
+              <button
+                type="button"
+                data-lightbox-previous
+                class="absolute left-3 top-1/2 z-10 inline-flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-[#101010]/85 text-xl text-white/80 backdrop-blur-sm transition hover:border-[#E56717]/60 hover:text-[#E56717] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E56717] disabled:pointer-events-none disabled:opacity-25 sm:left-5"
+                aria-label="Previous photo"
+              >
+                <span aria-hidden="true">&larr;</span>
+              </button>
+
+              <figure class="flex max-h-full min-h-0 max-w-full flex-col items-center">
+                <img
+                  src={portfolioOriginalImageUrl(firstImage.url)}
+                  alt={firstImage.alt}
+                  width={firstImage.width}
+                  height={firstImage.height}
+                  data-lightbox-image
+                  class="min-h-0 max-h-[calc(100dvh-11rem)] max-w-full rounded-sm object-contain shadow-2xl"
+                />
+                <figcaption
+                  data-lightbox-caption-wrap
+                  class="mt-3 max-w-3xl text-center text-xs leading-relaxed text-white/60 sm:text-sm"
+                  hidden={!firstImage.caption}
+                >
+                  <span data-lightbox-caption>{firstImage.caption}</span>
+                </figcaption>
+              </figure>
+
+              <button
+                type="button"
+                data-lightbox-next
+                class="absolute right-3 top-1/2 z-10 inline-flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-[#101010]/85 text-xl text-white/80 backdrop-blur-sm transition hover:border-[#E56717]/60 hover:text-[#E56717] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E56717] disabled:pointer-events-none disabled:opacity-25 sm:right-5"
+                aria-label="Next photo"
+              >
+                <span aria-hidden="true">&rarr;</span>
+              </button>
+            </div>
+
+            <p
+              data-lightbox-counter
+              aria-live="polite"
+              class="h-10 shrink-0 text-center text-[11px] tabular-nums tracking-[0.14em] text-white/40"
+            >
+              1 / {images.length}
+            </p>
+          </div>
+        </dialog>
+      </>
+    ) : (
+      <p class="rounded-lg border border-dashed border-white/20 p-6 text-sm text-white/50">
+        gallery coming soon.
+      </p>
+    )
+  }
+</section>
+
+<style>
+  .photo-lightbox {
+    color-scheme: dark;
+  }
+
+  .photo-lightbox::backdrop {
+    background: rgba(5, 5, 5, 0.94);
+    backdrop-filter: blur(8px);
+  }
+</style>
+
+<script>
+  function initialisePhotoGallery(root: HTMLElement) {
+    if (root.dataset.galleryReady === "true") return;
+    root.dataset.galleryReady = "true";
+
+    const triggers = Array.from(root.querySelectorAll<HTMLAnchorElement>("[data-gallery-trigger]"));
+    const dialog = root.querySelector<HTMLDialogElement>(".photo-lightbox");
+    const stage = root.querySelector<HTMLElement>("[data-lightbox-stage]");
+    const lightboxImage = root.querySelector<HTMLImageElement>("[data-lightbox-image]");
+    const caption = root.querySelector<HTMLElement>("[data-lightbox-caption]");
+    const captionWrap = root.querySelector<HTMLElement>("[data-lightbox-caption-wrap]");
+    const counter = root.querySelector<HTMLElement>("[data-lightbox-counter]");
+    const previousButton = root.querySelector<HTMLButtonElement>("[data-lightbox-previous]");
+    const nextButton = root.querySelector<HTMLButtonElement>("[data-lightbox-next]");
+    const closeButton = root.querySelector<HTMLButtonElement>("[data-lightbox-close]");
+
+    if (
+      triggers.length === 0 ||
+      !dialog ||
+      !stage ||
+      !lightboxImage ||
+      !caption ||
+      !captionWrap ||
+      !counter ||
+      !previousButton ||
+      !nextButton ||
+      !closeButton
+    ) {
+      return;
+    }
+
+    let currentIndex = 0;
+    let previouslyFocused: HTMLElement | null = null;
+    let previousBodyOverflow = "";
+    let touchStartX: number | null = null;
+
+    const updatePhoto = (requestedIndex: number) => {
+      currentIndex = (requestedIndex + triggers.length) % triggers.length;
+      const trigger = triggers[currentIndex];
+      const imageUrl = trigger.dataset.photoUrl ?? trigger.href;
+      const imageAlt = trigger.dataset.photoAlt ?? "Event photograph";
+      const imageCaption = trigger.dataset.photoCaption ?? "";
+      const imageWidth = Number(trigger.dataset.photoWidth);
+      const imageHeight = Number(trigger.dataset.photoHeight);
+
+      lightboxImage.src = imageUrl;
+      lightboxImage.alt = imageAlt;
+
+      if (Number.isFinite(imageWidth) && imageWidth > 0) {
+        lightboxImage.width = imageWidth;
+      } else {
+        lightboxImage.removeAttribute("width");
+      }
+
+      if (Number.isFinite(imageHeight) && imageHeight > 0) {
+        lightboxImage.height = imageHeight;
+      } else {
+        lightboxImage.removeAttribute("height");
+      }
+
+      caption.textContent = imageCaption;
+      captionWrap.hidden = imageCaption.length === 0;
+      counter.textContent = `${currentIndex + 1} / ${triggers.length}`;
+
+      const hasMultiplePhotos = triggers.length > 1;
+      previousButton.disabled = !hasMultiplePhotos;
+      nextButton.disabled = !hasMultiplePhotos;
+    };
+
+    const openPhoto = (index: number) => {
+      previouslyFocused =
+        document.activeElement instanceof HTMLElement ? document.activeElement : null;
+      updatePhoto(index);
+
+      if (!dialog.open) {
+        previousBodyOverflow = document.body.style.overflow;
+        document.body.style.overflow = "hidden";
+        dialog.showModal();
+      }
+
+      closeButton.focus();
+    };
+
+    triggers.forEach((trigger, index) => {
+      trigger.addEventListener("click", (event) => {
+        event.preventDefault();
+        openPhoto(index);
+      });
+    });
+
+    previousButton.addEventListener("click", () => updatePhoto(currentIndex - 1));
+    nextButton.addEventListener("click", () => updatePhoto(currentIndex + 1));
+
+    dialog.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        updatePhoto(currentIndex - 1);
+      } else if (event.key === "ArrowRight") {
+        event.preventDefault();
+        updatePhoto(currentIndex + 1);
+      } else if (event.key === "Home") {
+        event.preventDefault();
+        updatePhoto(0);
+      } else if (event.key === "End") {
+        event.preventDefault();
+        updatePhoto(triggers.length - 1);
+      }
+    });
+
+    stage.addEventListener("click", (event) => {
+      if (event.target === stage) dialog.close();
+    });
+
+    stage.addEventListener("pointerdown", (event) => {
+      if (event.pointerType === "touch") touchStartX = event.clientX;
+    });
+
+    stage.addEventListener("pointerup", (event) => {
+      if (event.pointerType !== "touch" || touchStartX === null) return;
+
+      const distance = event.clientX - touchStartX;
+      touchStartX = null;
+
+      if (Math.abs(distance) < 48) return;
+      updatePhoto(distance > 0 ? currentIndex - 1 : currentIndex + 1);
+    });
+
+    dialog.addEventListener("close", () => {
+      document.body.style.overflow = previousBodyOverflow;
+      previouslyFocused?.focus();
+    });
+  }
+
+  document.querySelectorAll<HTMLElement>("[data-photo-gallery]").forEach(initialisePhotoGallery);
+</script>

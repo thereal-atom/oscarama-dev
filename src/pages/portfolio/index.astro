@@ -1,0 +1,103 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PortfolioCard from "@/components/PortfolioCard.astro";
+import { getPortfolioEvents } from "@/lib/portfolio";
+
+export const prerender = false;
+
+const runtimeEnv = Astro.locals.runtime?.env;
+const events = await getPortfolioEvents(runtimeEnv);
+---
+
+<BaseLayout
+  title="photo + video portfolio | oscarama"
+  description="event photography and highlight films for tech events, communities and teams."
+  ogImage="/og-photo-video.png"
+  ogUrl="https://oscarama.dev/portfolio"
+>
+  <main class="mx-auto w-full max-w-[1080px] px-8 pb-32 pt-16 max-[560px]:px-5 max-[560px]:pt-6">
+    <a href="/photo-video" class="text-sm text-white/45 transition-colors hover:text-white/70"
+      >&larr; photo + video</a
+    >
+
+    <section class="mt-10 border-b border-dashed border-white/10 pb-12">
+      <div class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#E56717]">
+        // selected work
+      </div>
+      <div class="mt-4 grid items-end gap-8 md:grid-cols-[minmax(0,1fr)_340px]">
+        <h1 class="max-w-3xl text-4xl font-bold leading-[1.08] tracking-[-0.025em] sm:text-5xl">
+          the room,<br /><span class="text-white/40">as it felt.</span>
+        </h1>
+        <p class="text-sm leading-7 text-white/60">
+          honest event photography and short films — the big moments, the quiet ones and the energy
+          in between.
+        </p>
+      </div>
+    </section>
+
+    {
+      events.length > 0 ? (
+        <section class="mt-10" aria-labelledby="portfolio-heading">
+          <div class="mb-6 flex items-end justify-between gap-6">
+            <h2 id="portfolio-heading" class="text-sm text-white/55">
+              {String(events.length).padStart(2, "0")} stories
+            </h2>
+            <span class="hidden text-xs text-white/35 sm:block">photos + highlight films</span>
+          </div>
+          <div class="grid gap-6 md:grid-cols-2">
+            {events.map((event) => (
+              <PortfolioCard event={event} />
+            ))}
+          </div>
+        </section>
+      ) : (
+        <section class="mt-10" aria-labelledby="portfolio-heading">
+          <div class="grid min-h-[340px] place-items-center rounded-lg border border-dashed border-white/15 bg-white/[0.015] px-6 py-16 text-center">
+            <div class="max-w-md">
+              <div
+                class="mx-auto grid h-12 w-12 grid-cols-2 gap-1 rounded-sm border border-white/15 p-1.5"
+                aria-hidden="true"
+              >
+                <span class="rounded-[1px] bg-white/10" />
+                <span class="rounded-[1px] bg-[#E56717]/50" />
+                <span class="rounded-[1px] bg-white/20" />
+                <span class="rounded-[1px] bg-white/10" />
+              </div>
+              <h2 id="portfolio-heading" class="mt-6 text-xl font-semibold">
+                new work lands here soon.
+              </h2>
+              <p class="mt-3 text-sm leading-6 text-white/55">
+                i'm putting the first event stories together. in the meantime, tell me what you're
+                planning and i'll share relevant work directly.
+              </p>
+              <a
+                href="mailto:hello@oscarama.dev?subject=photo%20%2F%20video%20event%20enquiry"
+                class="mt-6 inline-block text-sm font-semibold text-[#E56717] underline decoration-[#E56717]/40 underline-offset-4 hover:decoration-[#E56717]"
+              >
+                hello@oscarama.dev &rarr;
+              </a>
+            </div>
+          </div>
+        </section>
+      )
+    }
+
+    <section
+      class="mt-20 flex items-center justify-between gap-8 rounded-lg border border-white/15 bg-[#161615] p-6 max-sm:flex-col max-sm:items-start sm:p-8"
+    >
+      <div>
+        <div class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#E56717]">
+          // your event next
+        </div>
+        <h2 class="mt-3 text-xl font-bold">want this kind of coverage?</h2>
+        <p class="mt-2 text-sm text-white/55">send the date, place and a rough brief.</p>
+      </div>
+      <a
+        href="mailto:hello@oscarama.dev?subject=photo%20%2F%20video%20event%20enquiry"
+        class="shrink-0 rounded-sm bg-[#E56717] px-5 py-3 text-sm font-semibold text-[#101010] transition-colors hover:bg-[#f0782c] max-sm:w-full max-sm:text-center"
+      >
+        check availability &rarr;
+      </a>
+    </section>
+  </main>
+</BaseLayout>

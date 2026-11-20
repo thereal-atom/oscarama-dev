@@ -1,0 +1,39 @@
+---
+interface Props {
+  playbackId: string;
+  title?: string;
+  posterTime?: number;
+  class?: string;
+}
+
+const { playbackId, title = "event highlight film", posterTime, class: className } = Astro.props;
+
+const playerParams = new URLSearchParams({
+  title,
+  "metadata-video-id": playbackId,
+  "metadata-video-title": title,
+  "accent-color": "#e56717",
+});
+
+if (posterTime !== undefined && Number.isFinite(posterTime)) {
+  playerParams.set("thumbnail-time", String(posterTime));
+}
+
+const playerUrl = `https://player.mux.com/${encodeURIComponent(playbackId)}?${playerParams.toString()}`;
+---
+
+<div
+  class:list={[
+    "overflow-hidden rounded-[10px] border border-[#242321] bg-[#161615] shadow-[0_16px_50px_-30px_rgba(0,0,0,0.9)]",
+    className,
+  ]}
+>
+  <iframe
+    src={playerUrl}
+    title={title}
+    loading="lazy"
+    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+    allowfullscreen
+    referrerpolicy="strict-origin-when-cross-origin"
+    class="block aspect-video w-full border-0"></iframe>
+</div>
