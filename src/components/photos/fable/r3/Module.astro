@@ -378,7 +378,7 @@ const ig = `https://instagram.com/${contact.instagram}`, tw = `https://x.com/${c
         <section class="g t-ink" id="clients" data-sec="E" style="--cm:2;--cd:5">
           <div class="vl" aria-hidden="true">{L.map((i) => <i style={`--i:${i}`} />)}</div>
           <p class="c lab mono" style="--am:1/1/span 1/span 2;--ad:1/1/span 1/span 5"><span>E — Shot for</span><b class="dk">2 → 5 columns</b></p>
-          {clients.map((c, i) => <div class="logo" style={`--am:${2 + Math.floor(i / 2) * 2}/${(i % 2) + 1}/span 2/span 1;--ad:2/${i + 1}/span 2/span 1`}><img src={c.logo.src} alt={c.name} loading="lazy" style={S.dark ? "filter:brightness(0)" : undefined} /><span class="mono">{c.name}</span></div>)}
+          {clients.map((c, i) => <div class="logo" style={`--am:${2 + Math.floor(i / 2) * 2}/${(i % 2) + 1}/span 2/span 1;--ad:2/${i + 1}/span 2/span 1`}><img src={S.dark && c.name === "SpaceX AI" ? "/photos/opus/spacexai-mark.svg" : c.logo.src} alt={c.name} loading="lazy" style={S.dark ? "filter:brightness(0)" : undefined} /><span class="mono">{c.name}</span></div>)}
           <a class="c fill you" href="#contact" style="--am:6/1/span 1/span 2;--ad:2/5/span 2/span 1"><span class="mono">next</span><b>YOUR LOGO →</b></a>
         </section>
 
