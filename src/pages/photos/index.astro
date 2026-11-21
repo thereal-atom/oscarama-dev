@@ -1,6 +1,6 @@
 ---
 // Hub for comparing the shortlisted photography prototypes: styles × colour schemes. Not part of the final design.
-import { styles, schemes, schemeIds, schemeKeys } from "@/components/photos/schemes";
+import { styles, schemes, schemeKeys } from "@/components/photos/schemes";
 ---
 
 <!doctype html>
@@ -21,7 +21,7 @@ import { styles, schemes, schemeIds, schemeKeys } from "@/components/photos/sche
       table { border-collapse: collapse; width: 100%; font-size: 13px; }
       th, td { border-bottom: 1px dashed #ccc; padding: 12px 8px; text-align: left; white-space: nowrap; }
       thead th { font-weight: 400; font-size: 11px; opacity: .7; }
-      thead th i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; box-shadow: 0 0 0 1px rgba(0,0,0,.2); }
+      td a i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; box-shadow: 0 0 0 1px rgba(0,0,0,.2); }
       td a { color: inherit; text-decoration: none; }
       td a:hover { text-decoration: underline; }
       kbd { font: inherit; opacity: .5; }
@@ -30,24 +30,18 @@ import { styles, schemes, schemeIds, schemeKeys } from "@/components/photos/sche
   <body>
     <main>
       <h1>hire-me page shortlist — styles × colour schemes</h1>
-      <p>On any page: keys 1–4 switch style, Q W E R switch scheme.</p>
+      <p>On any page: keys 1–8 switch style, Q W E R switch scheme.</p>
       <div class="wrap">
         <table>
-          <thead>
-            <tr>
-              <th></th>
-              {schemeIds.map((id, i) => {
-                const s = schemes[id];
-                const ground = s.dark ? s.ink : s.paper;
-                return <th><i style={`background:linear-gradient(90deg,${s.accent} 50%,${ground} 50%)`} />{s.label} <kbd>{schemeKeys[i].toUpperCase()}</kbd></th>;
-              })}
-            </tr>
-          </thead>
           <tbody>
             {styles.map((st) => (
               <tr>
                 <th>{st.label} <kbd>{st.key}</kbd></th>
-                {schemeIds.map((id) => <td><a href={`/photos/${st.id}/${id}`}>{schemes[id].label} →</a></td>)}
+                {st.schemes.map((id, i) => {
+                  const s = schemes[id];
+                  const ground = s.dark ? s.ink : s.paper;
+                  return <td><a href={`/photos/${st.id}/${id}`}><i style={`background:linear-gradient(90deg,${s.accent} 50%,${ground} 50%)`} />{s.label} <kbd>{schemeKeys[i].toUpperCase()}</kbd></a></td>;
+                })}
               </tr>
             ))}
           </tbody>

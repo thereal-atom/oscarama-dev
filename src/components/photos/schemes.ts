@@ -1,8 +1,11 @@
 // Prototype matrix: 4 page styles × 4 colour schemes, served at /photos/<style>/<scheme>.
 // The schemes are defined once here; each style component maps these semantic roles onto its own needs.
 
-export type SchemeId = "orange-light" | "orange-dark" | "blue-light" | "green";
-export type StyleId = "opus-1" | "fable-2" | "fable-2-blueprint" | "fable-4";
+export type SchemeId =
+  | "orange-light" | "orange-dark" | "blue-light" | "green"
+  // style-specific schemes for the poster-inspired styles (each style lists the ones it supports)
+  | "afterburner" | "concorde" | "ultramarine" | "graphite" | "ink-blue" | "ink-red" | "nebula" | "infrared";
+export type StyleId = "opus-1" | "fable-2" | "fable-2-blueprint" | "fable-4" | "motion" | "halftone" | "raptor" | "hubble";
 
 export interface Scheme {
   id: SchemeId;
@@ -21,14 +24,28 @@ export const schemes: Record<SchemeId, Scheme> = {
   "orange-dark": { id: "orange-dark", label: "orange dark", accent: "#FF3B1F", ink: "#111111", paper: "#F3F1EA", dark: true },
   "blue-light": { id: "blue-light", label: "blue light", accent: "#0000F2", ink: "#111111", paper: "#F3F1EA", dark: false },
   green: { id: "green", label: "green / black / white", accent: "#12B85A", ink: "#0E0E0E", paper: "#F2F0E6", dark: false },
+  // ── poster-inspired styles (owners may tune their own entries) ──
+  afterburner: { id: "afterburner", label: "afterburner red", accent: "#FF4A1C", ink: "#2A0604", paper: "#F3E6E1", dark: true },
+  concorde: { id: "concorde", label: "concorde orange", accent: "#FF8A3D", ink: "#1C0D07", paper: "#FCEBDD", dark: false },
+  ultramarine: { id: "ultramarine", label: "ultramarine", accent: "#3326D9", ink: "#090725", paper: "#E8EBF7", dark: true },
+  graphite: { id: "graphite", label: "graphite", accent: "#8A93A0", ink: "#0B0C0E", paper: "#ECEDEF", dark: true },
+  "ink-blue": { id: "ink-blue", label: "ink + blue", accent: "#1F8FEF", ink: "#111111", paper: "#F2F1EE", dark: false },
+  "ink-red": { id: "ink-red", label: "ink + red", accent: "#E8402C", ink: "#111111", paper: "#F2F1EE", dark: false },
+  nebula: { id: "nebula", label: "nebula", accent: "#45C8E8", ink: "#050608", paper: "#EAF5FA", dark: true },
+  infrared: { id: "infrared", label: "infrared", accent: "#FF6A3D", ink: "#070405", paper: "#FBEDE6", dark: true },
 };
 export const schemeIds = Object.keys(schemes) as SchemeId[];
 
-export const styles: Array<{ id: StyleId; label: string; key: string; short: string; defaultScheme: SchemeId }> = [
-  { id: "opus-1", label: "opus 1", key: "1", short: "O1", defaultScheme: "orange-light" },
-  { id: "fable-2", label: "fable 2", key: "2", short: "F2", defaultScheme: "orange-dark" },
-  { id: "fable-2-blueprint", label: "fable 2 blueprint", key: "3", short: "BP", defaultScheme: "orange-light" },
-  { id: "fable-4", label: "fable 4", key: "4", short: "F4", defaultScheme: "orange-light" },
+const core: SchemeId[] = ["orange-light", "orange-dark", "blue-light", "green"];
+export const styles: Array<{ id: StyleId; label: string; key: string; short: string; defaultScheme: SchemeId; schemes: SchemeId[] }> = [
+  { id: "opus-1", label: "opus 1", key: "1", short: "O1", defaultScheme: "orange-light", schemes: core },
+  { id: "fable-2", label: "fable 2", key: "2", short: "F2", defaultScheme: "orange-dark", schemes: core },
+  { id: "fable-2-blueprint", label: "fable 2 blueprint", key: "3", short: "BP", defaultScheme: "orange-light", schemes: core },
+  { id: "fable-4", label: "fable 4", key: "4", short: "F4", defaultScheme: "orange-light", schemes: core },
+  { id: "motion", label: "motion (opus)", key: "5", short: "MO", defaultScheme: "afterburner", schemes: ["afterburner", "concorde"] },
+  { id: "halftone", label: "halftone (fable)", key: "6", short: "HT", defaultScheme: "ultramarine", schemes: ["ultramarine", "graphite"] },
+  { id: "raptor", label: "raptor (opus)", key: "7", short: "RP", defaultScheme: "ink-blue", schemes: ["ink-blue", "ink-red"] },
+  { id: "hubble", label: "hubble (fable)", key: "8", short: "HB", defaultScheme: "nebula", schemes: ["nebula", "infrared"] },
 ];
 export const styleIds = styles.map((s) => s.id);
 /** keyboard shortcuts for the schemes, in schemeIds order */

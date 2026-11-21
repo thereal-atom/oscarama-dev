@@ -1,0 +1,9 @@
+---
+// STUB — to be replaced by the Motion poster-inspired style.
+import Switcher from "@/components/photos/Switcher.astro";
+import { schemes, type SchemeId } from "@/components/photos/schemes";
+interface Props { scheme: SchemeId }
+const S = schemes[Astro.props.scheme];
+---
+<!doctype html><html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Motion — stub</title></head>
+<body style={`margin:0;min-height:100vh;background:${S.dark ? S.ink : S.paper};color:${S.accent};font:16px monospace;padding:24px`}>Motion ({S.label}) — coming soon<Switcher /></body></html>
