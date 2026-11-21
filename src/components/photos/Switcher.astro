@@ -1,0 +1,60 @@
+---
+// Neutral prototype picker: row 1 = style, row 2 = colour scheme. Changing one keeps the other.
+// Keys 1–4 switch style, Q/W/E/R switch scheme (ignored while typing).
+import { styles, schemes, schemeIds, schemeKeys, isScheme, isStyle, type SchemeId, type StyleId } from "@/components/photos/schemes";
+
+const [, , st, sc] = Astro.url.pathname.replace(/\/$/, "").split("/");
+const style: StyleId = isStyle(st) ? st : styles[0].id;
+const scheme: SchemeId = isScheme(sc) ? sc : styles.find((s) => s.id === style)!.defaultScheme;
+const href = (a: StyleId, b: SchemeId) => `/photos/${a}/${b}`;
+const styleHrefs = styles.map((s) => href(s.id, scheme));
+const schemeHrefs = schemeIds.map((id) => href(style, id));
+const cur = styles.find((s) => s.id === style)!;
+---
+<nav class="psw" aria-label="prototype picker">
+  <div class="psw-r">
+    <a href="/photos" class="psw-l" title="all prototypes">← /photos</a>
+    {styles.map((s, i) => (
+      <a href={styleHrefs[i]} title={`${s.label} (${s.key})`} class:list={["psw-n", { on: s.id === style }]} aria-current={s.id === style ? "page" : undefined}>{s.short}</a>
+    ))}
+  </div>
+  <div class="psw-r">
+    <span class="psw-t" title={`${cur.label} · ${schemes[scheme].label}`}>{schemes[scheme].label}</span>
+    {schemeIds.map((id, i) => {
+      const s = schemes[id];
+      return (
+        <a href={schemeHrefs[i]} title={`${s.label} (${schemeKeys[i].toUpperCase()})`} aria-label={s.label} class:list={["psw-s", { on: id === scheme }]} aria-current={id === scheme ? "page" : undefined}>
+          <i style={`--a:${s.accent};--g:${s.dark ? s.ink : s.paper}`} />
+        </a>
+      );
+    })}
+  </div>
+</nav>
+<style is:global>
+  .psw{position:fixed;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:2147483000;display:grid;gap:1px;padding:3px 4px 3px 9px;border-radius:12px;
+    background:rgba(20,20,20,.9);color:#f4f4f4;font:500 11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.02em;text-transform:none;
+    -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:0 0 0 1px rgba(255,255,255,.16);max-width:calc(100vw - 20px)}
+  .psw a,.psw span,.psw i{position:static;font:inherit;background:none;border:0;box-shadow:none;width:auto;height:auto;margin:0;transform:none;text-transform:none;letter-spacing:inherit}
+  .psw-r{display:flex;align-items:center;justify-content:flex-end;gap:2px}
+  .psw a{color:inherit;text-decoration:none;opacity:.6;padding:6px 6px;border-radius:999px;text-align:center}
+  .psw a:hover,.psw a:focus-visible{opacity:1;outline:none}
+  .psw .psw-l,.psw .psw-t{padding:6px 6px 6px 0;opacity:.8;white-space:nowrap;margin-right:auto}
+  .psw .psw-t{opacity:.55;overflow:hidden;text-overflow:ellipsis;max-width:12em}
+  .psw a.psw-n.on{opacity:1;background:#f4f4f4;color:#141414}
+  .psw a.psw-s{padding:5px;opacity:1}
+  .psw a.psw-s i{display:block;width:14px;height:14px;border-radius:50%;background:linear-gradient(90deg,var(--a) 50%,var(--g) 50%);box-shadow:0 0 0 1px rgba(255,255,255,.35)}
+  .psw a.psw-s:hover i{box-shadow:0 0 0 1px rgba(255,255,255,.8)}
+  .psw a.psw-s.on i{box-shadow:0 0 0 2px #141414,0 0 0 3.5px #f4f4f4}
+  @media print{.psw{display:none}}
+</style>
+<script define:vars={{ styleHrefs, schemeHrefs, schemeKeys }}>
+  addEventListener("keydown", (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey || e.defaultPrevented) return;
+    const t = e.target;
+    if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+    const n = Number(e.key);
+    if (n >= 1 && n <= styleHrefs.length) location.href = styleHrefs[n - 1];
+    const k = schemeKeys.indexOf(e.key.toLowerCase());
+    if (k >= 0) location.href = schemeHrefs[k];
+  });
+</script>

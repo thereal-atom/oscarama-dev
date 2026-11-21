@@ -1,0 +1,617 @@
+---
+import Switcher from "@/components/photos/Switcher.astro";
+import Viewer from "@/components/photos/fable/r3/Viewer.astro";
+import Bits from "@/components/photos/fable/r3/Bits.astro";
+import { icons, dissolve } from "@/components/photos/fable/r3/bits";
+import { contact, clients } from "@/data/photos";
+import { quotes, mixed, shotIndex } from "@/components/photos/fable/derive";
+import { schemes, mix, alpha, rgb, onAccent, accentOnInk, type SchemeId } from "@/components/photos/schemes";
+
+interface Props { scheme: SchemeId }
+const S = schemes[Astro.props.scheme];
+// G = accent, K = ink, M = milk (paper). Dark: the milk sections drop to a dark surface (S) with milk type (SF).
+const OG = onAccent(S, "ink", 4.5); // type on the accent fields (ink; paper on blue)
+const GH = accentOnInk(S); // the accent as type / marks on ink (lifted for blue)
+const K2 = mix(S.ink, S.paper, 0.075);
+const surf = S.dark ? mix(S.ink, S.paper, 0.08) : S.paper, surfFg = S.dark ? S.paper : S.ink;
+const vars = [
+  `--G:${S.accent}`, `--K:${S.ink}`, `--M:${S.paper}`, `--K2:${K2}`, `--OG:${OG}`, `--GH:${GH}`,
+  `--S:${surf}`, `--SF:${surfFg}`, `--phc:${alpha(S.ink, 0.6)}`,
+].join(";");
+const tones = [rgb(S.ink), rgb(S.accent), rgb(S.paper)];
+
+const picks = mixed.slice(0, 24);
+const rest = mixed.slice(24);
+const byId = (id: string, alt: (typeof mixed)[number]) => rest.find((s) => s.id === id) ?? alt;
+const lead = byId("demo-night-7-5", rest.find((s) => s.width > s.height) ?? mixed[0]); // hero: one frame at two resolutions
+const face = byId("pauline-panel-4", rest.find((s) => s.height > s.width) ?? mixed[1]); // bio
+const last = byId("kcl-tech-summit-6", mixed[2]); // closing strip
+const pad = (n: number) => String(n).padStart(2, "0");
+
+// ── the wall: bands of whole cells. Every select gets a box; the photo takes most of it at (near enough) its true
+//    shape and the rest of the box is the same photo at one-cell resolution. Bands are picked to suit the next
+//    photos' orientations, so this keeps working when the real photos replace the placeholders.
+type Slot = { o: "L" | "P"; c: number; r: number; bw: number; bh: number; x: number; y: number; pw: number; ph: number };
+type Band = { h: number; slots: Slot[] };
+type Put = Omit<Slot, "o">;
+const sl = (o: "L" | "P", c: number, r: number, bw: number, bh: number, x: number, y: number, pw: number, ph: number): Slot => ({ o, c, r, bw, bh, x, y, pw, ph });
+function layout(cols: number, special: Band[], cycle: Band[]) {
+  const out: Put[] = [], fill: Array<{ r: number; c: number; w: number; h: number }> = [];
+  const used = new Map<Band, number>();
+  let i = 0, row = 0, turn = 0;
+  const o = (k: number) => (picks[k].height > picks[k].width ? "P" : "L");
+  while (i < picks.length) {
+    const ok = (b: Band) => b.slots[0].o === o(i) && b.slots.every((s, j) => i + j >= picks.length || s.o === o(i + j));
+    const rot = cycle.map((_, k) => cycle[(turn + k) % cycle.length]);
+    const band = special.find(ok) ?? rot.find(ok) ?? cycle[0];
+    if (cycle.includes(band)) turn = cycle.indexOf(band) + 1;
+    const n = used.get(band) ?? 0; used.set(band, n + 1);
+    const flip = n % 2 === 1;
+    band.slots.forEach((s, j) => {
+      const c = flip ? cols - s.c - s.bw : s.c;
+      if (i + j >= picks.length) { fill.push({ r: row + s.r, c, w: s.bw, h: s.bh }); return; }
+      out[i + j] = { c, r: row + s.r, bw: s.bw, bh: s.bh, pw: s.pw, ph: s.ph, x: flip ? s.bw - s.x - s.pw : s.x, y: s.y };
+    });
+    i += band.slots.length; row += band.h;
+  }
+  // neighbouring leftover slots become one block
+  fill.sort((a, b) => a.r - b.r || a.c - b.c);
+  const blocks: typeof fill = [];
+  for (const f of fill) { const l = blocks[blocks.length - 1]; if (l && l.r === f.r && l.h === f.h && l.c + l.w === f.c) l.w += f.w; else blocks.push({ ...f }); }
+  return { out, blocks };
+}
+const pm = layout(11, [
+  { h: 6, slots: [sl("P", 0, 0, 5, 6, 0, 0, 4, 5), sl("P", 5, 0, 6, 6, 2, 1, 4, 5)] },
+  { h: 5, slots: [sl("L", 0, 0, 7, 5, 1, 1, 6, 4), sl("P", 7, 0, 4, 5, 0, 0, 4, 5)] },
+  { h: 5, slots: [sl("P", 0, 0, 4, 5, 0, 0, 4, 5), sl("L", 4, 0, 7, 5, 0, 0, 6, 4)] },
+  { h: 10, slots: [sl("P", 0, 0, 11, 10, 1, 0, 8, 10)] },
+], [
+  { h: 7, slots: [sl("L", 0, 0, 11, 7, 1, 0, 9, 6)] },
+  { h: 5, slots: [sl("L", 0, 0, 7, 5, 0, 0, 6, 4), sl("L", 7, 0, 4, 5, 0, 2, 4, 3)] },
+  { h: 7, slots: [sl("L", 0, 0, 11, 7, 1, 1, 9, 6)] },
+  { h: 4, slots: [sl("L", 0, 0, 6, 4, 0, 0, 6, 4), sl("L", 6, 0, 5, 4, 0, 1, 5, 3)] },
+]);
+const pd = layout(19, [
+  { h: 5, slots: [sl("L", 0, 0, 7, 5, 0, 0, 6, 4), sl("P", 7, 0, 5, 5, 1, 0, 4, 5), sl("L", 12, 0, 7, 5, 1, 1, 6, 4)] },
+  { h: 5, slots: [sl("P", 0, 0, 5, 5, 0, 0, 4, 5), sl("L", 5, 0, 7, 5, 0, 1, 6, 4), sl("L", 12, 0, 7, 5, 1, 0, 6, 4)] },
+  { h: 5, slots: [sl("L", 0, 0, 7, 5, 0, 0, 6, 4), sl("L", 7, 0, 7, 5, 1, 1, 6, 4), sl("P", 14, 0, 5, 5, 1, 0, 4, 5)] },
+  { h: 6, slots: [sl("P", 0, 0, 5, 6, 0, 0, 4, 5), sl("P", 5, 0, 5, 6, 1, 1, 4, 5), sl("L", 10, 0, 9, 6, 0, 0, 9, 6)] },
+  { h: 6, slots: [sl("L", 0, 0, 9, 6, 0, 0, 9, 6), sl("P", 9, 0, 5, 6, 1, 0, 4, 5), sl("P", 14, 0, 5, 6, 0, 1, 4, 5)] },
+  { h: 6, slots: [sl("P", 0, 0, 5, 6, 0, 1, 4, 5), sl("L", 5, 0, 9, 6, 0, 0, 9, 6), sl("P", 14, 0, 5, 6, 1, 0, 4, 5)] },
+  { h: 6, slots: [sl("P", 0, 0, 6, 6, 0, 0, 4, 5), sl("P", 6, 0, 6, 6, 1, 1, 4, 5), sl("P", 12, 0, 7, 6, 2, 0, 4, 5)] },
+], [
+  { h: 7, slots: [sl("L", 0, 0, 10, 7, 0, 0, 9, 6), sl("L", 10, 0, 9, 7, 0, 1, 9, 6)] },
+  { h: 5, slots: [sl("L", 0, 0, 7, 5, 0, 0, 6, 4), sl("L", 7, 0, 6, 5, 0, 1, 6, 4), sl("L", 13, 0, 6, 5, 0, 0, 6, 4)] },
+  { h: 8, slots: [sl("L", 0, 0, 13, 8, 1, 0, 12, 8), sl("L", 13, 0, 6, 4, 0, 0, 6, 4), sl("L", 13, 4, 6, 4, 0, 0, 6, 4)] },
+  { h: 4, slots: [sl("L", 0, 0, 5, 4, 0, 0, 4, 3), sl("L", 5, 0, 5, 4, 1, 1, 4, 3), sl("L", 10, 0, 5, 4, 0, 0, 4, 3), sl("L", 15, 0, 4, 4, 0, 1, 4, 3)] },
+]);
+const area = (b: { r: number; c: number }, w: number, h: number) => `${b.r + 1}/${b.c + 1}/span ${h}/span ${w}`;
+
+const links = [
+  { href: "#work", t: "Work", d: "24 selects" },
+  { href: "#get", t: "What you get", d: "photo · video · portraits" },
+  { href: "#book", t: "Book", d: "pick a date, send a message" },
+  { href: "#contact", t: "Contact", d: "email + socials" },
+];
+const get = [
+  { n: "01", a: "Event", b: "photography", icon: icons.camera, d: "Conferences, hackathons, demo nights, launches. Candid over posed — the room as it actually felt." },
+  { n: "02", a: "Recap", b: "video", icon: icons.play, d: "A 60–90 second reel cut for socials, plus a longer cut if you want one for the website." },
+  { n: "03", a: "Speaker", b: "portraits", icon: icons.mic, d: "Speakers, founders, your team. A mini studio in a corner of the venue, or whatever light we've got." },
+  { n: "04", a: "Quick", b: "selects", icon: icons.bolt, d: "A first batch of the best frames lands fast, so you can post while people are still talking about it." },
+];
+const kinds = ["hackathon", "demo night", "conference", "launch", "panel", "meetup", "offsite", "something else"];
+const needs = ["photos", "recap video", "portraits"];
+const ig = `https://instagram.com/${contact.instagram}`, tw = `https://x.com/${contact.x}`;
+const hexOf = { g: "var(--G)", k: "var(--K)", m: "var(--S)" } as const;
+type Fld = keyof typeof hexOf;
+---
+
+<!--
+  FABLE R3 / 4 — "BITS" (pixel scale)
+  Concept: no metaphor — one graphic idea: resolution. Everything that isn't a photograph is drawn at absurdly low
+           resolution and huge scale: headings are a hand-drawn 7-row bitmap alphabet whose pixels are 11–25px
+           squares, sections dissolve into each other through giant dither blocks, icons are 9×9. The photographs
+           are the only sharp thing on the page — and each one sits on its own blown-up, three-colour, one-cell
+           pixelation, so you see the same frame at 11×7 pixels and at full quality at once.
+  Grid:    one pixel p = 1/33 of the screen (phone) or 1/57 (desktop), rounded to a whole CSS pixel; one cell = 3p.
+           Type pixels, mosaic cells, photo sizes, dissolves and quote notches are all whole multiples of it.
+  Palette: from the scheme (src/components/photos/schemes.ts) — accent · ink · milk; mosaics use only these 3
+  Fonts:   Geist (800/700/500) · Geist Mono · Geist Pixel — plus the drawn bitmap alphabet (SVG squares, not a font)
+  Motion:  one scroll effect — photos resolve: 3-colour blocks → finer blocks → full quality, in four hard steps.
+  Signature interactions:
+           1. hero frame: a full-quality window in a 19×7-pixel version of the same photo; it follows the cursor
+              one cell at a time (and steps along on its own on touch)
+           2. the wall: 24 selects in dense bands on the cell grid, each on its own pixelation; they resolve as you
+              reach them (bands are chosen from the photos' orientations, so real photos drop straight in)
+           3. giant dither-block dissolves between colour fields (static)
+           4. booking: day cells + tiles that fill green, "Send message"
+           5. instant viewer + mechanical shutter on any frame
+-->
+<!doctype html>
+<html lang="en" style={vars} data-scheme={S.id} data-tones={JSON.stringify(tones)}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content={S.accent} />
+    <title>Oscar shoots events — photo + video for tech events, London</title>
+    <meta name="description" content="Freelance event photography and recap video for hackathons, demo nights, conferences and launches. London, will travel." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link rel="preconnect" href="https://picsum.photos" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@500;700;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <script is:inline>document.documentElement.classList.add("js")</script>
+    <style is:inline>
+      @font-face{font-family:"Geist Pixel";src:url("https://cdn.jsdelivr.net/npm/geist@1.9.2/dist/fonts/geist-pixel/GeistPixel-Square.woff2") format("woff2");font-display:swap}
+      :root{--n:11;--u:33;
+        --p:min(calc(100cqw / var(--u)),30px);--c:calc(var(--p) * 3);
+        --sans:"Geist","Helvetica Neue",Helvetica,Arial,sans-serif;--mono:"Geist Mono",ui-monospace,monospace;--pxf:"Geist Pixel","Geist Mono",monospace}
+      @supports (width:round(down,10.5px,1px)){:root{--p:min(round(down,calc(100cqw / var(--u)),1px),30px)}}
+      @media (min-width:900px){:root{--n:19;--u:57}}
+      *{box-sizing:border-box}
+      html{background:var(--G);scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+      body{margin:0;background:var(--G);color:var(--OG);font:500 16px/1.45 var(--sans);overflow-x:clip;-webkit-font-smoothing:antialiased}
+      a{color:inherit;text-decoration:none}
+      p,h1,h2,h3,figure,blockquote{margin:0}
+      ::selection{background:var(--K);color:var(--GH)}
+      :focus-visible{outline:3px solid var(--fg,var(--K));outline-offset:3px}
+      .mono{font:500 11px/1.4 var(--mono);text-transform:uppercase;letter-spacing:.05em}
+      .pxf{font-family:var(--pxf);font-weight:400;letter-spacing:0}
+      @media (max-width:899px){.dk{display:none !important}}
+      @media (min-width:900px){.mo{display:none !important}}
+
+      .page{container-type:inline-size}
+      .f{background:var(--bg);color:var(--fg);position:relative}
+      .f.g{--bg:var(--G);--fg:var(--OG);--ac:var(--M)}
+      .f.k{--bg:var(--K);--fg:var(--M);--ac:var(--GH)}
+      .f.m{--bg:var(--S);--fg:var(--SF);--ac:var(--G)}
+      .w{width:calc(var(--c) * var(--n));margin-inline:auto;position:relative}
+      .sec{padding-block:clamp(44px,6cqw,92px)}
+      .lab{display:flex;align-items:center;gap:8px;margin-bottom:calc(var(--p) * 2)}
+      .lab::before{content:"";width:11px;height:11px;background:var(--ac);flex:none}
+      .f.m .lab::before{background:var(--SF)}
+
+      /* ── bitmaps ── */
+      .bm{display:block;flex:none;width:calc(var(--bw) * var(--p) * var(--k,1));height:calc(var(--bh) * var(--p) * var(--k,1));fill:currentColor;stroke:currentColor;stroke-width:.04;overflow:visible}
+      .bm .ac{fill:var(--ac);stroke:var(--ac)}
+      .bm.pop rect{animation:pop 1ms linear both}
+      @keyframes pop{from{opacity:0}to{opacity:1}}
+      .dv{background:var(--from);color:var(--to);display:flex;justify-content:center;overflow:hidden}
+      .dv .bm{--k:3;stroke-width:.02}
+
+      /* ── hero ── */
+      .bar{display:flex;justify-content:space-between;align-items:center;gap:10px;padding-block:var(--p)}
+      .me{display:grid;gap:2px}
+      .me b{font:400 22px/1 var(--pxf)}
+      .soc{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+      .chip{font:500 11px/1 var(--mono);text-transform:uppercase;letter-spacing:.05em;background:var(--K);color:var(--M);padding:11px 10px 10px;white-space:nowrap;display:inline-block}
+      .chip:hover,.chip:focus-visible{background:var(--M);color:var(--K)}
+      .chip.o{background:var(--M);color:var(--K)}
+      .chip.o:hover,.chip.o:focus-visible{background:var(--K);color:var(--M)}
+      .hl{display:flex;flex-wrap:wrap;align-items:flex-end;gap:calc(var(--p) * 2) calc(var(--p) * 3);padding-top:var(--p)}
+      .lede{flex:1 1 calc(var(--p) * 20);font:700 clamp(17px,1.75cqw,25px)/1.2 var(--sans);letter-spacing:-.015em;max-width:26em}
+      .links{display:grid;gap:var(--p);margin-top:calc(var(--p) * 2)}
+      .lk{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--K);color:var(--M);padding:0 calc(var(--p) * 1.2);min-height:calc(var(--p) * 5);--ac:var(--GH)}
+      .lk .t{font:400 clamp(27px,2.6cqw,40px)/1 var(--pxf);text-transform:uppercase;white-space:nowrap}
+      .lk .d{opacity:.7;display:none}
+      .lk .bm{--k:.5;color:var(--GH)}
+      .lk:hover,.lk:focus-visible{background:var(--M);color:var(--K)}
+      .lk:hover .bm,.lk:focus-visible .bm{color:var(--K);transform:translateY(calc(var(--p) * .5))}
+      @media (min-width:900px){
+        .links{grid-template-columns:repeat(4,minmax(0,1fr))}
+        .lk{display:grid;grid-template-columns:minmax(0,1fr) auto;align-content:space-between;align-items:end;padding:calc(var(--p) * .7);min-height:calc(var(--p) * 6)}
+        .lk .t{grid-column:1/-1}
+        .lk .d{display:block}
+        .lk .bm{--k:.4}
+      }
+      .band{display:block;position:relative;height:calc(var(--c) * var(--br));margin-top:calc(var(--p) * 3);background:var(--K);cursor:zoom-in;overflow:hidden;--br:8;--ww:9;--wh:6;--wx:1;--wy:1}
+      @media (min-width:900px){.band{--br:7;--ww:8;--wh:5;--wx:10;--wy:1}}
+      .band canvas,.it canvas,.strip canvas{position:absolute;inset:0;width:100%;height:100%;display:block;image-rendering:pixelated}
+      .band img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;
+        clip-path:inset(calc(var(--wy) * var(--c)) calc((var(--n) - var(--wx) - var(--ww)) * var(--c)) calc((var(--br) - var(--wy) - var(--wh)) * var(--c)) calc(var(--wx) * var(--c)))}
+      .fig{display:flex;justify-content:space-between;gap:12px;padding-block:8px calc(var(--p) * 2)}
+      .fig b{font:400 12px/1.2 var(--pxf)}
+
+      /* ── the wall ── */
+      .head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:calc(var(--p) * 1.5) calc(var(--p) * 3)}
+      .head .bm{color:var(--ac)}
+      .f.m .head .bm{color:var(--SF)}.f.g .head .bm{color:var(--OG)}
+      .head p{max-width:34ch;font-weight:500;font-size:15px}
+      .wall{display:grid;grid-template-columns:repeat(var(--n),var(--c));grid-auto-rows:var(--c);margin-top:calc(var(--p) * 2)}
+      .it{position:relative;margin:0;background:var(--K2);grid-area:var(--am);--x:var(--mx);--y:var(--my);--pw:var(--mw);--ph:var(--mh)}
+      .it:nth-child(3n){background:var(--G)}
+      .hole{grid-area:var(--am);background:var(--G);color:var(--OG);display:flex;flex-direction:column;justify-content:space-between;padding:calc(var(--p) * 1.2)}
+      .hole b{font:400 clamp(26px,4.4cqw,68px)/1 var(--pxf)}
+      .hole:hover,.hole:focus-visible{background:var(--M);color:var(--K)}
+      @media (min-width:900px){.it{grid-area:var(--ad);--x:var(--dx);--y:var(--dy);--pw:var(--dw);--ph:var(--dh)}.hole{grid-area:var(--ad)}}
+      .ph{position:absolute;left:calc(var(--x) * var(--c));top:calc(var(--y) * var(--c));width:calc(var(--pw) * var(--c));height:calc(var(--ph) * var(--c));display:block;overflow:hidden;cursor:zoom-in;background:var(--K)}
+      .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+      .js .it:not(.on) .ph img{opacity:0}
+      .it.on .res{display:none}
+      .ph .no{position:absolute;left:0;top:0;background:var(--K);color:var(--M);font:400 11px/1 var(--pxf);padding:4px 5px 3px}
+      .ph .cp{position:absolute;left:0;right:0;bottom:0;background:var(--G);color:var(--OG);padding:6px 7px 5px;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:0}
+      .ph:hover .cp,.ph:focus-visible .cp{opacity:1}
+      .ph:focus-visible{outline:3px solid var(--M);outline-offset:-3px}
+
+      /* ── bio ── */
+      .bio .w{display:grid;gap:calc(var(--c) * 1)}
+      .say{font:800 clamp(30px,4.3cqw,62px)/1.03 var(--sans);letter-spacing:-.035em;text-wrap:balance}
+      .say em{font:400 .94em/1 var(--pxf);font-style:normal;letter-spacing:-.02em;background:var(--G);color:var(--OG);padding:0 .14em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+      .bio .small{max-width:44ch;font-size:clamp(16px,1.3cqw,19px);margin-top:calc(var(--p) * 2)}
+      .bio .it{height:calc(var(--c) * 7);background:var(--K)}
+      @media (min-width:900px){.bio .w{grid-template-columns:calc(var(--c) * 11) calc(var(--c) * 7);justify-content:space-between;align-items:end}}
+
+      /* ── what you get ── */
+      .cards{display:grid;gap:var(--p);margin-top:calc(var(--p) * 3)}
+      .card{background:var(--K);color:var(--M);--ac:var(--GH);display:grid;grid-template-columns:auto minmax(0,1fr);gap:calc(var(--p) * 1.5);padding:calc(var(--p) * 1.5);align-items:start}
+      .card .bm{--k:.82}
+      .card .n{font:400 13px/1 var(--pxf);color:var(--GH);display:block;margin-bottom:8px}
+      .card h3{font:800 clamp(25px,2.5cqw,38px)/1 var(--sans);letter-spacing:-.03em}
+      .card h3 b{display:block;font:400 1em/1 var(--pxf);text-transform:uppercase;letter-spacing:-.01em}
+      .card p{font:400 12px/1.5 var(--mono);margin-top:10px;opacity:.85}
+      .card:hover{background:var(--M);color:var(--K)}
+      .card:hover .n{color:var(--K)}
+      @media (min-width:900px){.cards{grid-template-columns:repeat(4,minmax(0,1fr))}.card{grid-template-columns:1fr;gap:calc(var(--p) * 1.2);padding:var(--p)}.card .bm{--k:1}}
+
+      /* ── clients ── */
+      .logos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--p)}
+      .logos>*{background:var(--K2);color:var(--M);display:grid;place-items:center;align-content:center;gap:12px;text-align:center;padding:10px;min-height:calc(var(--c) * 4)}
+      .logos img{height:clamp(40px,4.6cqw,70px);width:auto;max-width:60%;object-fit:contain;display:block}
+      .logos .you{grid-column:1/-1;background:var(--G);color:var(--OG);min-height:calc(var(--c) * 2.5);justify-items:start;text-align:left;padding:calc(var(--p) * 1.2)}
+      .logos .you b{font:400 clamp(26px,2.6cqw,38px)/1 var(--pxf)}
+      .logos .you:hover,.logos .you:focus-visible{background:var(--M);color:var(--K)}
+      @media (min-width:900px){.logos{grid-template-columns:repeat(5,minmax(0,1fr))}.logos>*{min-height:calc(var(--c) * 3)}.logos .you{grid-column:auto;min-height:0;align-content:space-between}}
+
+      /* ── testimonials ── */
+      .quotes{display:grid;gap:var(--c)}
+      .q{width:calc(var(--c) * 10);padding:calc(var(--p) * 2) calc(var(--p) * 2) calc(var(--p) * 2.2);background:var(--K);color:var(--M);--qa:var(--GH);
+        clip-path:polygon(0 0,calc(100% - var(--c) * 2) 0,calc(100% - var(--c) * 2) var(--c),calc(100% - var(--c)) var(--c),calc(100% - var(--c)) calc(var(--c) * 2),100% calc(var(--c) * 2),100% 100%,0 100%)}
+      .q:nth-child(even){justify-self:end;background:var(--G);color:var(--OG);--qa:var(--M);
+        clip-path:polygon(calc(var(--c) * 2) 0,100% 0,100% 100%,0 100%,0 calc(var(--c) * 2),var(--c) calc(var(--c) * 2),var(--c) var(--c),calc(var(--c) * 2) var(--c))}
+      .q .bm{color:var(--qa);--k:2;margin-bottom:calc(var(--p) * 2)}
+      .q:nth-child(even) .bm{margin-left:auto}
+      .q blockquote{font:800 clamp(27px,3.5cqw,54px)/1.03 var(--sans);letter-spacing:-.035em;text-wrap:balance}
+      .q figcaption{margin-top:16px;display:flex;flex-wrap:wrap;gap:2px 14px;opacity:.85}
+      @media (min-width:900px){.q{width:calc(var(--c) * 12);padding:calc(var(--p) * 1.5) calc(var(--p) * 2) calc(var(--p) * 2)}.q .bm{--k:1.5;margin-bottom:var(--p)}}
+
+      /* ── booking ── */
+      .book .bm.ttl{color:var(--GH);--k:1.7368}
+      .book .intro{font:700 clamp(18px,1.8cqw,26px)/1.2 var(--sans);letter-spacing:-.015em;max-width:24em}
+      .form{display:grid;gap:calc(var(--c) * 1);margin-top:calc(var(--p) * 3)}
+      .step{display:grid;gap:8px;margin:0 0 calc(var(--p) * 2.4);padding:0;border:0;min-width:0}
+      .step>.mono{display:flex;justify-content:space-between;gap:10px;padding:0}
+      .step>.mono b{font-weight:500;color:var(--GH)}
+      .calh{display:grid;grid-template-columns:calc(100% / 7) 1fr calc(100% / 7);align-items:stretch;background:var(--K2)}
+      .calh b{display:grid;place-items:center;font:400 18px/1 var(--pxf);text-transform:uppercase;min-height:46px}
+      .calb{border:0;border-radius:0;background:none;color:inherit;font:400 20px/1 var(--pxf);cursor:pointer;padding:0}
+      .calb:hover:not(:disabled){background:var(--M);color:var(--K)}
+      .calb:disabled{opacity:.3;cursor:default}
+      #cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:2px}
+      #cal-grid>*{aspect-ratio:1;display:grid;place-items:center;font:400 clamp(16px,1.5cqw,21px)/1 var(--pxf);font-style:normal}
+      #cal-grid span{aspect-ratio:auto;font:500 10px/1 var(--mono);opacity:.7;padding:8px 0 5px}
+      #cal-grid button{border:0;border-radius:0;background:var(--K2);color:inherit;cursor:pointer;padding:0;margin:0}
+      #cal-grid button:hover:not(:disabled){background:var(--M);color:var(--K)}
+      #cal-grid button:disabled{opacity:.32;cursor:default}
+      #cal-grid button[aria-pressed="true"]{background:var(--G);color:var(--OG)}
+      .tiles{display:grid;grid-template-columns:repeat(var(--tc,2),minmax(0,1fr));gap:2px}
+      .tile{position:relative;display:block;min-height:54px}
+      .tile input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+      .tile span{position:absolute;inset:0;display:flex;align-items:flex-end;padding:9px 10px;background:var(--K2);font:400 15px/1.05 var(--pxf);text-transform:uppercase}
+      .tile:hover span{background:var(--M);color:var(--K)}
+      .tile input:checked+span{background:var(--G);color:var(--OG)}
+      .tile input:focus-visible+span{outline:3px solid var(--M);outline-offset:-3px}
+      .inp{width:100%;border:0;border-radius:0;background:var(--M);color:var(--K);font:500 17px/1.3 var(--sans);padding:15px 14px;display:block;resize:vertical;margin:0;-webkit-appearance:none;appearance:none}
+      .inp::placeholder{color:var(--phc)}
+      .inp:focus{outline:3px solid var(--G);outline-offset:-3px}
+      .two{display:grid;gap:2px}
+      .send{border:0;border-radius:0;cursor:pointer;width:100%;background:var(--G);color:var(--OG);display:flex;justify-content:space-between;align-items:center;gap:14px;padding:calc(var(--p) * 1.6) calc(var(--p) * 1.4);font:400 clamp(27px,3cqw,46px)/1 var(--pxf);text-transform:uppercase;text-align:left}
+      .send .bm{--k:.55}
+      .send:hover,.send:focus-visible{background:var(--M);color:var(--K)}
+      .fine{font:400 12px/1.5 var(--mono);opacity:.8;margin-top:10px}
+      .fine a{text-decoration:underline}
+      @media (min-width:900px){
+        .book .bm.ttl{--k:2}
+        .book .head{align-items:flex-end;justify-content:flex-start}
+        .form{grid-template-columns:calc(var(--c) * 7) calc(var(--c) * 11);justify-content:space-between;align-items:start}
+        .two{grid-template-columns:1fr 1fr}
+        .tiles.k4{--tc:4 !important}
+        .send .bm{--k:.4}
+      }
+
+      /* ── footer ── */
+      .mailw{display:block;margin-bottom:calc(var(--p) * 2)}
+      .mail{display:inline-block;font:400 30px/1.05 var(--pxf);letter-spacing:-.04em;white-space:nowrap}
+      .mailw:hover .mail,.mailw:focus-visible .mail{background:var(--K);color:var(--GH)}
+      .foot .lk{min-height:calc(var(--p) * 6);flex-direction:row;align-items:center}
+      .foot .lk .t{font-size:clamp(34px,6cqw,96px)}
+      .foot .lk .d{display:block;margin-left:auto;text-transform:none}
+      .foot .lk:hover .bm,.foot .lk:focus-visible .bm{transform:translate(calc(var(--p) * .25),calc(var(--p) * -.25))}
+      @media (min-width:900px){.foot .links{grid-template-columns:1fr 1fr}.foot .lk{min-height:calc(var(--p) * 7);padding:0 var(--p)}}
+      .end{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;padding-block:calc(var(--p) * 2)}
+      .strip{position:relative;height:calc(var(--c) * 3);background:var(--K)}
+      .foot{padding-bottom:calc(64px + env(safe-area-inset-bottom))}
+
+      .cta{position:fixed;right:10px;top:10px;z-index:50;transform:translateY(-70px);transition:transform .2s steps(4)}
+      .cta.on{transform:none}
+      [id]{scroll-margin-top:0}
+      @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.bm.pop rect{animation:none}.cta{transition:none}}
+    </style>
+  </head>
+  <body>
+    <a class="chip o cta" id="cta" href="#book">Book →</a>
+    <div class="page">
+      <header class="f g" id="top">
+        <div class="w">
+          <div class="bar">
+            <a class="me" href="#top"><b>OSCAR</b><span class="mono">photo + video<span class="dk"> · {contact.basedIn}</span></span></a>
+            <nav class="soc" aria-label="socials">
+              <a class="chip" href={ig} target="_blank" rel="noopener">Instagram ↗</a>
+              <a class="chip" href={tw} target="_blank" rel="noopener">X ↗</a>
+              <a class="chip o" href={`mailto:${contact.email}`}>Email</a>
+            </nav>
+          </div>
+          <div class="hl">
+            <h1 style="display:contents" aria-label="Oscar shoots events."><Bits text="OSCAR" pop /><Bits text="SHOOTS" pop /><Bits text="EVENTS." pop /></h1>
+            <p class="lede">Event photography + recap video for hackathons, demo nights, conferences and launches. {contact.basedIn}, will travel.</p>
+          </div>
+          <nav class="links" aria-label="sections">
+            {links.map((l) => (
+              <a class="lk" href={l.href}>
+                <span class="t">{l.t}</span>
+                <span class="d mono">{l.d}</span>
+                <Bits rows={icons.down} />
+              </a>
+            ))}
+          </nav>
+          <a class="band" id="band" href={lead.src} data-shot={shotIndex.get(lead.id)} data-m="11,8" data-d="19,7" aria-label={`open photo: ${lead.caption}`}>
+            <canvas aria-hidden="true"></canvas>
+            <img src={lead.src} alt={lead.caption} width={lead.width} height={lead.height} crossorigin="anonymous" decoding="async" fetchpriority="high" />
+          </a>
+          <p class="fig mono"><span><b>00</b> {lead.caption} — {lead.event.name}</span><span style="white-space:nowrap"><span class="mo">11 × 8</span><span class="dk">19 × 7</span> px ↔ full</span></p>
+        </div>
+      </header>
+      <div class="dv" style={`--from:${hexOf.g};--to:${hexOf.k}`} aria-hidden="true"><Bits rows={dissolve(3, 27, 3)} /></div>
+
+      <main>
+        <section class="f k sec" id="work" style="padding-bottom:0">
+          <div class="w">
+            <div class="head">
+              <h2 aria-label="Selects"><Bits text="SELECTS" /></h2>
+              <p class="dk">A few favourites from the last few months of hackathons, demo nights, launches and one river. Tap any frame to open it.</p>
+            </div>
+            <p class="mono mo" style="margin-top:calc(var(--p) * 1.5)">24 frames · tap any to open</p>
+            <div class="wall">
+              {picks.map((s, i) => {
+                const m = pm.out[i], d = pd.out[i];
+                return (
+                  <figure class="it" data-m={`${m.bw},${m.bh},${m.pw},${m.ph}`} data-d={`${d.bw},${d.bh},${d.pw},${d.ph}`}
+                    style={`--am:${area(m, m.bw, m.bh)};--mx:${m.x};--my:${m.y};--mw:${m.pw};--mh:${m.ph};--ad:${area(d, d.bw, d.bh)};--dx:${d.x};--dy:${d.y};--dw:${d.pw};--dh:${d.ph}`}>
+                    <canvas class="halo" aria-hidden="true"></canvas>
+                    <a class="ph" href={s.src} data-shot={shotIndex.get(s.id)} aria-label={`${s.caption} — ${s.event.name}`}>
+                      <img src={s.thumb} srcset={`${s.thumb} 533w, ${s.src} 1600w`} sizes={`(min-width:900px) ${(d.pw * 5.3).toFixed(0)}vw, ${(m.pw * 9).toFixed(0)}vw`} alt="" width={s.width} height={s.height} crossorigin="anonymous" loading="lazy" decoding="async" />
+                      <canvas class="res" aria-hidden="true"></canvas>
+                      <span class="no">{pad(i + 1)}</span>
+                      <span class="cp mono">{s.caption} · {s.event.name}</span>
+                    </a>
+                  </figure>
+                );
+              })}
+              {pm.blocks.map((h) => <a class="hole mo" href="#book" style={`--am:${area(h, h.w, h.h)}`}><span class="mono">next</span><b>YOUR EVENT →</b></a>)}
+              {pd.blocks.map((h) => <a class="hole dk" href="#book" style={`--ad:${area(h, h.w, h.h)}`}><span class="mono">next</span><b>YOUR EVENT →</b></a>)}
+            </div>
+          </div>
+        </section>
+        <div class="dv" style={`--from:${hexOf.k};--to:${hexOf.m}`} aria-hidden="true"><Bits rows={dissolve(11, 27, 2)} /></div>
+
+        <section class="f m sec bio" id="about">
+          <div class="w">
+            <div>
+              <p class="lab mono">Who's holding the camera</p>
+              <p class="say">I'm Oscar. I shoot the events tech people actually go to — <em>hackathons</em> at hour 22, <em>demo nights</em> where the wifi holds, <em>launch parties</em>, panels, and founders in wetsuits.</p>
+              <p class="small">I build things too, so I know which moments matter: the demo that lands, the room reacting, the hallway chat that turns into a company. I work quietly, I don't need a brief the length of a PRD, and you get pictures people actually want to post.</p>
+            </div>
+            <figure class="it" data-m="11,7,4,5" data-d="7,7,4,5" style="--mx:6;--my:1;--mw:4;--mh:5;--dx:2;--dy:1;--dw:4;--dh:5;grid-area:auto">
+              <canvas class="halo" aria-hidden="true"></canvas>
+              <a class="ph" href={face.src} data-shot={shotIndex.get(face.id)} aria-label={`${face.caption} — ${face.event.name}`}>
+                <img src={face.thumb} alt="" width={face.width} height={face.height} crossorigin="anonymous" loading="lazy" decoding="async" />
+                <canvas class="res" aria-hidden="true"></canvas>
+                <span class="cp mono">{face.caption} · {face.event.name}</span>
+              </a>
+            </figure>
+          </div>
+        </section>
+        <div class="dv" style={`--from:${hexOf.m};--to:${hexOf.g}`} aria-hidden="true"><Bits rows={dissolve(5, 27, 2)} /></div>
+
+        <section class="f g sec" id="get">
+          <div class="w">
+            <h2 class="hl" style="padding:0" aria-label="What you get"><Bits text="WHAT" /><Bits text="YOU" /><Bits text="GET" /></h2>
+            <div class="cards">
+              {get.map((s) => (
+                <article class="card">
+                  <Bits rows={s.icon} />
+                  <div>
+                    <span class="n">{s.n}</span>
+                    <h3><b>{s.a}</b>{s.b}</h3>
+                    <p>{s.d}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+        <div class="dv" style={`--from:${hexOf.g};--to:${hexOf.k}`} aria-hidden="true"><Bits rows={dissolve(8, 27, 2)} /></div>
+
+        <section class="f k sec" id="clients">
+          <div class="w">
+            <p class="lab mono">Shot for</p>
+            <div class="logos">
+              {clients.map((c) => <div><img src={c.logo.src} alt={c.name} loading="lazy" /><span class="mono">{c.name}</span></div>)}
+              <a class="you" href="#book"><span class="mono">next</span><b>YOUR LOGO →</b></a>
+            </div>
+          </div>
+        </section>
+        <div class="dv" style={`--from:${hexOf.k};--to:${hexOf.m}`} aria-hidden="true"><Bits rows={dissolve(21, 27, 2)} /></div>
+
+        <section class="f m sec" aria-label="testimonials">
+          <div class="w">
+            <p class="lab mono">Said afterwards</p>
+            <div class="quotes">
+              {quotes.map((q) => (
+                <figure class="q">
+                  <Bits rows={icons.quote} />
+                  <blockquote>{q.text[0].toUpperCase() + q.text.slice(1)}.</blockquote>
+                  <figcaption class="mono"><span>— {q.by}</span><span>{q.event}</span></figcaption>
+                </figure>
+              ))}
+            </div>
+          </div>
+        </section>
+        <div class="dv" style={`--from:${hexOf.m};--to:${hexOf.k}`} aria-hidden="true"><Bits rows={dissolve(14, 27, 2)} /></div>
+
+        <section class="f k sec book" id="book">
+          <div class="w">
+            <div class="head">
+              <h2 aria-label="Book"><Bits text="BOOK" class="ttl" /></h2>
+              <p class="intro">Pick a date, tap what it is, leave your email. I'll reply within a day with availability and a quote.</p>
+            </div>
+            <form class="form" id="form" novalidate>
+              <div>
+                <div class="step" style="margin:0">
+                  <p class="mono"><span>1 — When is it?</span><b id="cal-picked">optional</b></p>
+                  <div class="calh">
+                    <button class="calb" type="button" id="cal-prev" aria-label="previous month">←</button>
+                    <b id="cal-title" aria-live="polite"></b>
+                    <button class="calb" type="button" id="cal-next" aria-label="next month">→</button>
+                  </div>
+                  <div id="cal-grid"></div>
+                  <label class="tile"><input type="checkbox" id="nodate" /><span>No date yet — just asking</span></label>
+                </div>
+              </div>
+              <div>
+                <div class="step" role="group" aria-label="what is it">
+                  <p class="mono"><span>2 — What is it?</span><b>pick one</b></p>
+                  <div class="tiles k4" style="--tc:2">{kinds.map((k) => <label class="tile"><input type="radio" name="kind" value={k} /><span>{k}</span></label>)}</div>
+                </div>
+                <div class="step" role="group" aria-label="what do you need">
+                  <p class="mono"><span>3 — What do you need?</span><b>pick any</b></p>
+                  <div class="tiles" style="--tc:3">{needs.map((k, i) => <label class="tile"><input type="checkbox" name="need" value={k} checked={i === 0} /><span>{k}</span></label>)}</div>
+                </div>
+                <div class="step">
+                  <p class="mono"><span>4 — Where do I reply?</span></p>
+                  <div class="two">
+                    <input class="inp" type="text" name="name" placeholder="Your name" autocomplete="name" aria-label="your name" />
+                    <input class="inp" type="email" name="email" placeholder="Your email" autocomplete="email" aria-label="your email" required />
+                  </div>
+                  <textarea class="inp" name="note" rows="2" placeholder="Anything else? Venue, size, vibe — optional" aria-label="anything else" style="margin-top:-6px"></textarea>
+                </div>
+                <button class="send" type="submit"><span>Send message</span><Bits rows={icons.right} /></button>
+                <p class="fine" id="sent">Opens your email app with this written out. Or just write to <a href={`mailto:${contact.email}`}>{contact.email}</a></p>
+              </div>
+            </form>
+          </div>
+        </section>
+      </main>
+      <div class="dv" style={`--from:${hexOf.k};--to:${hexOf.g}`} aria-hidden="true"><Bits rows={dissolve(30, 27, 3)} /></div>
+
+      <footer class="f g foot" id="contact">
+        <div class="w" style="padding-top:calc(var(--p) * 2)">
+          <p class="lab mono">Or skip the form</p>
+          <a class="mailw" href={`mailto:${contact.email}`}><span class="mail" id="mail">{contact.email}</span></a>
+          <nav class="links" aria-label="socials" style="margin:0">
+            <a class="lk" href={ig} target="_blank" rel="noopener"><span class="t">Instagram</span><span class="d mono dk">@{contact.instagram}</span><Bits rows={icons.out} /></a>
+            <a class="lk" href={tw} target="_blank" rel="noopener"><span class="t">X</span><span class="d mono">@{contact.x}</span><Bits rows={icons.out} /></a>
+          </nav>
+          <div class="end mono"><span>Oscar — event photo + video — {contact.basedIn}, will travel</span><a href="#top">back to top ↑</a></div>
+          <div class="strip" data-src={last.thumb} data-m="11,3" data-d="19,3" aria-hidden="true"><canvas></canvas></div>
+        </div>
+      </footer>
+    </div>
+
+    <Viewer bg={S.ink} fg={S.paper} accent={GH} onAccent={S.ink} mono='"Geist Mono", ui-monospace, monospace' display='"Geist", sans-serif' />
+    <Switcher />
+
+    <script define:vars={{ email: contact.email }}>window.__mail = email;</script>
+    <script>
+      import { wireBook, fitText } from "@/components/photos/fable/r3/book";
+      import { mosaic, type RGB } from "@/components/photos/fable/r3/pixel";
+      const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+      const tones = JSON.parse(document.documentElement.dataset.tones ?? "[]") as RGB[]; // ink, accent, milk from the scheme
+      const wide = matchMedia("(min-width:900px)");
+      const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const dims = (el: HTMLElement) => ((wide.matches ? el.dataset.d : el.dataset.m) ?? "1,1").split(",").map(Number);
+      const ready = (im: HTMLImageElement) => im.complete && im.naturalWidth > 0;
+
+      // ── every select: its box at one-cell resolution, and the frame itself resolving in hard steps ──
+      const items = [...document.querySelectorAll<HTMLElement>(".it")];
+      function paint(it: HTMLElement) {
+        const im = it.querySelector("img")!; if (!ready(im)) return;
+        const [bw, bh, pw, ph] = dims(it);
+        mosaic(it.querySelector<HTMLCanvasElement>(".halo")!, im, bw, bh, tones);
+        if (!it.classList.contains("on") && !it.dataset.go) mosaic(it.querySelector<HTMLCanvasElement>(".res")!, im, pw, ph, tones);
+        it.dataset.rdy = "1";
+        if (it.dataset.vis) resolve(it);
+      }
+      function resolve(it: HTMLElement) {
+        if (it.dataset.go || !it.dataset.rdy) return; it.dataset.go = "1";
+        if (still) { it.classList.add("on"); return; }
+        const im = it.querySelector("img")!, cv = it.querySelector<HTMLCanvasElement>(".res")!, [, , pw, ph] = dims(it);
+        const steps: Array<[number, boolean]> = [[2, true], [4, false], [8, false]];
+        let i = 0;
+        const next = () => {
+          if (i >= steps.length) { it.classList.add("on"); return; }
+          const [k, flat] = steps[i++]; mosaic(cv, im, pw * k, ph * k, flat ? tones : null); setTimeout(next, 110);
+        };
+        setTimeout(next, 140 + Math.random() * 160);
+      }
+      const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { const it = e.target as HTMLElement; it.dataset.vis = "1"; resolve(it); io.unobserve(it); } }), { threshold: 0.35 });
+      items.forEach((it) => {
+        const im = it.querySelector("img")!;
+        if (ready(im)) paint(it); else im.addEventListener("load", () => paint(it), { once: true });
+        im.addEventListener("error", () => it.classList.add("on"), { once: true });
+        io.observe(it);
+      });
+
+      // ── flat mosaics that aren't selects: the hero frame and the closing strip ──
+      const band = $("band"), bandImg = band.querySelector("img")!;
+      const flats: Array<[HTMLElement, HTMLImageElement]> = [[band, bandImg]];
+      document.querySelectorAll<HTMLElement>(".strip[data-src]").forEach((el) => { const im = new Image(); im.crossOrigin = "anonymous"; im.src = el.dataset.src!; flats.push([el, im]); });
+      const flat = (el: HTMLElement, im: HTMLImageElement) => { if (!ready(im)) return; const [c, r] = dims(el); mosaic(el.querySelector("canvas")!, im, c, r, tones); };
+      flats.forEach(([el, im]) => { if (ready(im)) flat(el, im); else im.addEventListener("load", () => flat(el, im), { once: true }); });
+
+      // ── hero window: follows the mouse one cell at a time; steps along by itself otherwise ──
+      const num = (v: string) => parseFloat(getComputedStyle(band).getPropertyValue(v)) || 0;
+      let hovering = false, dir = 1, seen = false;
+      const place = (x: number, y: number) => {
+        const cols = num("--n"), rows = num("--br"), ww = num("--ww"), wh = num("--wh");
+        band.style.setProperty("--wx", String(Math.max(0, Math.min(cols - ww, x))));
+        band.style.setProperty("--wy", String(Math.max(0, Math.min(rows - wh, y))));
+      };
+      band.addEventListener("pointermove", (e) => {
+        if (e.pointerType !== "mouse") return; hovering = true;
+        const r = band.getBoundingClientRect(), c = r.width / num("--n");
+        place(Math.round((e.clientX - r.left) / c - num("--ww") / 2), Math.round((e.clientY - r.top) / c - num("--wh") / 2));
+      });
+      band.addEventListener("pointerleave", () => { hovering = false; });
+      new IntersectionObserver(([e]) => { seen = e.isIntersecting; }, { threshold: 0.4 }).observe(band);
+      if (!still) setInterval(() => {
+        if (!seen || hovering || document.hidden) return;
+        const x = num("--wx"), max = num("--n") - num("--ww");
+        if (x + dir > max || x + dir < 0) dir = -dir;
+        place(x + dir, num("--wy"));
+      }, 1100);
+
+      wide.addEventListener("change", () => {
+        band.style.removeProperty("--wx"); band.style.removeProperty("--wy");
+        items.forEach(paint); flats.forEach(([el, im]) => flat(el, im));
+      });
+
+      new IntersectionObserver(([e]) => $("cta").classList.toggle("on", !e.isIntersecting && e.boundingClientRect.top < 0)).observe(band);
+      fitText($("mail"));
+      wireBook({
+        form: $<HTMLFormElement>("form"), email: (window as any).__mail,
+        cal: { grid: $("cal-grid"), title: $("cal-title"), prev: $<HTMLButtonElement>("cal-prev"), next: $<HTMLButtonElement>("cal-next") },
+        nodate: $<HTMLInputElement>("nodate"), sent: $("sent"), picked: $("cal-picked"),
+      });
+    </script>
+  </body>
+</html>

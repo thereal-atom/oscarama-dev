@@ -1,0 +1,21 @@
+---
+// Draws a bitmap (a word in the r3/4 alphabet, or explicit rows) as square SVG cells.
+// Size comes from CSS: one cell = var(--p) × var(--k, 1). `pop` = cells switch on one by one (CSS only).
+import { glyphRows } from "./bits";
+interface Props { text?: string; rows?: string[]; pop?: boolean; class?: string }
+const { text, rows: given, pop = false, class: cls } = Astro.props;
+const rows = given ?? glyphRows(text ?? "");
+const w = Math.max(...rows.map((r) => r.length)), h = rows.length;
+const path = (ch: string) => {
+  let d = "";
+  rows.forEach((r, y) => { for (let x = 0; x < r.length; x++) { if (r[x] !== ch) continue; let e = x; while (r[e + 1] === ch) e++; d += `M${x} ${y}h${e - x + 1}v1h-${e - x + 1}z`; x = e; } });
+  return d;
+};
+const cells: Array<[number, number, number]> = [];
+if (pop) rows.forEach((r, y) => [...r].forEach((c, x) => { if (c === "#") cells.push([x, y, ((x * 73 + y * 151 + x * y * 31) % 97) * 7]); }));
+const ac = path("g");
+---
+<svg class:list={["bm", cls, { pop }]} viewBox={`0 0 ${w} ${h}`} style={`--bw:${w};--bh:${h}`} aria-hidden="true" focusable="false">
+  {pop ? cells.map(([x, y, d]) => <rect x={x} y={y} width="1" height="1" style={`animation-delay:${d}ms`} />) : <path d={path("#")} />}
+  {ac && <path class="ac" d={ac} />}
+</svg>

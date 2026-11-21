@@ -1,0 +1,9 @@
+---
+// /photos/<style> → that style's default scheme.
+import { styles } from "@/components/photos/schemes";
+
+export function getStaticPaths() {
+  return styles.map((s) => ({ params: { style: s.id }, props: { to: `/photos/${s.id}/${s.defaultScheme}` } }));
+}
+return Astro.redirect(Astro.props.to);
+---
