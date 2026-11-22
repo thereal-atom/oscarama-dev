@@ -233,6 +233,10 @@ const ig = `https://instagram.com/${contact.instagram}`, tw = `https://x.com/${c
       .ph:hover .cp,.ph:focus-visible .cp{opacity:1}
       .ph:focus-visible{outline-offset:2px}
       .ph.me{cursor:default}
+      /* handwritten name + arrow onto the face; the face sits ~70% across, ~30-40% down in both the phone and desktop crops */
+      .me-tag{position:absolute;right:5%;top:3%;font:600 calc(var(--r) * .52)/1 "Caveat","Bradley Hand",cursive;color:var(--blue);transform:rotate(-7deg);text-shadow:0 1px 6px rgb(0 0 0/.35)}
+      .me-arrow{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+      .me-arrow path{fill:none;stroke:var(--blue);stroke-width:2.5px;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke;filter:drop-shadow(0 1px 3px rgb(0 0 0/.35))}
             .hole.x{margin:calc(var(--r) * .1);background:var(--blue)}
 
       /* ── text blocks ── */
@@ -358,6 +362,8 @@ const ig = `https://instagram.com/${contact.instagram}`, tw = `https://x.com/${c
           {heroPhoto ? (
             <div class="ph me" style="--am:10/1/span 4/span 6;--ad:2/13/span 6/span 4">
               <img src={heroPhoto.src} alt="Oscar holding a camera up to his eye" width={heroPhoto.width} height={heroPhoto.height} style={`object-position:${heroPhoto.focus}`} decoding="async" fetchpriority="high" />
+              <span class="me-tag" aria-hidden="true">oscarama</span>
+              <svg class="me-arrow" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M83 13 C 88 19, 82 25, 71 28 M71 28 l4.5 -0.6 M71 28 l1.6 -3.6" /></svg>
             </div>
           ) : (
             <a class="ph" href={lead.src} data-shot={shotIndex.get(lead.id)} aria-label={`open photo${lead.caption ? `: ${lead.caption}` : ""}`} style="--am:10/1/span 4/span 6;--ad:2/13/span 6/span 4">
