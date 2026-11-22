@@ -226,12 +226,17 @@ const ig = `https://www.instagram.com/${contact.instagram}/`, tw = `https://x.co
       }
 
       /* ── photos on the module ── */
-      .ph{display:block;margin:calc(var(--r) * .1);overflow:hidden;background:var(--ink);cursor:zoom-in;color:var(--paper)}
+      .ph{display:block;margin:calc(var(--r) * .1);overflow:hidden;background:var(--paper);cursor:zoom-in;color:var(--paper)}
       .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
             .ph .cp{position:absolute;left:0;right:0;bottom:0;background:var(--blue);color:var(--on-a);padding:2px 8px 4px;opacity:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font:600 21px/1.1 "Caveat","Bradley Hand",cursive}
       .ph:hover .cp,.ph:focus-visible .cp{opacity:1}
       .ph:focus-visible{outline-offset:2px}
       .ph.me{cursor:default}
+      /* first load: a photo stays hidden on the ground colour until it has downloaded, then pixels in (the hover
+         dither at 1/4 → 1/2 → 3/4 → full). Photos already in the cache when the script runs just appear. */
+      .js .ph img:not(.ld){visibility:hidden}
+      .ph img.ld.px{animation:px-in .32s step-end;-webkit-mask-size:calc(var(--r,60px) * 16 / 7) calc(var(--r,60px) * 16 / 7);mask-size:calc(var(--r,60px) * 16 / 7) calc(var(--r,60px) * 16 / 7)}
+      @media (prefers-reduced-motion:reduce){.ph img.ld.px{animation:none}}
       /* handwritten name + arrow onto the face; the face sits ~70% across, ~30-40% down in both the phone and desktop crops */
       .me-tag{position:absolute;right:5%;top:3%;font:600 calc(var(--r) * .52)/1 "Caveat","Bradley Hand",cursive;color:var(--blue);transform:rotate(-7deg);text-shadow:0 1px 6px rgb(0 0 0/.35)}
       .me-arrow{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
@@ -488,6 +493,14 @@ const ig = `https://www.instagram.com/${contact.instagram}/`, tw = `https://x.co
       import { fitText } from "@/components/photos/book";
       const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
       const gs = [...document.querySelectorAll<HTMLElement>(".g")];
+
+      // ── photos pixel in once downloaded (see .ph img.ld) ──
+      document.querySelectorAll<HTMLImageElement>(".ph img").forEach((img) => {
+        if (img.complete && img.naturalWidth) { img.classList.add("ld"); return; }
+        const show = () => img.classList.add("ld", "px");
+        img.addEventListener("load", show, { once: true });
+        img.addEventListener("error", show, { once: true });
+      });
 
       // ── snap: text blocks grow in whole rows ──
       const rowH = () => parseFloat(getComputedStyle(gs[0]).gridAutoRows) || 60;
