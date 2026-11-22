@@ -1,0 +1,52 @@
+---
+// Hub for comparing the shortlisted photography prototypes: styles × colour schemes. Not part of the final design.
+import { styles, schemes, schemeKeys } from "@/components/photos/schemes";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>photos — prototypes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;600&display=swap" rel="stylesheet" />
+    <style>
+      body { margin: 0; padding: 32px 16px; background: #FDFDFD; color: #1A1A1A; font-family: "Geist Mono", monospace; }
+      main { max-width: 760px; margin: 0 auto; }
+      h1 { font-size: 14px; font-weight: 600; margin: 0 0 8px; }
+      p { font-size: 12px; opacity: .6; margin: 0 0 24px; }
+      .wrap { overflow-x: auto; }
+      table { border-collapse: collapse; width: 100%; font-size: 13px; }
+      th, td { border-bottom: 1px dashed #ccc; padding: 12px 8px; text-align: left; white-space: nowrap; }
+      thead th { font-weight: 400; font-size: 11px; opacity: .7; }
+      td a i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; box-shadow: 0 0 0 1px rgba(0,0,0,.2); }
+      td a { color: inherit; text-decoration: none; }
+      td a:hover { text-decoration: underline; }
+      kbd { font: inherit; opacity: .5; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>hire-me page shortlist — styles × colour schemes</h1>
+      <p>On any page: keys 1–{styles.length} switch style, Q W E R switch scheme.</p>
+      <div class="wrap">
+        <table>
+          <tbody>
+            {styles.map((st) => (
+              <tr>
+                <th>{st.label} <kbd>{st.key}</kbd></th>
+                {st.schemes.map((id, i) => {
+                  const s = schemes[id];
+                  const ground = s.dark ? s.ink : s.paper;
+                  return <td><a href={`/photos/${st.id}/${id}`}><i style={`background:linear-gradient(90deg,${s.accent} 50%,${ground} 50%)`} />{s.label} <kbd>{schemeKeys[i].toUpperCase()}</kbd></a></td>;
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </body>
+</html>

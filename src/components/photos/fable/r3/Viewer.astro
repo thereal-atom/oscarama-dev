@@ -1,0 +1,174 @@
+---
+// Round-3 photo viewer.
+// - any element with [data-shot="<index into allShots>"] opens it
+// - opens INSTANTLY: the already-decoded thumbnail is painted onto a canvas at full size in the same frame,
+//   the full-res frame fades in over it once decoded (and is pre-warmed on hover / touchstart)
+// - mechanical shutter sound + a ~70ms mirror blackout
+// Theme with the props (they become CSS custom properties) or override .rv* in the page.
+import { viewerData } from "../derive";
+import { schemes } from "@/components/photos/schemes";
+interface Props { bg?: string; fg?: string; accent?: string; onAccent?: string; mono?: string; display?: string; radius?: string; bookHref?: string; bookLabel?: string }
+const D = schemes["orange-light"];
+const { bg = D.ink, fg = D.paper, accent = D.accent, onAccent = D.ink, mono = "ui-monospace, monospace", display = "inherit", radius = "0px", bookHref = "#book", bookLabel = "book a shoot like this →" } = Astro.props;
+---
+<div class="rv" id="rv" hidden role="dialog" aria-modal="true" aria-label="photo viewer"
+  style={`--rv-bg:${bg};--rv-fg:${fg};--rv-accent:${accent};--rv-on:${onAccent};--rv-mono:${mono};--rv-display:${display};--rv-radius:${radius}`}>
+  <div class="rv-top">
+    <span class="rv-count" id="rv-count">01 / 01</span>
+    <span class="rv-ev" id="rv-ev"></span>
+    <button class="rv-btn" data-mute type="button" aria-pressed="false">sound on</button>
+    <button class="rv-btn rv-close" id="rv-close" type="button" aria-label="close viewer">close ✕</button>
+  </div>
+  <div class="rv-stage" id="rv-stage">
+    <div class="rv-frame" id="rv-frame">
+      <canvas id="rv-thumb" aria-hidden="true"></canvas>
+      <img id="rv-img" alt="" draggable="false" decoding="async" />
+      <i class="rv-black" aria-hidden="true"></i>
+    </div>
+    <button class="rv-nav rv-prev" id="rv-prev" type="button" aria-label="previous photo">←</button>
+    <button class="rv-nav rv-next" id="rv-next" type="button" aria-label="next photo">→</button>
+  </div>
+  <div class="rv-bot">
+    <p class="rv-cap" id="rv-cap"></p>
+    <p class="rv-meta" id="rv-meta"></p>
+    <p class="rv-exif" id="rv-exif"></p>
+    <a class="rv-book" href={bookHref} id="rv-book">{bookLabel}</a>
+  </div>
+</div>
+<script type="application/json" id="rv-data" set:html={JSON.stringify(viewerData)} />
+
+<style is:global>
+  .rv{position:fixed;inset:0;z-index:1000;background:var(--rv-bg);color:var(--rv-fg);display:grid;grid-template-rows:auto minmax(0,1fr) auto;
+    font-family:var(--rv-mono);font-size:11px;line-height:1.35;letter-spacing:.03em;text-transform:uppercase;overscroll-behavior:contain}
+  .rv[hidden]{display:none}
+  .rv-top{display:flex;align-items:center;gap:10px;padding:10px 12px;min-height:48px;box-sizing:border-box}
+  .rv-ev{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.7}
+  .rv-count{font-variant-numeric:tabular-nums;color:var(--rv-accent)}
+  .rv-btn{font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;background:none;border:1px solid currentColor;border-radius:var(--rv-radius);padding:8px 10px;cursor:pointer;white-space:nowrap}
+  .rv-btn:hover,.rv-btn:focus-visible{background:var(--rv-fg);color:var(--rv-bg);outline:none}
+  .rv-btn[aria-pressed="true"]{opacity:.55;text-decoration:line-through}
+  .rv-stage{position:relative;min-height:0;padding:0 12px;overflow:hidden;touch-action:pan-y;container-type:size}
+  .rv-frame{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);aspect-ratio:var(--ar,1.5);
+    width:min(100cqw,100cqh * var(--ar,1.5));overflow:hidden;border-radius:var(--rv-radius);background:#111}
+  .rv-frame canvas,.rv-frame img{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover;user-select:none;-webkit-user-drag:none}
+  .rv-frame img{opacity:0;transition:opacity .18s linear}
+  .rv-frame img.in{opacity:1}
+  .rv-black{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none}
+  .rv.snap .rv-black{animation:rv-black .16s linear}
+  @keyframes rv-black{0%{opacity:1}45%{opacity:1}100%{opacity:0}}
+  .rv-nav{position:absolute;top:0;bottom:0;width:20%;min-width:56px;background:none;border:0;color:var(--rv-fg);font:inherit;font-size:22px;cursor:pointer;display:flex;align-items:center;padding:0 16px;opacity:0;transition:opacity .15s}
+  .rv-nav::before{content:"";position:absolute;width:44px;height:44px;border-radius:50%;background:var(--rv-bg);opacity:.72;z-index:-1}
+  .rv-prev{left:0;justify-content:flex-start}.rv-next{right:0;justify-content:flex-end}
+  .rv-prev::before{left:5px}.rv-next::before{right:5px}
+  .rv-nav{z-index:1;isolation:isolate}
+  .rv-nav:hover,.rv-nav:focus-visible{opacity:1;outline:none}
+  @media (hover:none){.rv-nav{opacity:.9}}
+  .rv-bot{padding:12px 12px calc(14px + env(safe-area-inset-bottom));display:grid;gap:3px;grid-template-columns:1fr auto;align-items:end}
+  .rv-bot p{margin:0;grid-column:1}
+  .rv-cap{font-family:var(--rv-display);font-size:clamp(20px,3vw,34px);line-height:1.02;letter-spacing:0;text-transform:none;margin-bottom:4px !important}
+  .rv-meta{opacity:.75}.rv-exif{opacity:.5}
+  .rv-book{grid-column:2;grid-row:1/4;align-self:end;color:var(--rv-on);background:var(--rv-accent);text-decoration:none;padding:11px 13px;border-radius:var(--rv-radius);white-space:nowrap}
+  .rv-book:hover,.rv-book:focus-visible{background:var(--rv-fg);color:var(--rv-bg);outline:none}
+  @media (max-width:560px){.rv-bot{grid-template-columns:1fr;padding-right:120px}.rv-book{grid-column:1;grid-row:auto;justify-self:start;margin-top:8px}.rv-ev{display:none}.rv-count{flex:1}}
+  @media (prefers-reduced-motion:reduce){.rv.snap .rv-black{animation:none}.rv-frame img{transition:none}}
+</style>
+
+<script>
+  import { shutter, wireMute } from "./shutter";
+  type V = { src: string; thumb: string; w: number; h: number; cap: string; ev: string; client: string; date: string; place: string; exif: string };
+  const data: V[] = JSON.parse(document.getElementById("rv-data")!.textContent || "[]");
+  const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+  const root = $("rv"), img = $<HTMLImageElement>("rv-img"), cv = $<HTMLCanvasElement>("rv-thumb"), frame = $("rv-frame");
+  let cur = 0, opener: HTMLElement | null = null, token = 0;
+  wireMute();
+
+  const warmed = new Map<number, HTMLImageElement>();
+  function warm(i: number) {
+    if (warmed.has(i) || !data[i]) return warmed.get(i);
+    const im = new Image(); im.decoding = "async"; im.src = data[i].src; warmed.set(i, im); return im;
+  }
+  // start fetching the full frame as soon as there's intent
+  const intent = (e: Event) => { const el = (e.target as HTMLElement).closest?.<HTMLElement>("[data-shot]"); if (el) warm(Number(el.dataset.shot)); };
+  document.addEventListener("pointerenter", intent, { capture: true, passive: true });
+  document.addEventListener("touchstart", intent, { capture: true, passive: true });
+  document.addEventListener("focusin", intent, { passive: true });
+
+  /** find an already-decoded thumbnail for shot i somewhere on the page */
+  function loadedThumb(i: number, from?: HTMLElement | null): HTMLImageElement | null {
+    const ok = (im: HTMLImageElement | null | undefined) => (im && im.complete && im.naturalWidth > 0 ? im : null);
+    const a = ok(from?.matches("img") ? (from as HTMLImageElement) : (from?.querySelector<HTMLImageElement>("img[data-live]") ?? from?.querySelector("img")));
+    if (a) return a;
+    for (const el of document.querySelectorAll<HTMLElement>(`[data-shot="${i}"]`)) { const b = ok(el.matches("img") ? (el as HTMLImageElement) : el.querySelector("img")); if (b) return b; }
+    return null;
+  }
+  function paintThumb(im: HTMLImageElement, s: V) {
+    // cover-fit the thumb (it may have been cropped differently on the page) into the shot's true aspect
+    const w = 640, h = Math.round((640 * s.h) / s.w);
+    cv.width = w; cv.height = h;
+    const x = cv.getContext("2d")!; const r = Math.max(w / im.naturalWidth, h / im.naturalHeight);
+    x.drawImage(im, (w - im.naturalWidth * r) / 2, (h - im.naturalHeight * r) / 2, im.naturalWidth * r, im.naturalHeight * r);
+  }
+
+  const pad = (n: number) => String(n).padStart(2, "0");
+  function show(i: number, from: HTMLElement | null = null, soft = false) {
+    cur = (i + data.length) % data.length;
+    const s = data[cur], my = ++token;
+    frame.style.setProperty("--ar", String(s.w / s.h));
+    img.classList.remove("in"); img.removeAttribute("src"); img.alt = [s.cap, s.ev].filter(Boolean).join(" — ");
+    const th = loadedThumb(cur, from);
+    if (th) paintThumb(th, s);
+    else { cv.getContext("2d")!.clearRect(0, 0, cv.width, cv.height); const t = new Image(); t.onload = () => { if (my === token && !img.classList.contains("in")) paintThumb(t, s); }; t.src = s.thumb; }
+    root.classList.remove("snap"); void root.offsetWidth; root.classList.add("snap");
+    shutter(soft);
+    const full = warm(cur) ?? new Image();
+    const done = () => { if (my !== token) return; img.src = s.src; img.classList.add("in"); };
+    if (full.complete && full.naturalWidth) done(); else (full.decode ? full.decode().then(done, done) : (full.onload = done));
+    $("rv-count").textContent = `${pad(cur + 1)} / ${pad(data.length)}`;
+    $("rv-ev").textContent = [s.ev, s.client].filter(Boolean).join(" — ");
+    $("rv-cap").textContent = s.cap;
+    $("rv-meta").textContent = [s.ev, s.client, s.place, s.date].filter(Boolean).join(" · ");
+    $("rv-exif").textContent = s.exif;
+    setTimeout(() => { if (my === token) warm((cur + 1) % data.length); }, 300);
+    root.dispatchEvent(new CustomEvent("rv:show", { detail: { index: cur } }));
+  }
+  function open(i: number, from: HTMLElement | null) {
+    opener = from; root.hidden = false; document.documentElement.classList.add("rv-open");
+    show(i, from); $("rv-close").focus({ preventScroll: true });
+  }
+  function close() {
+    root.hidden = true; document.documentElement.classList.remove("rv-open"); token++;
+    opener?.focus({ preventScroll: true });
+  }
+  (window as any).r3Viewer = { open, close, show };
+  document.addEventListener("click", (e) => {
+    const el = (e.target as HTMLElement).closest?.<HTMLElement>("[data-shot]");
+    if (!el || root.contains(el) || el.hasAttribute("data-noview")) return;
+    e.preventDefault(); open(Number(el.dataset.shot), el);
+  });
+  $("rv-close").addEventListener("click", close);
+  $("rv-prev").addEventListener("click", () => show(cur - 1, null, true));
+  $("rv-next").addEventListener("click", () => show(cur + 1, null, true));
+  $("rv-book").addEventListener("click", close);
+  $("rv-stage").addEventListener("click", (e) => { if (e.target === e.currentTarget) close(); });
+  addEventListener("keydown", (e) => {
+    if (root.hidden) return;
+    if (e.key === "Escape") { e.preventDefault(); close(); }
+    else if (e.key === "ArrowLeft") show(cur - 1, null, true);
+    else if (e.key === "ArrowRight") show(cur + 1, null, true);
+    else if (e.key === "Tab") {
+      const f = [...root.querySelectorAll<HTMLElement>("button,a[href]")].filter((n) => n.offsetParent);
+      const first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  });
+  let sx = 0, sy = 0;
+  const stage = $("rv-stage");
+  stage.addEventListener("touchstart", (e) => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+  stage.addEventListener("touchend", (e) => {
+    const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+    if (Math.abs(dx) > 44 && Math.abs(dx) > Math.abs(dy) * 1.3) show(cur + (dx < 0 ? 1 : -1), null, true);
+    else if (dy > 90 && Math.abs(dy) > Math.abs(dx) * 1.5) close();
+  }, { passive: true });
+</script>
+<style is:global>html.rv-open{overflow:hidden}</style>
