@@ -70,8 +70,18 @@ const placeholderShots = events.flatMap((e) => e.shots.map((s) => ({ ...s, event
 
 // ── real photos: the "portfolio" doc in Sanity, in the order they're arranged there ──
 const noEvent: EventShoot = { slug: "", name: "", client: "", date: "", place: "", type: "meetup", deliverables: [], stats: { photos: 0, turnaround: "" }, accent: accents[0], shots: [] };
-const fromSanity = (await sanityQuery<Array<{ _key: string; caption?: string; ref?: string }>>(`*[_id == "portfolio"][0].photos[]{ _key, caption, "ref": asset._ref }`)) ?? [];
-export const realShots = fromSanity.flatMap((p) => {
+type SanityPortfolio = { hero?: { ref?: string; hotspot?: { x: number; y: number } }; photos?: Array<{ _key: string; caption?: string; ref?: string }> };
+const portfolio = await sanityQuery<SanityPortfolio | null>(`*[_id == "portfolio"][0]{ "hero": hero{ "ref": asset._ref, hotspot }, "photos": photos[]{ _key, caption, "ref": asset._ref } }`);
+
+/** the hand-picked photo beside the headline; `focus` is a CSS object-position from the Studio hotspot */
+export const heroPhoto = (() => {
+  const img = portfolio?.hero?.ref ? sanityImage(portfolio.hero.ref) : null;
+  if (!img) return null;
+  const h = portfolio!.hero!.hotspot;
+  return { src: img.url(1600), width: img.width, height: img.height, focus: h ? `${(h.x * 100).toFixed(1)}% ${(h.y * 100).toFixed(1)}%` : "50% 50%" };
+})();
+
+export const realShots = (portfolio?.photos ?? []).flatMap((p) => {
   const img = p.ref ? sanityImage(p.ref) : null;
   if (!img) return [];
   const shot: Shot = { id: p._key, src: img.url(2400), thumb: img.url(800), width: img.width, height: img.height, caption: p.caption?.trim() ?? "" };

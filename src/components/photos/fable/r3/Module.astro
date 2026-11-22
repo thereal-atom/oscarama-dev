@@ -3,7 +3,7 @@ import Switcher from "@/components/photos/Switcher.astro";
 import Viewer from "@/components/photos/fable/r3/Viewer.astro";
 import Bits from "@/components/photos/fable/r3/Bits.astro";
 import { icons, dissolve } from "@/components/photos/fable/r3/bits";
-import { events, contact, clients } from "@/data/photos";
+import { events, contact, clients, heroPhoto } from "@/data/photos";
 import { mixed, shotIndex, shotLabel, hasRealPhotos } from "@/components/photos/fable/derive";
 import { schemes, alpha, onAccent, type SchemeId } from "@/components/photos/schemes";
 
@@ -232,6 +232,7 @@ const ig = `https://instagram.com/${contact.instagram}`, tw = `https://x.com/${c
             .ph .cp{position:absolute;left:0;right:0;bottom:0;background:var(--blue);color:var(--on-a);padding:2px 8px 4px;opacity:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font:600 21px/1.1 "Caveat","Bradley Hand",cursive}
       .ph:hover .cp,.ph:focus-visible .cp{opacity:1}
       .ph:focus-visible{outline-offset:2px}
+      .ph.me{cursor:default}
             .hole.x{margin:calc(var(--r) * .1);background:var(--blue)}
 
       /* ── text blocks ── */
@@ -354,10 +355,16 @@ const ig = `https://instagram.com/${contact.instagram}`, tw = `https://x.com/${c
             </a>
           ))}
           <p class="c mono lede dk" style="--ad:8/13/span 2/span 4">Mostly events, plus product shoots, sports, launch videos and other bits. I turn up, stay out of the way, and you get pictures people actually post.</p>
-          <a class="ph" href={lead.src} data-shot={shotIndex.get(lead.id)} aria-label={`open photo${lead.caption ? `: ${lead.caption}` : ""}`} style="--am:10/1/span 4/span 6;--ad:2/13/span 6/span 4">
-            <img src={lead.src} alt={lead.caption} width={lead.width} height={lead.height} decoding="async" fetchpriority="high" />
-            {shotLabel(lead) && <span class="cp">{shotLabel(lead)}</span>}
-          </a>
+          {heroPhoto ? (
+            <div class="ph me" style="--am:10/1/span 4/span 6;--ad:2/13/span 6/span 4">
+              <img src={heroPhoto.src} alt="Oscar holding a camera up to his eye" width={heroPhoto.width} height={heroPhoto.height} style={`object-position:${heroPhoto.focus}`} decoding="async" fetchpriority="high" />
+            </div>
+          ) : (
+            <a class="ph" href={lead.src} data-shot={shotIndex.get(lead.id)} aria-label={`open photo${lead.caption ? `: ${lead.caption}` : ""}`} style="--am:10/1/span 4/span 6;--ad:2/13/span 6/span 4">
+              <img src={lead.src} alt={lead.caption} width={lead.width} height={lead.height} decoding="async" fetchpriority="high" />
+              {shotLabel(lead) && <span class="cp">{shotLabel(lead)}</span>}
+            </a>
+          )}
         </header>
 
         <section class="g t-ink" id="about" data-sec="B" style="--cm:3;--cd:8">

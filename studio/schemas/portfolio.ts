@@ -7,10 +7,17 @@ export const portfolio = defineType({
   type: "document",
   fields: [
     defineField({
+      name: "hero",
+      title: "Hero photo",
+      type: "image",
+      description: "The photo beside the headline (ideally one of you). Set the hotspot to keep the important part in frame when it's cropped.",
+      options: { hotspot: true },
+    }),
+    defineField({
       name: "photos",
       title: "Photos",
       type: "array",
-      description: "Drag files in to add. Drag to reorder: this is the order on the site. The first portrait photo also sits beside the headline.",
+      description: "Drag files in to add. Drag to reorder: this is the order on the site.",
       options: { layout: "grid" },
       of: [
         defineArrayMember({
