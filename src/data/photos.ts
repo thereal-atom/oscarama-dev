@@ -1,5 +1,6 @@
-// Placeholder portfolio data shared by every prototype.
-// Swap `src` for real images later (folder of images + front-matter / content collection).
+// Portfolio data shared by every prototype. Real photos come from Sanity (studio/) at build time;
+// the placeholder events below are only used while Sanity has no published photos.
+import { sanityImage, sanityQuery } from "@/lib/sanity";
 
 export interface Shot {
   id: string;
@@ -8,7 +9,7 @@ export interface Shot {
   width: number;
   height: number;
   caption: string;
-  exif: { camera: string; lens: string; aperture: string; shutter: string; iso: number };
+  exif?: { camera: string; lens: string; aperture: string; shutter: string; iso: number };
 }
 
 export interface EventShoot {
@@ -65,7 +66,23 @@ export const events: EventShoot[] = raw.map(({ n, captions, ...e }, ei) => ({
   }),
 }));
 
-export const allShots = events.flatMap((e) => e.shots.map((s) => ({ ...s, event: e })));
+const placeholderShots = events.flatMap((e) => e.shots.map((s) => ({ ...s, event: e })));
+
+// ── real photos: the "portfolio" doc in Sanity, in the order they're arranged there ──
+const noEvent: EventShoot = { slug: "", name: "", client: "", date: "", place: "", type: "meetup", deliverables: [], stats: { photos: 0, turnaround: "" }, accent: accents[0], shots: [] };
+const fromSanity = (await sanityQuery<Array<{ _key: string; caption?: string; ref?: string }>>(`*[_id == "portfolio"][0].photos[]{ _key, caption, "ref": asset._ref }`)) ?? [];
+export const realShots = fromSanity.flatMap((p) => {
+  const img = p.ref ? sanityImage(p.ref) : null;
+  if (!img) return [];
+  const shot: Shot = { id: p._key, src: img.url(2400), thumb: img.url(800), width: img.width, height: img.height, caption: p.caption?.trim() ?? "" };
+  return [{ ...shot, event: noEvent }];
+});
+export const hasRealPhotos = realShots.length > 0;
+
+/** every shot, in viewer order */
+export const allShots = hasRealPhotos ? realShots : placeholderShots;
+/** "caption · event", skipping whichever is empty */
+export const shotLabel = (s: { caption: string; event: { name: string } }) => [s.caption, s.event.name].filter(Boolean).join(" · ");
 
 export const services = [
   { name: "event photography", detail: "conferences, hackathons, demo nights, launches. candid > posed." },

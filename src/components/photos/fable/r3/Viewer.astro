@@ -114,7 +114,7 @@ const { bg = D.ink, fg = D.paper, accent = D.accent, onAccent = D.ink, mono = "u
     cur = (i + data.length) % data.length;
     const s = data[cur], my = ++token;
     frame.style.setProperty("--ar", String(s.w / s.h));
-    img.classList.remove("in"); img.removeAttribute("src"); img.alt = `${s.cap} — ${s.ev}`;
+    img.classList.remove("in"); img.removeAttribute("src"); img.alt = [s.cap, s.ev].filter(Boolean).join(" — ");
     const th = loadedThumb(cur, from);
     if (th) paintThumb(th, s);
     else { cv.getContext("2d")!.clearRect(0, 0, cv.width, cv.height); const t = new Image(); t.onload = () => { if (my === token && !img.classList.contains("in")) paintThumb(t, s); }; t.src = s.thumb; }
@@ -124,9 +124,9 @@ const { bg = D.ink, fg = D.paper, accent = D.accent, onAccent = D.ink, mono = "u
     const done = () => { if (my !== token) return; img.src = s.src; img.classList.add("in"); };
     if (full.complete && full.naturalWidth) done(); else (full.decode ? full.decode().then(done, done) : (full.onload = done));
     $("rv-count").textContent = `${pad(cur + 1)} / ${pad(data.length)}`;
-    $("rv-ev").textContent = `${s.ev} — ${s.client}`;
+    $("rv-ev").textContent = [s.ev, s.client].filter(Boolean).join(" — ");
     $("rv-cap").textContent = s.cap;
-    $("rv-meta").textContent = `${s.ev} · ${s.client} · ${s.place} · ${s.date}`;
+    $("rv-meta").textContent = [s.ev, s.client, s.place, s.date].filter(Boolean).join(" · ");
     $("rv-exif").textContent = s.exif;
     setTimeout(() => { if (my === token) warm((cur + 1) % data.length); }, 300);
     root.dispatchEvent(new CustomEvent("rv:show", { detail: { index: cur } }));

@@ -4,7 +4,7 @@ import Viewer from "@/components/photos/fable/r3/Viewer.astro";
 import Bits from "@/components/photos/fable/r3/Bits.astro";
 import { icons, dissolve } from "@/components/photos/fable/r3/bits";
 import { events, contact, clients } from "@/data/photos";
-import { mixed, shotIndex } from "@/components/photos/fable/derive";
+import { mixed, shotIndex, shotLabel, hasRealPhotos } from "@/components/photos/fable/derive";
 import { schemes, alpha, onAccent, type SchemeId } from "@/components/photos/schemes";
 
 interface Props { scheme: SchemeId }
@@ -44,7 +44,7 @@ const testimonials: Array<{ text: string; by: string; role?: string }> = [];
 const showSaid = testimonials.length > 0;
 const sec = { said: "F", contact: showSaid ? "G" : "F", direct: showSaid ? "H" : "G" };
 
-const picks = mixed.slice(0, 24);
+const picks = hasRealPhotos ? mixed : mixed.slice(0, 24);
 type Size = [number, number];
 type Box = { c: number; r: number; w: number; h: number };
 
@@ -85,7 +85,7 @@ const pd = pack(16, (i, p) => p
 const area = (b: Box) => `${b.r + 1}/${b.c + 1}/span ${b.h}/span ${b.w}`;
 const pad = (n: number) => String(n).padStart(2, "0");
 
-const lead = events[2].shots[4]; // a portrait frame beside the headline
+const lead = hasRealPhotos ? (mixed.find((s) => s.height > s.width) ?? mixed[0]) : { ...events[2].shots[4], event: events[2] }; // a portrait frame beside the headline
 const L = Array.from({ length: 17 }, (_, i) => i);
 
 const links = [
@@ -355,9 +355,9 @@ const ig = `https://instagram.com/${contact.instagram}`, tw = `https://x.com/${c
             </a>
           ))}
           <p class="c mono lede dk" style="--ad:8/13/span 2/span 4">Mostly events, plus product shoots, sports, launch videos and other bits. I turn up, stay out of the way, and you get pictures people actually post.</p>
-          <a class="ph" href={lead.src} data-shot={shotIndex.get(lead.id)} aria-label={`open photo: ${lead.caption}`} style="--am:10/1/span 4/span 6;--ad:2/13/span 6/span 4">
+          <a class="ph" href={lead.src} data-shot={shotIndex.get(lead.id)} aria-label={`open photo${lead.caption ? `: ${lead.caption}` : ""}`} style="--am:10/1/span 4/span 6;--ad:2/13/span 6/span 4">
             <img src={lead.src} alt={lead.caption} width={lead.width} height={lead.height} decoding="async" fetchpriority="high" />
-            <span class="cp">{lead.caption} · {events[2].name}</span>
+            {shotLabel(lead) && <span class="cp">{shotLabel(lead)}</span>}
           </a>
         </header>
 
@@ -377,9 +377,9 @@ const ig = `https://instagram.com/${contact.instagram}`, tw = `https://x.com/${c
         <section class="g t-paper" data-sec="C" aria-label="selected photos" style="--cm:6;--cd:16">
           <div class="vl" aria-hidden="true">{L.map((i) => <i style={`--i:${i}`} />)}</div>
           {picks.map((s, i) => (
-            <a class="ph" href={s.src} data-shot={shotIndex.get(s.id)} aria-label={`${s.caption} — ${s.event.name}`} style={`--am:${area(pm.out[i])};--ad:${area(pd.out[i])}`}>
+            <a class="ph" href={s.src} data-shot={shotIndex.get(s.id)} aria-label={shotLabel(s)} style={`--am:${area(pm.out[i])};--ad:${area(pd.out[i])}`}>
               <img src={s.thumb} srcset={`${s.thumb} 533w, ${s.src} 1600w`} sizes={`(min-width:900px) ${(pd.out[i].w * 6.2).toFixed(0)}vw, ${(pm.out[i].w * 16).toFixed(0)}vw`} alt="" width={s.width} height={s.height} loading="lazy" decoding="async" />
-              <span class="cp">{s.caption} · {s.event.name}</span>
+              {shotLabel(s) && <span class="cp">{shotLabel(s)}</span>}
             </a>
           ))}
           {pm.holes.map((h, i) => <i class:list={["hole mo", { x: i % 4 === 0 }]} style={`--am:${area(h)}`} aria-hidden="true" />)}

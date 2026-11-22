@@ -4,7 +4,7 @@ import Viewer from "@/components/photos/fable/r3/Viewer.astro";
 import Bits from "@/components/photos/fable/r3/Bits.astro";
 import { icons, dissolve } from "@/components/photos/fable/r3/bits";
 import { contact, clients } from "@/data/photos";
-import { quotes, mixed, shotIndex } from "@/components/photos/fable/derive";
+import { quotes, mixed, shotIndex, shotLabel } from "@/components/photos/fable/derive";
 import { schemes, mix, alpha, rgb, onAccent, accentOnInk, type SchemeId } from "@/components/photos/schemes";
 
 interface Props { scheme: SchemeId }
@@ -364,11 +364,11 @@ type Fld = keyof typeof hexOf;
               </a>
             ))}
           </nav>
-          <a class="band" id="band" href={lead.src} data-shot={shotIndex.get(lead.id)} data-m="11,8" data-d="19,7" aria-label={`open photo: ${lead.caption}`}>
+          <a class="band" id="band" href={lead.src} data-shot={shotIndex.get(lead.id)} data-m="11,8" data-d="19,7" aria-label={`open photo${lead.caption ? `: ${lead.caption}` : ""}`}>
             <canvas aria-hidden="true"></canvas>
             <img src={lead.src} alt={lead.caption} width={lead.width} height={lead.height} crossorigin="anonymous" decoding="async" fetchpriority="high" />
           </a>
-          <p class="fig mono"><span><b>00</b> {lead.caption} — {lead.event.name}</span><span style="white-space:nowrap"><span class="mo">11 × 8</span><span class="dk">19 × 7</span> px ↔ full</span></p>
+          <p class="fig mono"><span><b>00</b> {shotLabel(lead)}</span><span style="white-space:nowrap"><span class="mo">11 × 8</span><span class="dk">19 × 7</span> px ↔ full</span></p>
         </div>
       </header>
       <div class="dv" style={`--from:${hexOf.g};--to:${hexOf.k}`} aria-hidden="true"><Bits rows={dissolve(3, 27, 3)} /></div>
@@ -388,11 +388,11 @@ type Fld = keyof typeof hexOf;
                   <figure class="it" data-m={`${m.bw},${m.bh},${m.pw},${m.ph}`} data-d={`${d.bw},${d.bh},${d.pw},${d.ph}`}
                     style={`--am:${area(m, m.bw, m.bh)};--mx:${m.x};--my:${m.y};--mw:${m.pw};--mh:${m.ph};--ad:${area(d, d.bw, d.bh)};--dx:${d.x};--dy:${d.y};--dw:${d.pw};--dh:${d.ph}`}>
                     <canvas class="halo" aria-hidden="true"></canvas>
-                    <a class="ph" href={s.src} data-shot={shotIndex.get(s.id)} aria-label={`${s.caption} — ${s.event.name}`}>
+                    <a class="ph" href={s.src} data-shot={shotIndex.get(s.id)} aria-label={shotLabel(s)}>
                       <img src={s.thumb} srcset={`${s.thumb} 533w, ${s.src} 1600w`} sizes={`(min-width:900px) ${(d.pw * 5.3).toFixed(0)}vw, ${(m.pw * 9).toFixed(0)}vw`} alt="" width={s.width} height={s.height} crossorigin="anonymous" loading="lazy" decoding="async" />
                       <canvas class="res" aria-hidden="true"></canvas>
                       <span class="no">{pad(i + 1)}</span>
-                      <span class="cp mono">{s.caption} · {s.event.name}</span>
+                      {shotLabel(s) && <span class="cp mono">{shotLabel(s)}</span>}
                     </a>
                   </figure>
                 );
@@ -413,10 +413,10 @@ type Fld = keyof typeof hexOf;
             </div>
             <figure class="it" data-m="11,7,4,5" data-d="7,7,4,5" style="--mx:6;--my:1;--mw:4;--mh:5;--dx:2;--dy:1;--dw:4;--dh:5;grid-area:auto">
               <canvas class="halo" aria-hidden="true"></canvas>
-              <a class="ph" href={face.src} data-shot={shotIndex.get(face.id)} aria-label={`${face.caption} — ${face.event.name}`}>
+              <a class="ph" href={face.src} data-shot={shotIndex.get(face.id)} aria-label={shotLabel(face)}>
                 <img src={face.thumb} alt="" width={face.width} height={face.height} crossorigin="anonymous" loading="lazy" decoding="async" />
                 <canvas class="res" aria-hidden="true"></canvas>
-                <span class="cp mono">{face.caption} · {face.event.name}</span>
+                {shotLabel(face) && <span class="cp mono">{shotLabel(face)}</span>}
               </a>
             </figure>
           </div>

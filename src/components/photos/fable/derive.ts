@@ -1,10 +1,10 @@
 // Derived, read-only views over the shared placeholder data. Used by all four fable prototypes.
-import { events, allShots, services, contact } from "@/data/photos";
+import { events, allShots, services, contact, hasRealPhotos, realShots, shotLabel } from "@/data/photos";
 
-export { events, allShots, services, contact };
+export { events, allShots, services, contact, hasRealPhotos, shotLabel };
 
 export const fmtDate = (iso: string, opts: Intl.DateTimeFormatOptions = { day: "2-digit", month: "short", year: "numeric" }) =>
-  new Date(iso + "T12:00:00Z").toLocaleDateString("en-GB", { timeZone: "UTC", ...opts });
+  !iso ? "" : new Date(iso + "T12:00:00Z").toLocaleDateString("en-GB", { timeZone: "UTC", ...opts });
 
 export const totals = {
   photos: events.reduce((n, e) => n + e.stats.photos, 0),
@@ -35,11 +35,11 @@ export const viewerData = allShots.map((s) => ({
   client: s.event.client,
   date: fmtDate(s.event.date),
   place: s.event.place,
-  exif: `${s.exif.camera} · ${s.exif.lens} · ${s.exif.aperture} · ${s.exif.shutter}s · ISO ${s.exif.iso}`,
+  exif: s.exif ? `${s.exif.camera} · ${s.exif.lens} · ${s.exif.aperture} · ${s.exif.shutter}s · ISO ${s.exif.iso}` : "",
 }));
 
 /** a hand-picked "best of" order: interleave events so the grid never shows one event in a clump */
-export const mixed = (() => {
+export const mixed = hasRealPhotos ? realShots : (() => {
   const out: typeof allShots = [];
   const max = Math.max(...events.map((e) => e.shots.length));
   for (let i = 0; i < max; i++) for (const e of events) if (e.shots[i]) out.push({ ...e.shots[i], event: e });
