@@ -2,7 +2,7 @@
 // The schemes are defined once here; each style component maps these semantic roles onto its own needs.
 
 export type SchemeId = "orange-light" | "orange-dark" | "blue-light" | "green";
-export type StyleId = "fable-2" | "fable-2-simple" | "fable-4";
+export type StyleId = "fable-2" | "fable-4";
 
 export interface Scheme {
   id: SchemeId;
@@ -27,8 +27,7 @@ export const schemeIds = Object.keys(schemes) as SchemeId[];
 const core: SchemeId[] = ["orange-light", "orange-dark", "blue-light", "green"];
 export const styles: Array<{ id: StyleId; label: string; key: string; short: string; defaultScheme: SchemeId; schemes: SchemeId[] }> = [
   { id: "fable-2", label: "fable 2", key: "1", short: "F2", defaultScheme: "orange-dark", schemes: core },
-  { id: "fable-2-simple", label: "fable 2 simple", key: "2", short: "FS", defaultScheme: "orange-dark", schemes: core },
-  { id: "fable-4", label: "fable 4", key: "3", short: "F4", defaultScheme: "orange-light", schemes: core },
+  { id: "fable-4", label: "fable 4", key: "2", short: "F4", defaultScheme: "orange-light", schemes: core },
 ];
 export const styleIds = styles.map((s) => s.id);
 /** keyboard shortcuts for the schemes, in schemeIds order */

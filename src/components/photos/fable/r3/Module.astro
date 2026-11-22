@@ -20,7 +20,7 @@ const vars = [
   `--l-ink:${alpha(paper, S.dark ? 0.2 : 0.26)}`,
   `--l-blue:${alpha(onA, S.dark ? 0.3 : 0.45)}`,
   `--key:${inkOnA ? S.ink : paper}`, `--hov-bg:${inkOnA ? S.paper : ink}`, `--hov-fg:${onA}`,
-  `--phc:${alpha(ink, 0.53)}`,
+  `--phc:${alpha(ink, 0.53)}`, `--sub:${alpha(S.accent, 0.5)}`,
 ].join(";");
 
 // ── TESTIMONIALS ── add real quotes here: { text, by, role? }. While this is empty the whole "Said afterwards"
@@ -74,19 +74,20 @@ const lead = events[2].shots[4]; // a portrait frame beside the headline
 const L = Array.from({ length: 17 }, (_, i) => i);
 
 const links = [
-  { href: "#work", t: "Work", d: "24 selects" },
   { href: "#about", t: "About", d: "who's holding the camera" },
-  { href: "#get", t: "What you get", d: "photo · video · portraits" },
-  { href: "#contact", t: "Contact", d: "pick a date, send a message" },
+  { href: "#work", t: "Work", d: "24 selects" },
+  { href: "#get", t: "What I shoot", d: "events, products + more" },
+  { href: "#contact", t: "Contact", d: "send a message" },
 ];
+// the hero's last word cycles through these with a pixel wipe (first one is what renders without JS)
+const words = ["events.", "hackathons.", "meetups.", "launches.", "products.", "startups."];
 const get = [
-  { n: "01", t: "Event photography", icon: icons.camera, d: "Conferences, hackathons, demo nights, launches. Candid over posed — the room as it actually felt." },
-  { n: "02", t: "Recap video", icon: icons.play, d: "A 60–90 second reel cut for socials, plus a longer cut if you want one for the website." },
-  { n: "03", t: "Speaker portraits", icon: icons.mic, d: "Speakers, founders, your team. A mini studio in a corner of the venue, or whatever light we've got." },
-  { n: "04", t: "Quick selects", icon: icons.bolt, d: "A first batch of the best frames lands fast, so you can post while people are still talking about it." },
+  { n: "01", t: "Hackathons", icon: icons.laptop, d: "Hour-one optimism, hour-22 whiteboards, the winners on stage. The whole arc, not just the demo." },
+  { n: "02", t: "Meetups", icon: icons.people, d: "Talks, panels, demo nights, community dinners. The people, the room and the hallway chats." },
+  { n: "03", t: "Launches", icon: icons.rocket, d: "Launch parties, product reveals and launch videos — the stuff you post on day one." },
+  { n: "04", t: "Product shoots", icon: icons.box, d: "Your product, your office, your team. Clean shots for the website, the deck and socials." },
+  { n: "05", t: "And more", icon: icons.sparkle, d: "Sports, portraits, offsites, recap reels. If it's startup-y or tech-y, just ask." },
 ];
-const kinds = ["hackathon", "demo night", "conference", "launch", "panel", "meetup", "offsite", "something else"];
-const needs = ["photos", "recap video", "portraits"];
 // the one pixel transition: the contact slab breaks up into the footer in whole modules (a seeded dither, as in r3/4)
 const cellsOf = (rows: string[]) => rows.flatMap((row, y) => [...row].flatMap((ch, x) => (ch === "#" ? [`${y + 1}/${x + 1}/span 1/span 1`] : [])));
 const dzM = cellsOf(dissolve(306, 6, 3)), dzD = cellsOf(dissolve(30, 16, 3));
@@ -106,8 +107,9 @@ const ig = `https://instagram.com/${contact.instagram}`, tw = `https://x.com/${c
   Signature interactions:
            1. grid lines draw in per section; the sticky column ruler re-divides to the section's column count
            2. selects are packed onto the module (6×4, 3×2, 4×5, 2×3… cells); open cells stay open and show the grid
-           3. contact is a grid too: a 7-column calendar where each day is a cell, tiles and inputs on whole cells
+           3. contact is a grid too: name, email, message and send, each on whole cells
            4. instant viewer + mechanical shutter on any frame
+  Hero:    the last headline word cycles (events. → hackathons. → …) through a pixel wipe on the grid's quarter-module.
   Pixels:  used sparingly, borrowed from r3/4 — 9×9 icons in the "what you get" cells (one module each), the
            stair-notched testimonial blocks (hidden until there are quotes), and one dither dissolve into the footer.
 -->
@@ -117,19 +119,19 @@ const ig = `https://instagram.com/${contact.instagram}`, tw = `https://x.com/${c
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content={paper} />
-    <title>Oscar shoots events — photo + video for tech events, London</title>
-    <meta name="description" content="Freelance event photography and recap video for hackathons, demo nights, conferences and launches. London, will travel." />
+    <title>Oscar — photo + video for startups and tech, London</title>
+    <meta name="description" content="Freelance photo + video for startups and tech: mostly events — hackathons, meetups, launches — plus product shoots, sports, launch videos and more. Based in London." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
     <link rel="preconnect" href="https://picsum.photos" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;800;900&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;800;900&family=Geist+Mono:wght@400;500&family=Caveat:wght@600&display=swap" rel="stylesheet" />
     <script is:inline>document.documentElement.classList.add("js")</script>
     <style is:inline>
       @font-face{font-family:"Geist Pixel";src:url("https://cdn.jsdelivr.net/npm/geist@1.9.2/dist/fonts/geist-pixel/GeistPixel-Square.woff2") format("woff2");font-display:swap}
-      :root{--base:6;--gut:22px;--pad:8px;--inset:2px;
+      :root{--base:6;--gut:16px;--pad:8px;--inset:2px;
         --sans:"Inter Tight","Helvetica Neue",Helvetica,Arial,sans-serif;--mono:"Geist Mono",ui-monospace,monospace;--px:"Geist Pixel","Geist Mono",monospace}
-      @media (min-width:900px){:root{--base:16;--gut:36px;--pad:12px;--inset:3px}}
+      @media (min-width:900px){:root{--base:16;--gut:26px;--pad:12px;--inset:3px}}
       *{box-sizing:border-box}
       html{background:var(--paper);scroll-behavior:smooth;-webkit-text-size-adjust:100%}
       body{margin:0;background:var(--paper);color:var(--ink);font:500 15px/1.4 var(--sans);overflow-x:clip;-webkit-font-smoothing:antialiased}
@@ -173,18 +175,21 @@ const ig = `https://instagram.com/${contact.instagram}`, tw = `https://x.com/${c
       .lab{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;background:none;box-shadow:none}
       .lab b{font-weight:500;color:var(--hi)}
       /* display type: cap-height = k modules, sitting exactly on the row rules */
+      /* the cycling hero word: shrinks to fit its columns (sitting on the same baseline); the canvas draws the pixel wipe */
+      .rot .w{display:inline-block}
+      .rot canvas{position:absolute;left:0;top:0;pointer-events:none}
       .cap{font:900 calc(var(--r) * 1.3755 * var(--k,1))/calc(var(--r) * var(--k,1)) var(--sans);letter-spacing:-.04em;text-transform:uppercase;white-space:nowrap;padding-left:.035em;color:var(--hi);display:block}
       @media (min-width:900px){.cap{--k:2}}
       @media (max-width:899px){.cap.fit{--k:.93;align-self:end}} /* CONTACT at a full module runs a hair over six columns on a phone */
 
       /* ── rulers ── */
-      .rl{position:sticky;top:0;z-index:40;height:18px;background:var(--paper);color:var(--blue);display:flex;border-bottom:1px solid var(--blue);font:500 9px/17px var(--mono)}
-      .rl b{flex:0 0 calc(100cqw - var(--r) * var(--base));font-weight:500;text-align:center;background:var(--blue);color:var(--on-a)}
-      .rl i{flex:1 1 0;min-width:0;overflow:hidden;font-style:normal;padding-left:3px;box-shadow:inset 1px 0 var(--blue);white-space:nowrap;transition:flex-grow .6s cubic-bezier(.3,.7,.1,1)}
+      .rl{position:sticky;top:0;z-index:40;height:16px;background:var(--paper);color:var(--sub);display:flex;border-bottom:1px solid var(--l-paper);font:500 8px/15px var(--mono)}
+      .rl b{flex:0 0 calc(100cqw - var(--r) * var(--base));font-weight:500;text-align:center;color:var(--blue)}
+      .rl i{flex:1 1 0;min-width:0;overflow:hidden;font-style:normal;padding-left:3px;box-shadow:inset 1px 0 var(--l-paper);white-space:nowrap;transition:flex-grow .6s cubic-bezier(.3,.7,.1,1)}
       .rl i.off{flex-grow:0;padding:0;box-shadow:none}
-      .rr{position:absolute;left:0;top:0;bottom:0;width:calc(100cqw - var(--r) * var(--base));overflow:hidden;color:var(--blue);font:500 8px/1 var(--mono);pointer-events:none}
-      .rr span{display:block;height:var(--r);padding:3px 3px 0 0;text-align:right}
-      @media (min-width:900px){.rr{font-size:9px}.rr span{padding:4px 6px 0 0}}
+      .rr{position:absolute;left:0;top:0;bottom:0;width:calc(100cqw - var(--r) * var(--base));overflow:hidden;color:var(--sub);font:500 7px/1 var(--mono);pointer-events:none}
+      .rr span{display:block;height:var(--r);padding:3px 2px 0 0;text-align:right}
+      @media (min-width:900px){.rr{font-size:8px}.rr span{padding:4px 4px 0 0}}
 
       /* ── hero ── */
       .brand{display:flex;flex-direction:column;justify-content:space-between}
@@ -211,13 +216,10 @@ const ig = `https://instagram.com/${contact.instagram}`, tw = `https://x.com/${c
       /* ── photos on the module ── */
       .ph{display:block;margin:var(--inset);overflow:hidden;background:var(--ink);cursor:zoom-in;color:var(--paper)}
       .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
-      .ph .no{position:absolute;left:0;top:0;background:var(--paper);color:var(--blue);padding:3px 5px 2px;font:500 9px/1 var(--mono)}
-      .ph .cp{position:absolute;left:0;right:0;bottom:0;background:var(--blue);color:var(--on-a);padding:5px 6px;opacity:0;transition:opacity .1s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px}
+            .ph .cp{position:absolute;left:0;right:0;bottom:0;background:var(--blue);color:var(--on-a);padding:2px 8px 4px;opacity:0;transition:opacity .1s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font:600 21px/1.1 "Caveat","Bradley Hand",cursive}
       .ph:hover .cp,.ph:focus-visible .cp{opacity:1}
       .ph:focus-visible{outline-offset:2px}
-      .hole{display:flex;align-items:flex-end;padding:5px;color:var(--blue);font:500 8px/1.2 var(--mono);letter-spacing:.04em}
-      .hole.x{margin:var(--inset);background:var(--blue)}
-      .hole.p{align-items:center;justify-content:center;font:400 22px/1 var(--px)}
+            .hole.x{margin:var(--inset);background:var(--blue)}
 
       /* ── text blocks ── */
       .say{font:800 clamp(27px,4.6cqw,66px)/1.02 var(--sans);letter-spacing:-.03em;text-wrap:balance}
@@ -240,6 +242,7 @@ const ig = `https://instagram.com/${contact.instagram}`, tw = `https://x.com/${c
         .sv .ic{top:auto;right:auto;left:0;bottom:0;box-shadow:inset -1px 0 var(--line),inset 0 1px var(--line)}}
       .logo{display:grid;place-items:center;gap:8px;align-content:center;text-align:center}
       .logo img{height:clamp(40px,5cqw,72px);width:auto;max-width:60%;object-fit:contain;display:block}
+      .logo img.sm{height:clamp(28px,3.4cqw,50px)}
       .you{display:flex;flex-direction:column;justify-content:space-between}
       .you b{font:400 clamp(22px,2.4cqw,34px)/1 var(--px)}
       /* testimonials: r3/4's stair-notched blocks, cut in whole modules; alternating ink / accent, left / right */
@@ -258,29 +261,13 @@ const ig = `https://instagram.com/${contact.instagram}`, tw = `https://x.com/${c
       .dz .c{--bg:var(--paper);--line:var(--l-paper);padding:0}
 
       /* ── contact form ── */
-      .bk{background:var(--blue)}
-      @media (min-width:900px){.bk{display:flex;width:calc(var(--r) * 16);margin-left:auto}.bk .g{margin:0}.bk .g7{width:calc(var(--r) * 7)}.bk .g9{width:calc(var(--r) * 9)}}
-      #cal-grid{display:contents}
-      #cal-grid>*,.cal-b{position:relative;z-index:1;display:grid;place-items:center;font:400 clamp(17px,1.6cqw,24px)/1 var(--px);font-style:normal}
-      #cal-grid span{font:500 10px/1 var(--mono);opacity:.75;align-items:end;padding-bottom:6px}
-      #cal-grid button,.cal-b{border:0;border-radius:0;background:none;color:inherit;cursor:pointer;padding:0;margin:0}
-      #cal-grid button:hover:not(:disabled),.cal-b:hover:not(:disabled){background:var(--hov-bg);color:var(--hov-fg)}
-      #cal-grid button:disabled,.cal-b:disabled{opacity:.3;cursor:default}
-      #cal-grid button[aria-pressed="true"]{background:var(--key);color:var(--blue)}
-      .cal-t{display:grid;place-items:center;font:400 clamp(19px,1.9cqw,26px)/1 var(--px);text-transform:uppercase}
-      .tile{position:relative;padding:0;display:block}
-      .tile input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
-      .tile span{position:absolute;inset:0;display:flex;align-items:flex-end;padding:var(--pad);font:400 clamp(14px,1.3cqw,18px)/1.05 var(--px);text-transform:uppercase}
-      .tile:hover span{background:var(--hov-bg);color:var(--hov-fg)}
-      .tile input:checked+span{background:var(--key);color:var(--blue)}
-      .tile input:focus-visible+span{outline:3px solid var(--paper);outline-offset:-5px}
       .fld{padding:0}
       .fld input,.fld textarea{width:100%;height:100%;border:0;border-radius:0;background:var(--paper);color:var(--ink);font:500 17px/1.3 var(--sans);padding:var(--pad) calc(var(--pad) + 2px);display:block;resize:none;box-shadow:inset 1px 0 var(--blue),inset 0 1px var(--blue)}
       .fld input::placeholder,.fld textarea::placeholder{color:var(--phc)}
       .fld input:focus,.fld textarea:focus{outline:3px solid var(--ink);outline-offset:-3px}
-      .send{border:0;border-radius:0;font:900 clamp(34px,4.4cqw,64px)/1 var(--sans);letter-spacing:-.04em;text-transform:uppercase;display:flex;justify-content:space-between;align-items:flex-end;text-align:left;background:var(--key);color:var(--blue);padding:var(--pad) calc(var(--pad) + 2px)}
+      .send{border:0;border-radius:0;font:900 clamp(34px,3.4cqw,52px)/.95 var(--sans);letter-spacing:-.04em;text-transform:uppercase;display:flex;flex-wrap:wrap;gap:0 12px;justify-content:space-between;align-items:flex-end;text-align:left;background:var(--key);color:var(--blue);padding:var(--pad) calc(var(--pad) + 2px)}
       .send:hover,.send:focus-visible{background:var(--hov-bg);color:var(--hov-fg)}
-      .fine{font:400 11px/1.45 var(--mono);background:none;box-shadow:none}
+      .fine{font:400 12px/1.45 var(--mono);background:none;box-shadow:none}
       .fine a{text-decoration:underline}
 
       /* ── footer ── */
@@ -294,7 +281,7 @@ const ig = `https://instagram.com/${contact.instagram}`, tw = `https://x.com/${c
       .cta{position:fixed;left:0;bottom:calc(10px + env(safe-area-inset-bottom));z-index:60;background:var(--blue);color:var(--on-a);padding:11px 13px 10px;transform:translateX(-101%);transition:transform .2s;box-shadow:0 0 0 1px var(--paper)}
       .cta.on{transform:none}
       .cta:hover{background:var(--hov-bg);color:var(--hov-fg)}
-      [id]{scroll-margin-top:18px}
+      [id]{scroll-margin-top:16px}
       @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.js .vl i,.js .g::before,.rl i,.cta{transition:none}}
     </style>
   </head>
@@ -307,15 +294,16 @@ const ig = `https://instagram.com/${contact.instagram}`, tw = `https://x.com/${c
         <header class="g t-paper" id="top" data-sec="A" style="--cm:6;--cd:16">
           <div class="vl" aria-hidden="true">{L.map((i) => <i style={`--i:${i}`} />)}</div>
           <a class="c brand" href="#top" style="--am:1/1/span 1/span 2;--ad:1/1/span 1/span 3"><b>OSCAR</b><span class="mono">photo + video</span></a>
-          <p class="c mono lede dk" style="--ad:1/4/span 1/span 5">Event photography + recap video for tech events. {contact.basedIn}, will travel.</p>
+          <p class="c mono lede dk" style="--ad:1/4/span 1/span 5">Photo + video for startups and tech. Based in {contact.basedIn}.</p>
           <a class="c fill soc mono" href={ig} target="_blank" rel="noopener" style="--am:1/3/span 1/span 2;--ad:1/11/span 1/span 2">Instagram ↗</a>
           <a class="c fill soc mono" href={tw} target="_blank" rel="noopener" style="--am:1/5/span 1/span 1;--ad:1/13/span 1/span 1">X ↗</a>
           <a class="c soc mono" href={`mailto:${contact.email}`} style="--am:1/6/span 1/span 1;--ad:1/14/span 1/span 1">Mail</a>
           <a class="c soc mono dk" href="#contact" style="--ad:1/15/span 1/span 2">Contact me →</a>
-          <h1 style="display:contents" aria-label="Oscar shoots events.">
-            {["Oscar", "shoots", "events."].map((t, i) => <span class="cap" aria-hidden="true" style={`--am:${2 + i}/1/span 1/span 6;--ad:${2 + i * 2}/1/span 2/span 12`}>{t}</span>)}
+          <h1 style="display:contents" aria-label={`Oscar shoots ${words.slice(0, -1).join(" ").replaceAll(".", ",")} and ${words[words.length - 1]}`}>
+            {["Oscar", "shoots"].map((t, i) => <span class="cap" aria-hidden="true" style={`--am:${2 + i}/1/span 1/span 6;--ad:${2 + i * 2}/1/span 2/span 12`}>{t}</span>)}
+            <span class="cap rot" id="rot" aria-hidden="true" data-words={JSON.stringify(words)} style="--am:4/1/span 1/span 6;--ad:6/1/span 2/span 12"><span class="w">{words[0]}</span><canvas></canvas></span>
           </h1>
-          <p class="c mono lede mo" style="--am:5/1/span 1/span 6">Event photography + recap video for hackathons, demo nights and launches. {contact.basedIn}, will travel.</p>
+          <p class="c mono lede mo" style="--am:5/1/span 1/span 6">Photo + video for startups and tech: mostly events, plus product shoots, launch videos and more. Based in {contact.basedIn}.</p>
           {links.map((l, i) => (
             <a class="c lk" href={l.href} style={`--am:${6 + i}/1/span 1/span 6;--ad:8/${1 + i * 3}/span 2/span 3`}>
               <span class="n mono"><span>{pad(i + 1)}</span><span class="dk" aria-hidden="true">↓</span></span>
@@ -323,51 +311,48 @@ const ig = `https://instagram.com/${contact.instagram}`, tw = `https://x.com/${c
               <span class="a" aria-hidden="true">↓</span>
             </a>
           ))}
-          <p class="c mono lede dk" style="--ad:8/13/span 2/span 4">Hackathons, demo nights, conferences, launches. I turn up, stay out of the way, and you get pictures people actually post.</p>
+          <p class="c mono lede dk" style="--ad:8/13/span 2/span 4">Mostly events, plus product shoots, sports, launch videos and other bits. I turn up, stay out of the way, and you get pictures people actually post.</p>
           <a class="ph" href={lead.src} data-shot={shotIndex.get(lead.id)} aria-label={`open photo: ${lead.caption}`} style="--am:10/1/span 4/span 6;--ad:2/13/span 6/span 4">
             <img src={lead.src} alt={lead.caption} width={lead.width} height={lead.height} decoding="async" fetchpriority="high" />
-            <span class="cp mono">{lead.caption} · {events[2].name}</span>
+            <span class="cp">{lead.caption} · {events[2].name}</span>
           </a>
         </header>
 
-        <section class="g t-paper" id="work" data-sec="B" style="--cm:6;--cd:16">
+        <section class="g t-ink" id="about" data-sec="B" style="--cm:3;--cd:8">
           <div class="vl" aria-hidden="true">{L.map((i) => <i style={`--i:${i}`} />)}</div>
-          <p class="c lab mono" style="--am:1/1/span 1/span 6;--ad:1/1/span 1/span 16"><span>B — Selects</span><b>24 frames · tap any</b></p>
-          <h2 class="cap" style="--am:2/1/span 1/span 6;--ad:2/1/span 2/span 11">Selects</h2>
-          <p class="c body2" data-snap style="--am:3/1/span var(--rs,2)/span 6;--ad:2/13/span 2/span 4"><span class="in">A few favourites from the last few months of hackathons, demo nights, launches and one river. Every frame sits on whole cells of the grid — tap one to open it.</span></p>
+          <p class="c lab mono" style="--am:1/1/span 1/span 3;--ad:1/1/span 1/span 8"><span>B — Who's holding the camera</span></p>
+          <p class="c say" data-snap style="--am:2/1/span var(--rs,7)/span 3;--ad:2/1/span var(--rs,4)/span 6"><span class="in" style="display:block">I'm Oscar. I've hosted <em>40+ events</em>, been to <em>100+ more</em>, and shot for teams like OpenAI and Vercel — so I know every side of the room.</span></p>
+          <p class="c body2" data-snap style="--am:auto/1/span var(--rs,3)/span 3;--ad:2/7/span var(--rs,4)/span 2"><span class="in" style="display:block">Organiser, guest, photographer: I've been all three, often on the same night. I know what the run sheet needs, which moments people actually share, and how to get them without getting in the way. Mostly startup and tech events, but product shoots, sports, launch videos and other odd bits too.</span></p>
         </section>
-        <section class="g t-paper" data-sec="B" aria-label="selected photos" style="--cm:6;--cd:16">
+
+        <section class="g t-paper" id="work" data-sec="C" style="--cm:6;--cd:16">
+          <div class="vl" aria-hidden="true">{L.map((i) => <i style={`--i:${i}`} />)}</div>
+          <p class="c lab mono" style="--am:1/1/span 1/span 6;--ad:1/1/span 1/span 16"><span>C — Selects</span><b>24 frames · tap any</b></p>
+          <h2 class="cap" style="--am:2/1/span 1/span 6;--ad:2/1/span 2/span 12">Selects</h2>
+          <p class="c body2" data-snap style="--am:3/1/span var(--rs,2)/span 6;--ad:2/13/span 2/span 4"><span class="in">Mostly events — hackathons, demo nights, launches — plus the odd product shoot. Tap any frame to open it.</span></p>
+        </section>
+        <section class="g t-paper" data-sec="C" aria-label="selected photos" style="--cm:6;--cd:16">
           <div class="vl" aria-hidden="true">{L.map((i) => <i style={`--i:${i}`} />)}</div>
           {picks.map((s, i) => (
             <a class="ph" href={s.src} data-shot={shotIndex.get(s.id)} aria-label={`${s.caption} — ${s.event.name}`} style={`--am:${area(pm.out[i])};--ad:${area(pd.out[i])}`}>
               <img src={s.thumb} srcset={`${s.thumb} 533w, ${s.src} 1600w`} sizes={`(min-width:900px) ${(pd.out[i].w * 6.2).toFixed(0)}vw, ${(pm.out[i].w * 16).toFixed(0)}vw`} alt="" width={s.width} height={s.height} loading="lazy" decoding="async" />
-              <span class="no">{pad(i + 1)}</span>
-              <span class="cp mono">{s.caption} · {s.event.name}</span>
+              <span class="cp">{s.caption} · {s.event.name}</span>
             </a>
           ))}
-          {pm.holes.map((h, i) => <i class:list={["hole mo", ["x", "p", "", "x"][i % 4]]} style={`--am:${area(h)}`} aria-hidden="true">{["", "+", `R${pad(h.r + 1)} C${pad(h.c + 1)}`, ""][i % 4]}</i>)}
-          {pd.holes.map((h, i) => <i class:list={["hole dk", ["x", "p", "", ""][i % 4]]} style={`--ad:${area(h)}`} aria-hidden="true">{["", "+", `R${pad(h.r + 1)} C${pad(h.c + 1)}`, "open cell"][i % 4]}</i>)}
+          {pm.holes.map((h, i) => <i class:list={["hole mo", { x: i % 4 === 0 }]} style={`--am:${area(h)}`} aria-hidden="true" />)}
+          {pd.holes.map((h, i) => <i class:list={["hole dk", { x: i % 4 === 0 }]} style={`--ad:${area(h)}`} aria-hidden="true" />)}
         </section>
 
-        <section class="g t-ink" id="about" data-sec="C" style="--cm:3;--cd:8">
-          <div class="vl" aria-hidden="true">{L.map((i) => <i style={`--i:${i}`} />)}</div>
-          <p class="c lab mono" style="--am:1/1/span 1/span 3;--ad:1/1/span 1/span 8"><span>C — Who's holding the camera</span><b class="dk">3 → 8 columns</b></p>
-          <p class="c say" data-snap style="--am:2/1/span var(--rs,7)/span 3;--ad:2/1/span var(--rs,4)/span 6"><span class="in" style="display:block">I'm Oscar. I shoot the events tech people actually go to — <em>hackathons</em> at hour 22, <em>demo nights</em> where the wifi holds, <em>launch parties</em>, panels, and founders in wetsuits.</span></p>
-          <p class="c body2" data-snap style="--am:auto/1/span var(--rs,3)/span 3;--ad:2/7/span var(--rs,4)/span 2"><span class="in" style="display:block">I build things too, so I know which moments matter: the demo that lands, the room reacting, the hallway chat that turns into a company. I work quietly, I don't need a brief the length of a PRD, and you get pictures people actually want to post.</span></p>
-        </section>
 
-        <section class="g t-paper" id="get" data-sec="D" style="--cm:2;--cd:4">
+        <section class="g t-paper" id="get" data-sec="D" style="--cm:2;--cd:5">
           <div class="vl" aria-hidden="true">{L.map((i) => <i style={`--i:${i}`} />)}</div>
-          <p class="c lab mono" style="--am:1/1/span 1/span 2;--ad:1/1/span 1/span 4"><span>D — What you get</span><b>four things</b></p>
-          <h2 style="display:contents" aria-label="What you get">
-            <span class="cap mo" aria-hidden="true" style="--am:2/1/span 1/span 2">What</span>
-            <span class="cap mo" aria-hidden="true" style="--am:3/1/span 1/span 2">you</span>
-            <span class="cap mo" aria-hidden="true" style="--am:4/1/span 1/span 2">get</span>
-            <span class="cap dk" aria-hidden="true" style="--ad:2/1/span 2/span 4">What you</span>
-            <span class="cap dk" aria-hidden="true" style="--ad:4/1/span 2/span 4">get</span>
+          <p class="c lab mono" style="--am:1/1/span 1/span 2;--ad:1/1/span 1/span 5"><span>D — What I shoot</span><b>mostly events, plus the rest</b></p>
+          <h2 style="display:contents" aria-label="What I shoot">
+            <span class="cap" aria-hidden="true" style="--am:2/1/span 1/span 2;--ad:2/1/span 2/span 5">What I</span>
+            <span class="cap" aria-hidden="true" style="--am:3/1/span 1/span 2;--ad:4/1/span 2/span 5">shoot</span>
           </h2>
           {get.map((s, i) => (
-            <article class="c sv" style={`--am:${5 + i * 3}/1/span 3/span 2;--ad:6/${i + 1}/span 5/span 1`}>
+            <article class="c sv" style={`--am:${4 + i * 3}/1/span 3/span 2;--ad:6/${i + 1}/span 5/span 1`}>
               <span class="n">{s.n}</span>
               <span class="ic" aria-hidden="true"><Bits rows={s.icon} /></span>
               <div><h3>{s.t}</h3><p>{s.d}</p></div>
@@ -375,11 +360,11 @@ const ig = `https://instagram.com/${contact.instagram}`, tw = `https://x.com/${c
           ))}
         </section>
 
-        <section class="g t-ink" id="clients" data-sec="E" style="--cm:2;--cd:5">
+        <section class="g t-ink" id="clients" data-sec="E" style="--cm:2;--cd:6">
           <div class="vl" aria-hidden="true">{L.map((i) => <i style={`--i:${i}`} />)}</div>
-          <p class="c lab mono" style="--am:1/1/span 1/span 2;--ad:1/1/span 1/span 5"><span>E — Shot for</span><b class="dk">2 → 5 columns</b></p>
-          {clients.map((c, i) => <div class="logo" style={`--am:${2 + Math.floor(i / 2) * 2}/${(i % 2) + 1}/span 2/span 1;--ad:2/${i + 1}/span 2/span 1`}><img src={S.dark && c.name === "SpaceX AI" ? "/photos/opus/spacexai-mark.svg" : c.logo.src} alt={c.name} loading="lazy" style={S.dark ? "filter:brightness(0)" : undefined} /><span class="mono">{c.name}</span></div>)}
-          <a class="c fill you" href="#contact" style="--am:6/1/span 1/span 2;--ad:2/5/span 2/span 1"><span class="mono">next</span><b>YOUR LOGO →</b></a>
+          <p class="c lab mono" style="--am:1/1/span 1/span 2;--ad:1/1/span 1/span 6"><span>E — Shot for</span></p>
+          {clients.map((c, i) => <div class="logo" style={`--am:${2 + Math.floor(i / 2) * 2}/${(i % 2) + 1}/span 2/span 1;--ad:2/${i + 1}/span 2/span 1`}><img class:list={{ sm: c.name === "SPACEXAI" }} src={S.dark && c.name === "SPACEXAI" ? "/photos/opus/spacexai-mark.svg" : c.logo.src} alt={c.name} loading="lazy" style={S.dark ? "filter:brightness(0)" : undefined} /><span class="mono">{c.name}</span></div>)}
+          <a class="c fill you" href="#contact" style="--am:6/2/span 2/span 1;--ad:2/6/span 2/span 1"><span class="mono">next</span><b>YOUR LOGO →</b></a>
         </section>
 
         {showSaid && (
@@ -402,37 +387,20 @@ const ig = `https://instagram.com/${contact.instagram}`, tw = `https://x.com/${c
         <section id="contact" aria-label="contact me">
           <div class="g t-blue" data-sec={sec.contact} style="--cm:6;--cd:16">
             <div class="vl" aria-hidden="true">{L.map((i) => <i style={`--i:${i}`} />)}</div>
-            <p class="lab mono" style="--am:1/1/span 1/span 6;--ad:1/1/span 1/span 16;padding:var(--pad)"><span>{sec.contact} — Contact me</span><b>four steps · one minute</b></p>
+            <p class="lab mono" style="--am:1/1/span 1/span 6;--ad:1/1/span 1/span 16;padding:var(--pad)"><span>{sec.contact} — Contact me</span><b>I reply within a day</b></p>
             <h2 style="display:contents" aria-label="Contact me">
               <span class="cap fit" aria-hidden="true" style="--am:2/1/span 1/span 6;--ad:2/1/span 2/span 16">Contact</span>
               <span class="cap fit" aria-hidden="true" style="--am:3/1/span 1/span 6;--ad:4/1/span 2/span 8">me</span>
             </h2>
-            <p class="say" data-snap style="--am:4/1/span var(--rs,3)/span 6;--ad:4/9/span 2/span 8;padding:var(--pad);font-size:clamp(20px,2.2cqw,32px);line-height:1.12"><span class="in" style="display:block">Pick a date, tap what it is, leave your email. I'll reply within a day with availability and a quote.</span></p>
+            <p class="say" data-snap style="--am:4/1/span var(--rs,3)/span 6;--ad:4/9/span 2/span 8;padding:var(--pad);font-size:clamp(20px,2.2cqw,32px);line-height:1.12"><span class="in" style="display:block">Tell me what you're planning — an event, a launch, a product, anything. I'll get back to you with availability and a quote.</span></p>
           </div>
-          <form class="bk" id="form" novalidate>
-            <div class="g t-blue g7" data-sec={sec.contact} style="--cm:7;--cd:7">
-              <div class="vl" aria-hidden="true">{L.map((i) => <i style={`--i:${i}`} />)}</div>
-              <p class="lab mono" style="--am:1/1/span 1/span 7;padding:var(--pad)"><span>1 — When is it?</span><b id="cal-picked">optional</b></p>
-              <button class="cal-b" type="button" id="cal-prev" aria-label="previous month" style="--am:2/1/span 1/span 1">←</button>
-              <b class="cal-t" id="cal-title" aria-live="polite" style="--am:2/2/span 1/span 5"></b>
-              <button class="cal-b" type="button" id="cal-next" aria-label="next month" style="--am:2/7/span 1/span 1">→</button>
-              <div id="cal-grid"></div>
-              <label class="tile" style="--am:10/1/span 1/span 7"><input type="checkbox" id="nodate" /><span>No date yet — just asking</span></label>
-            </div>
-            <div class="g t-blue g9" data-sec={sec.contact} style="--cm:6;--cd:9">
-              <div class="vl" aria-hidden="true">{L.map((i) => <i style={`--i:${i}`} />)}</div>
-              <p class="lab mono" style="--am:auto/1/span 1/span 6;--ad:auto/1/span 1/span 9;padding:var(--pad)"><span>2 — What is it?</span><b>pick one</b></p>
-              {kinds.map((k) => <label class="tile" style="--am:auto/auto/span 1/span 3"><input type="radio" name="kind" value={k} /><span>{k}</span></label>)}
-              <i class="dk" style="--ad:auto/auto/span 1/span 3" aria-hidden="true"></i>
-              <p class="lab mono" style="--am:auto/1/span 1/span 6;--ad:auto/1/span 1/span 9;padding:var(--pad)"><span>3 — What do you need?</span><b>pick any</b></p>
-              {needs.map((k, i) => <label class="tile" style="--am:auto/auto/span 1/span 2;--ad:auto/auto/span 1/span 3"><input type="checkbox" name="need" value={k} checked={i === 0} /><span>{k}</span></label>)}
-              <p class="lab mono" style="--am:auto/1/span 1/span 6;--ad:auto/1/span 1/span 9;padding:var(--pad)"><span>4 — Where do I reply?</span></p>
-              <div class="fld" style="--am:auto/1/span 1/span 6;--ad:auto/1/span 1/span 4"><input type="text" name="name" placeholder="Your name" autocomplete="name" aria-label="your name" /></div>
-              <div class="fld" style="--am:auto/1/span 1/span 6;--ad:auto/5/span 1/span 5"><input type="email" name="email" placeholder="Your email" autocomplete="email" aria-label="your email" required /></div>
-              <div class="fld" style="--am:auto/1/span 2/span 6;--ad:auto/1/span 1/span 9"><textarea name="note" placeholder="Anything else? Venue, size, vibe — optional" aria-label="anything else"></textarea></div>
-              <button class="send" type="submit" style="--am:auto/1/span 2/span 6;--ad:auto/1/span 2/span 9"><span>Send message</span><span aria-hidden="true">→</span></button>
-              <p class="fine" data-snap style="--am:auto/1/span var(--rs,1)/span 6;--ad:auto/1/span var(--rs,1)/span 9;padding:var(--pad)"><span class="in" id="sent" style="display:block">Opens your email app with this written out. Or just write to <a href={`mailto:${contact.email}`}>{contact.email}</a></span></p>
-            </div>
+          <form class="g t-blue" id="form" data-sec={sec.contact} novalidate style="--cm:6;--cd:16">
+            <div class="vl" aria-hidden="true">{L.map((i) => <i style={`--i:${i}`} />)}</div>
+            <div class="fld" style="--am:1/1/span 1/span 6;--ad:1/1/span 1/span 8"><input type="text" name="name" placeholder="Your name" autocomplete="name" aria-label="your name" /></div>
+            <div class="fld" style="--am:2/1/span 1/span 6;--ad:1/9/span 1/span 8"><input type="email" name="email" placeholder="Your email" autocomplete="email" aria-label="your email" required /></div>
+            <div class="fld" style="--am:3/1/span 3/span 6;--ad:2/1/span 3/span 12"><textarea name="note" placeholder="What's the plan? Date, place, rough idea — whatever you know so far" aria-label="your message"></textarea></div>
+            <button class="send" type="submit" style="--am:6/1/span 2/span 6;--ad:2/13/span 3/span 4"><span>Send message</span><span aria-hidden="true">→</span></button>
+            <p class="fine" data-snap style="--am:8/1/span var(--rs,1)/span 6;--ad:5/1/span var(--rs,1)/span 16;padding:var(--pad)"><span class="in" id="sent" style="display:block">Opens your email app with this written out. Or just write to <a href={`mailto:${contact.email}`}>{contact.email}</a></span></p>
           </form>
         </section>
 
@@ -444,7 +412,7 @@ const ig = `https://instagram.com/${contact.instagram}`, tw = `https://x.com/${c
 
         <footer class="g t-paper" id="direct" data-sec={sec.direct} style="--cm:6;--cd:16">
           <div class="vl" aria-hidden="true">{L.map((i) => <i style={`--i:${i}`} />)}</div>
-          <p class="c lab mono" style="--am:1/1/span 1/span 6;--ad:1/1/span 1/span 16"><span>{sec.direct} — Or skip the form</span><b>{contact.basedIn}, will travel</b></p>
+          <p class="c lab mono" style="--am:1/1/span 1/span 6;--ad:1/1/span 1/span 16"><span>{sec.direct} — Or skip the form</span><b>Based in {contact.basedIn}</b></p>
           <a class="mailw" href={`mailto:${contact.email}`} style="--am:2/1/span 1/span 6;--ad:2/1/span 2/span 16"><span class="mail" id="mail">{contact.email}</span></a>
           <a class="c big" href={ig} target="_blank" rel="noopener" style="--am:3/1/span 1/span 6;--ad:4/1/span 2/span 8"><span>Instagram ↗</span><small>@{contact.instagram}</small></a>
           <a class="c big" href={tw} target="_blank" rel="noopener" style="--am:4/1/span 1/span 6;--ad:4/9/span 2/span 8"><span>X ↗</span><small>@{contact.x}</small></a>
@@ -459,7 +427,7 @@ const ig = `https://instagram.com/${contact.instagram}`, tw = `https://x.com/${c
 
     <script define:vars={{ email: contact.email }}>window.__mail = email;</script>
     <script>
-      import { wireBook, fitText } from "@/components/photos/fable/r3/book";
+      import { fitText } from "@/components/photos/fable/r3/book";
       const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
       const gs = [...document.querySelectorAll<HTMLElement>(".g")];
 
@@ -503,11 +471,54 @@ const ig = `https://instagram.com/${contact.instagram}`, tw = `https://x.com/${c
 
       new IntersectionObserver(([e]) => $("cta").classList.toggle("on", !e.isIntersecting && e.boundingClientRect.top < 0)).observe($("top"));
 
-      wireBook({
-        form: $<HTMLFormElement>("form"), email: (window as any).__mail,
-        cal: { grid: $("cal-grid"), title: $("cal-title"), prev: $<HTMLButtonElement>("cal-prev"), next: $<HTMLButtonElement>("cal-next") },
-        nodate: $<HTMLInputElement>("nodate"), sent: $("sent"), picked: $("cal-picked"),
+      // ── contact: name / email / message → a pre-written email ──
+      const form = $<HTMLFormElement>("form"), sent = $("sent"), to: string = (window as any).__mail;
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const f = new FormData(form), name = String(f.get("name") ?? "").trim(), email = String(f.get("email") ?? "").trim(), note = String(f.get("note") ?? "").trim();
+        if (!/^\S+@\S+\.\S+$/.test(email)) { (form.elements.namedItem("email") as HTMLInputElement).focus(); sent.textContent = "Pop your email in so I can reply."; return; }
+        const body = ["Hi Oscar,", "", note || "I'd like to talk about a shoot.", "", name || "—", email].join("\n");
+        const url = `mailto:${to}?subject=${encodeURIComponent(`Shoot enquiry${name ? ` — ${name}` : ""}`)}&body=${encodeURIComponent(body)}`;
+        sent.innerHTML = `Opening your email app… nothing happened? Write to <a href="${url}">${to}</a>`;
+        location.href = url;
       });
+
+      // ── hero: the last word cycles through a pixel wipe on the quarter-module ──
+      const rot = $("rot"), word = rot.querySelector<HTMLElement>(".w")!, cv = rot.querySelector("canvas")!, cx = cv.getContext("2d")!;
+      const words: string[] = JSON.parse(rot.dataset.words ?? "[]");
+      function fitWord() {
+        word.style.fontSize = "";
+        const avail = rot.clientWidth - parseFloat(getComputedStyle(rot).paddingLeft), w = word.offsetWidth;
+        if (w > avail) word.style.fontSize = (parseFloat(getComputedStyle(rot).fontSize) * avail / w) * 0.985 + "px";
+      }
+      fitWord(); addEventListener("resize", fitWord); (document as any).fonts?.ready.then(fitWord);
+      const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      let wi = 0, visible = true, busy = false;
+      new IntersectionObserver(([e]) => { visible = e.isIntersecting; }).observe(rot);
+      const shuffle = <T,>(a: T[]) => { for (let i = a.length - 1; i > 0; i--) { const j = (Math.random() * (i + 1)) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
+      function wipe() {
+        if (busy || !visible || document.hidden) return; busy = true;
+        const dpr = devicePixelRatio || 1, W = rot.clientWidth, H = rot.clientHeight;
+        cv.width = W * dpr; cv.height = H * dpr; cv.style.width = W + "px"; cv.style.height = H + "px"; cx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        const cs = rowH() / 4, oldW = word.offsetWidth + 4;
+        const next = words[(wi + 1) % words.length];
+        word.textContent = next; fitWord(); const newW = word.offsetWidth + 4; word.textContent = words[wi]; fitWord();
+        const cols = Math.ceil(Math.min(W, Math.max(oldW, newW)) / cs), rows = Math.ceil(H / cs);
+        const cells = shuffle(Array.from({ length: cols * rows }, (_, k) => k));
+        cx.fillStyle = getComputedStyle(rot).color;
+        const D = 320; let t0 = 0, swapped = false;
+        const step = (t: number) => {
+          if (!t0) t0 = t; const p = (t - t0) / D;
+          cx.clearRect(0, 0, W, H);
+          // phase 1 (0→1): pixels switch on over the old word · phase 2 (1→2): they switch off over the new one
+          const on = p < 1 ? Math.floor(cells.length * p) : Math.floor(cells.length * Math.max(0, 2 - p));
+          if (p >= 1 && !swapped) { swapped = true; wi = (wi + 1) % words.length; word.textContent = words[wi]; fitWord(); shuffle(cells); }
+          for (let k = 0; k < on; k++) { const c = cells[k]; cx.fillRect((c % cols) * cs, Math.floor(c / cols) * cs, cs, cs); }
+          if (p < 2) requestAnimationFrame(step); else { cx.clearRect(0, 0, W, H); busy = false; }
+        };
+        requestAnimationFrame(step);
+      }
+      if (!still && words.length > 1) setInterval(wipe, 2600);
     </script>
   </body>
 </html>

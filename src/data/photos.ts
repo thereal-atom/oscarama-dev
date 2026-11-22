@@ -81,10 +81,12 @@ import spacexai from "@/assets/logos/spacexai.svg";
 import openai from "@/assets/logos/openai.png";
 import vercel from "@/assets/logos/vercel.png";
 import corgi from "@/assets/logos/corgi.png";
+import cognition from "@/assets/logos/cognition.svg";
 
 export const clients = [
-  { name: "SpaceX AI", logo: spacexai },
+  { name: "SPACEXAI", logo: spacexai },
   { name: "OpenAI", logo: openai },
   { name: "Vercel", logo: vercel },
   { name: "Corgi", logo: corgi },
+  { name: "Cognition", logo: cognition },
 ];

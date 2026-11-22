@@ -134,7 +134,7 @@ type Fld = keyof typeof hexOf;
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content={S.accent} />
     <title>Oscar shoots events — photo + video for tech events, London</title>
-    <meta name="description" content="Freelance event photography and recap video for hackathons, demo nights, conferences and launches. London, will travel." />
+    <meta name="description" content="Freelance event photography and recap video for hackathons, demo nights, conferences and launches. Based in London." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
@@ -257,10 +257,11 @@ type Fld = keyof typeof hexOf;
       .logos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--p)}
       .logos>*{background:var(--K2);color:var(--M);display:grid;place-items:center;align-content:center;gap:12px;text-align:center;padding:10px;min-height:calc(var(--c) * 4)}
       .logos img{height:clamp(40px,4.6cqw,70px);width:auto;max-width:60%;object-fit:contain;display:block}
-      .logos .you{grid-column:1/-1;background:var(--G);color:var(--OG);min-height:calc(var(--c) * 2.5);justify-items:start;text-align:left;padding:calc(var(--p) * 1.2)}
+      .logos img.sm{height:clamp(28px,3.2cqw,48px)}
+      .logos .you{background:var(--G);color:var(--OG);min-height:calc(var(--c) * 2.5);justify-items:start;text-align:left;padding:calc(var(--p) * 1.2)}
       .logos .you b{font:400 clamp(26px,2.6cqw,38px)/1 var(--pxf)}
       .logos .you:hover,.logos .you:focus-visible{background:var(--M);color:var(--K)}
-      @media (min-width:900px){.logos{grid-template-columns:repeat(5,minmax(0,1fr))}.logos>*{min-height:calc(var(--c) * 3)}.logos .you{grid-column:auto;min-height:0;align-content:space-between}}
+      @media (min-width:900px){.logos{grid-template-columns:repeat(6,minmax(0,1fr))}.logos>*{min-height:calc(var(--c) * 3)}.logos .you{grid-column:auto;min-height:0;align-content:space-between}}
 
       /* ── testimonials ── */
       .quotes{display:grid;gap:var(--c)}
@@ -352,7 +353,7 @@ type Fld = keyof typeof hexOf;
           </div>
           <div class="hl">
             <h1 style="display:contents" aria-label="Oscar shoots events."><Bits text="OSCAR" pop /><Bits text="SHOOTS" pop /><Bits text="EVENTS." pop /></h1>
-            <p class="lede">Event photography + recap video for hackathons, demo nights, conferences and launches. {contact.basedIn}, will travel.</p>
+            <p class="lede">Event photography + recap video for hackathons, demo nights, conferences and launches. Based in {contact.basedIn}.</p>
           </div>
           <nav class="links" aria-label="sections">
             {links.map((l) => (
@@ -445,7 +446,7 @@ type Fld = keyof typeof hexOf;
           <div class="w">
             <p class="lab mono">Shot for</p>
             <div class="logos">
-              {clients.map((c) => <div><img src={c.logo.src} alt={c.name} loading="lazy" /><span class="mono">{c.name}</span></div>)}
+              {clients.map((c) => <div><img class:list={{ sm: c.name === "SPACEXAI" }} src={c.logo.src} alt={c.name} loading="lazy" /><span class="mono">{c.name}</span></div>)}
               <a class="you" href="#book"><span class="mono">next</span><b>YOUR LOGO →</b></a>
             </div>
           </div>
@@ -521,7 +522,7 @@ type Fld = keyof typeof hexOf;
             <a class="lk" href={ig} target="_blank" rel="noopener"><span class="t">Instagram</span><span class="d mono dk">@{contact.instagram}</span><Bits rows={icons.out} /></a>
             <a class="lk" href={tw} target="_blank" rel="noopener"><span class="t">X</span><span class="d mono">@{contact.x}</span><Bits rows={icons.out} /></a>
           </nav>
-          <div class="end mono"><span>Oscar — event photo + video — {contact.basedIn}, will travel</span><a href="#top">back to top ↑</a></div>
+          <div class="end mono"><span>Oscar — event photo + video — based in {contact.basedIn}</span><a href="#top">back to top ↑</a></div>
           <div class="strip" data-src={last.thumb} data-m="11,3" data-d="19,3" aria-hidden="true"><canvas></canvas></div>
         </div>
       </footer>

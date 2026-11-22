@@ -1,4 +1,7 @@
-// Synthesised mechanical shutter (Web Audio, no files) + shared mute state.
+// Shutter sound + shared mute state. Plays a real recorded shutter (public/photos/audio/shutter.wav, cut from
+// freesound "shutter" #39318), decoded once into an AudioBuffer so it fires with no delay. Until that has
+// loaded (or if it fails) it falls back to the synthesised one below.
+// Synthesised fallback:
 // A real SLR/mirrorless-with-mechanical-shutter actuation is three events in ~100ms:
 //   0ms   mirror slap / first curtain release — a dull, woody "thk" (low-mid noise + body thump)
 //   ~8ms  a very sharp, bright transient (the latch)
@@ -10,6 +13,16 @@ let ctx: AudioContext | null = null;
 let master: DynamicsCompressorNode | null = null;
 let noiseBuf: AudioBuffer | null = null;
 let muted = false;
+let sample: AudioBuffer | null = null;
+let bytes: Promise<ArrayBuffer> | null = null;
+let decoding = false;
+const SAMPLE_URL = "/photos/audio/shutter.wav";
+/** fetch the bytes early (no AudioContext needed for that) */
+const fetchSample = () => (bytes ??= fetch(SAMPLE_URL).then((r) => r.arrayBuffer()));
+function loadSample(c: AudioContext) {
+  if (decoding) return; decoding = true;
+  fetchSample().then((b) => c.decodeAudioData(b.slice(0))).then((buf) => { sample = buf; }).catch(() => {});
+}
 try { muted = localStorage.getItem("fable-mute") === "1"; } catch {}
 
 function ac() {
@@ -25,6 +38,7 @@ function ac() {
     for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
   }
   if (ctx.state === "suspended") ctx.resume();
+  loadSample(ctx);
   return ctx;
 }
 
@@ -55,6 +69,12 @@ export function shutter(soft = false) {
   if (muted) return;
   try {
     const c = ac();
+    if (sample) {
+      const src = c.createBufferSource(); src.buffer = sample;
+      const g = c.createGain(); g.gain.value = soft ? 0.45 : 0.9;
+      src.connect(g).connect(c.destination); src.start();
+      return;
+    }
     const t = c.currentTime + 0.004, v = soft ? 0.5 : 1;
     // 1. mirror slap: dull body + thump
     noise(c, t, 0.034, "bandpass", 1500, 0.8, 0.9 * v);
@@ -87,6 +107,11 @@ function paint() {
 let wired = false;
 export function wireMute() {
   if (wired) return; wired = true;
+  // decode the sample on the first touch/press anywhere (an AudioContext needs a user gesture)
+  fetchSample().catch(() => {});
+  const warm = () => { try { ac(); } catch {} };
+  addEventListener("pointerdown", warm, { once: true, capture: true });
+  addEventListener("keydown", warm, { once: true, capture: true });
   document.addEventListener("click", (e) => {
     const b = (e.target as HTMLElement).closest?.("[data-mute]");
     if (!b) return;
