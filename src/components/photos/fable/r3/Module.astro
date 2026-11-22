@@ -104,7 +104,7 @@ const get = [
 // the one pixel transition: the contact slab breaks up into the footer in whole modules (a seeded dither, as in r3/4)
 const cellsOf = (rows: string[]) => rows.flatMap((row, y) => [...row].flatMap((ch, x) => (ch === "#" ? [`${y + 1}/${x + 1}/span 1/span 1`] : [])));
 const dzM = cellsOf(dissolve(306, 6, 4)), dzD = cellsOf(dissolve(30, 16, 4));
-const ig = `https://instagram.com/${contact.instagram}`, tw = `https://x.com/${contact.x}`;
+const ig = `https://www.instagram.com/${contact.instagram}/`, tw = `https://x.com/${contact.x}`;
 ---
 
 <!--

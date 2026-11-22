@@ -101,7 +101,7 @@ export const services = [
   { name: "fast turnaround", detail: "first selects within 24h so you can post while it's still hot." },
 ];
 
-export const contact = { email: "hello@oscarama.dev", instagram: "oscarfall", x: "oscarfalll", basedIn: "London" };
+export const contact = { email: "hello@oscarama.dev", instagram: "oscarfalll", x: "oscarfalll", basedIn: "London" };
 
 // Real clients to show as logos (user will add more). Use these instead of KPIs/stats.
 import spacexai from "@/assets/logos/spacexai.svg";
