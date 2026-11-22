@@ -1,9 +1,568 @@
 ---
-// STUB — to be replaced by the Motion poster-inspired style.
+// MOTION: the red F-22 + orange Concorde posters, translated to a hire page.
+// Saturated monochrome tint, glowing light streaks, horizontal smear, scanlines, huge tight grotesk bleeding off
+// the edges and small mono spec tables (value + label).
+// ONE signature scroll effect: every select arrives as a tinted horizontal smear and resolves sharp + full colour
+// as it travels up the screen (scroll-linked, so it reverses; off under reduced motion).
 import Switcher from "@/components/photos/Switcher.astro";
-import { schemes, type SchemeId } from "@/components/photos/schemes";
+import Viewer from "@/components/photos/fable/r3/Viewer.astro";
+import { schemes, mix, rgb, type SchemeId } from "@/components/photos/schemes";
+import { allShots, services, contact, clients } from "@/data/photos";
+
 interface Props { scheme: SchemeId }
 const S = schemes[Astro.props.scheme];
+const dark = S.dark;
+
+// ── style tokens derived from the four roles ──
+// fire: the saturated poster field (hero / contact); deep: near-black of the hue; hot: glow colour of the light streaks
+const T = dark
+  ? { fire: mix(S.accent, S.ink, 0.42), deep: S.ink, hot: mix(S.accent, "#FFE7C2", 0.35), fireBig: S.paper, fireSmall: S.paper, duo: [mix(S.ink, "#000000", 0.5), mix(mix(S.accent, "#E00000", 0.5), S.ink, 0.3), mix(S.accent, "#FFD8C4", 0.3)] }
+  : { fire: S.accent, deep: S.ink, hot: "#FFF6EA", fireBig: S.paper, fireSmall: S.ink, duo: [mix(S.accent, S.ink, 0.62), S.accent, mix(S.paper, "#FFFFFF", 0.4)] };
+// the accent as small text on paper (darkened until legible)
+const accOnPaper = dark ? mix(S.accent, S.ink, 0.25) : mix(S.accent, S.ink, 0.42);
+
+// duotone table for the SVG filter: shadow → mid → highlight, per channel
+const D = T.duo.map(rgb);
+const tv = (c: 0 | 1 | 2) => D.map((x) => (x[c] / 255).toFixed(3)).join(" ");
+
+// section grounds per scheme: contrast flips down the page
+const G = dark
+  ? { hero: "fire", sel: "deep", about: "acc", svc: "deep", cli: "paper", con: "fire", foot: "deep" }
+  : { hero: "fire", sel: "paper", about: "acc", svc: "deep", cli: "paper", con: "fire", foot: "deep" };
+
+// selects: interleave events so one shoot never clumps
+const picked = (() => {
+  const by = new Map<string, typeof allShots>();
+  allShots.forEach((s) => by.set(s.event.slug, [...(by.get(s.event.slug) ?? []), s]));
+  const out: typeof allShots = [];
+  const lists = [...by.values()];
+  for (let i = 0; out.length < 12 && i < 8; i++) for (const l of lists) if (l[i] && out.length < 12) out.push(l[i]);
+  return out;
+})();
+const heroShot = allShots[0];
+const idx = (id: string) => allShots.findIndex((s) => s.id === id);
+// desktop spans on a 12-col grid / mobile spans on a 2-col grid; each row sums to the full width
+const dSpan = [12, 8, 4, 4, 4, 4, 5, 7, 4, 8, 6, 6];
+const mSpan = [2, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 2];
+
+const ig = `https://instagram.com/${contact.instagram}`;
+const tw = `https://x.com/${contact.x}`;
+const kinds = ["conference", "hackathon", "demo night", "launch", "panel", "meetup", "offsite", "something else"];
+const needs = ["photos", "recap video", "portraits", "24h selects"];
+
+// streak noise: very stretched turbulence, alpha-thresholded so only the peaks survive as short horizontal dashes
+const streaks = (seed: number, fx: number, cut: number) =>
+  `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='900' height='900'><filter id='n' x='0' y='0'><feTurbulence type='fractalNoise' baseFrequency='${fx} 0.55' numOctaves='2' seed='${seed}' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 14 ${cut}'/></filter><rect width='100%' height='100%' filter='url(#n)'/></svg>`)}")`;
+const vars = [
+  `--fire:${T.fire}`, `--deep:${T.deep}`, `--hot:${T.hot}`, `--acc:${S.accent}`, `--ink:${S.ink}`, `--paper:${S.paper}`,
+  `--fire-big:${T.fireBig}`, `--fire-small:${T.fireSmall}`, `--acc-paper:${accOnPaper}`,
+  `--streaks:${streaks(7, 0.018, -10.6)}`, `--streaks2:${streaks(19, 0.03, -11)}`,
+].join(";");
+const pad = (n: number) => String(n).padStart(2, "0");
 ---
-<!doctype html><html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Motion — stub</title></head>
-<body style={`margin:0;min-height:100vh;background:${S.dark ? S.ink : S.paper};color:${S.accent};font:16px monospace;padding:24px`}>Motion ({S.label}) — coming soon<Switcher /></body></html>
+<!doctype html>
+<html lang="en" style={vars} data-scheme={S.id}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content={T.fire} />
+    <title>Oscar Falemara — event photography + video for tech & startup events</title>
+    <meta name="description" content="Event photography and recap video for tech and startup events. London based. Contact me to book." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="preload" as="image" href={heroShot.src} fetchpriority="high" />
+  </head>
+  <body>
+    <svg class="defs" width="0" height="0" aria-hidden="true" focusable="false">
+      <filter id="mo-duo" color-interpolation-filters="sRGB">
+        <feColorMatrix type="matrix" values="0.3 0.59 0.11 0 0  0.3 0.59 0.11 0 0  0.3 0.59 0.11 0 0  0 0 0 1 0" />
+        <feComponentTransfer><feFuncR type="table" tableValues={tv(0)} /><feFuncG type="table" tableValues={tv(1)} /><feFuncB type="table" tableValues={tv(2)} /></feComponentTransfer>
+      </filter>
+      <!-- the hero: duotone + a horizontal ghost smear mixed back over the sharp frame -->
+      <filter id="mo-hero" color-interpolation-filters="sRGB" x="-5%" y="0" width="110%" height="100%">
+        <feColorMatrix type="matrix" values="0.3 0.59 0.11 0 0  0.3 0.59 0.11 0 0  0.3 0.59 0.11 0 0  0 0 0 1 0" result="g" />
+        <feComponentTransfer in="g" result="d"><feFuncR type="table" tableValues={tv(0)} /><feFuncG type="table" tableValues={tv(1)} /><feFuncB type="table" tableValues={tv(2)} /></feComponentTransfer>
+        <feGaussianBlur in="d" stdDeviation="38 0" result="s" />
+        <feComposite in="d" in2="s" operator="arithmetic" k1="0" k2="0.5" k3="0.55" k4="0" />
+      </filter>
+    </svg>
+
+    <!-- ═════════════ HERO ═════════════ -->
+    <header class={`hero g-${G.hero}`} id="top">
+      <button class="hero-ph" data-shot={idx(heroShot.id)} type="button" aria-label={`open photo: ${heroShot.caption}`}>
+        <img src={heroShot.src} alt={`${heroShot.caption}, ${heroShot.event.name}`} width={heroShot.width} height={heroShot.height} fetchpriority="high" decoding="async" />
+      </button>
+      <i class="tex streak" aria-hidden="true"></i>
+      <i class="beam b1" aria-hidden="true"></i><i class="beam b2" aria-hidden="true"></i><i class="flare" aria-hidden="true"></i>
+      <i class="tex scan" aria-hidden="true"></i>
+
+      <nav class="top" aria-label="main">
+        <a class="brand" href="#top">Oscar Falemara</a>
+        <ul class="links">
+          <li><a href="#selects">Selects</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#services">What you get</a></li>
+          <li class="soc"><a href={ig} target="_blank" rel="noopener">IG</a></li>
+          <li class="soc"><a href={tw} target="_blank" rel="noopener">X</a></li>
+        </ul>
+        <a class="cta" href="#contact">Contact me <span aria-hidden="true">→</span></a>
+      </nav>
+
+      <dl class="spec hero-spec">
+        <div><dt>photo + video</dt><dd>discipline</dd></div>
+        <div><dt>tech / startup</dt><dd>events</dd></div>
+        <div><dt>{contact.basedIn}</dt><dd>based [will travel]</dd></div>
+        <div><dt>open</dt><dd>bookings 2027</dd></div>
+      </dl>
+
+      <div class="hero-foot">
+        <p class="lede">I photograph and film tech &amp; startup events — conferences, hackathons, launches — and get first selects to you within 24 hours.</p>
+        <h1 class="bleed" data-bleed>
+          <span class="ln d">// EVENT PHOTOGRAPHY + VIDEO /</span>
+          <span class="ln d">FOR TECH &amp; STARTUP EVENTS</span>
+          <span class="ln d">/ OSCAR FALEMARA, LONDON //</span>
+          <span class="ln m">/ EVENT PHOTO</span>
+          <span class="ln m">+ VIDEO FOR</span>
+          <span class="ln m">TECH EVENTS</span>
+          <span class="ln m">&amp; STARTUPS /</span>
+        </h1>
+      </div>
+    </header>
+
+    <main>
+      <!-- ═════════════ SELECTS ═════════════ -->
+      <section class={`sel g-${G.sel}`} id="selects" aria-labelledby="sel-h">
+        <div class="shead">
+          <p class="kick mono"><span>01</span><span>Selects — tap any frame</span></p>
+          <h2 class="bleed sm" id="sel-h" data-bleed><span class="ln">/ SELECTS / SELECTS / SELECTS /</span></h2>
+        </div>
+        <div class="grid">
+          {picked.map((s, i) => (
+            <figure class="tile" style={`--d:${dSpan[i]};--m:${mSpan[i]}`} data-tile>
+              <button class="ph" type="button" data-shot={idx(s.id)} aria-label={`open photo: ${s.caption}, ${s.event.name}`}>
+                <img src={s.thumb} alt={`${s.caption}, ${s.event.name}`} width={Math.round(s.width / 3)} height={Math.round(s.height / 3)} loading={i < 2 ? "eager" : "lazy"} decoding="async" />
+                <canvas class="smr" aria-hidden="true"></canvas>
+              </button>
+              <dl class="spec tspec" aria-hidden="true">
+                <div><dt>{s.exif.aperture}</dt><dd>aperture</dd></div>
+                <div><dt>{s.exif.shutter}</dt><dd>shutter</dd></div>
+                <div><dt>{s.exif.iso}</dt><dd>iso</dd></div>
+              </dl>
+              <figcaption class="mono"><span>{pad(i + 1)}</span><span>{s.caption}</span><span class="ev">{s.event.name}</span></figcaption>
+            </figure>
+          ))}
+        </div>
+      </section>
+
+      <!-- ═════════════ ABOUT ═════════════ -->
+      <section class={`about g-${G.about}`} id="about" aria-labelledby="about-h">
+        <p class="kick mono"><span>02</span><span id="about-h">About / what I shoot</span></p>
+        <p class="big">I'm Oscar. I shoot the rooms where things get built: keynotes, 3am hackathon tables, launch-night toasts. I move fast, stay out of the way, and catch the candid stuff people actually share.</p>
+        <dl class="spec about-spec">
+          <div><dt>conferences</dt><dd>stages, panels, hallway track</dd></div>
+          <div><dt>hackathons</dt><dd>day one to demo hour</dd></div>
+          <div><dt>launches</dt><dd>product, party, founders</dd></div>
+          <div><dt>meetups</dt><dd>talks, crowds, offsites</dd></div>
+        </dl>
+      </section>
+
+      <!-- ═════════════ WHAT YOU GET ═════════════ -->
+      <section class={`svc g-${G.svc}`} id="services" aria-labelledby="svc-h">
+        <i class="tex streak soft" aria-hidden="true"></i>
+        <div class="shead">
+          <p class="kick mono"><span>03</span><span>What you get</span></p>
+          <h2 class="bleed sm" id="svc-h" data-bleed><span class="ln">WHAT YOU GET // WHAT YOU GET //</span></h2>
+        </div>
+        <ol class="svc-list">
+          {services.map((s, i) => (
+            <li>
+              <span class="mono n">{pad(i + 1)}</span>
+              <h3>{s.name}</h3>
+              <p class="mono">{s.detail}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <!-- ═════════════ CLIENTS ═════════════ -->
+      <section class={`cli g-${G.cli}`} aria-labelledby="cli-h">
+        <p class="kick mono"><span>04</span><span id="cli-h">Shot for</span></p>
+        <ul class="logos">
+          {clients.map((c) => (
+            <li><img src={c.name === "SpaceX AI" ? "/photos/opus/spacexai-mark.svg" : c.logo.src} alt={c.name} loading="lazy" /><span class="mono">{c.name}</span></li>
+          ))}
+        </ul>
+      </section>
+
+      <!-- ═════════════ CONTACT ═════════════ -->
+      <section class={`con g-${G.con}`} id="contact" aria-labelledby="con-h">
+        <i class="tex streak" aria-hidden="true"></i>
+        <i class="tex scan" aria-hidden="true"></i>
+        <div class="shead">
+          <p class="kick mono"><span>05</span><span>Contact me</span></p>
+          <h2 class="bleed" id="con-h" data-bleed><span class="ln">CONTACT ME //</span></h2>
+        </div>
+        <form class="form" id="form" novalidate>
+          <fieldset>
+            <legend class="mono">What is it?</legend>
+            <div class="chips">{kinds.map((k, i) => <label class="chip"><input type="radio" name="kind" value={k} checked={i === 0} /><span>{k}</span></label>)}</div>
+          </fieldset>
+          <fieldset>
+            <legend class="mono">What do you need?</legend>
+            <div class="chips">{needs.map((k, i) => <label class="chip"><input type="checkbox" name="need" value={k} checked={i === 0} /><span>{k}</span></label>)}</div>
+          </fieldset>
+          <div class="row">
+            <label class="fld"><span class="mono">When <i>(optional)</i></span><input type="date" name="date" /></label>
+            <label class="fld"><span class="mono">Your name</span><input type="text" name="name" autocomplete="name" /></label>
+            <label class="fld"><span class="mono">Your email</span><input type="email" name="email" autocomplete="email" required /></label>
+          </div>
+          <label class="fld"><span class="mono">Anything else? <i>venue, size, vibe</i></span><textarea name="note" rows="3"></textarea></label>
+          <p class="say" id="say" aria-live="polite"></p>
+          <button class="send" type="submit"><span>Send message</span><span aria-hidden="true">→</span></button>
+          <p class="mono fine" id="sent">Opens your email app with this written out. Or write to <a href={`mailto:${contact.email}`}>{contact.email}</a></p>
+        </form>
+      </section>
+    </main>
+
+    <!-- ═════════════ FOOTER ═════════════ -->
+    <footer class={`foot g-${G.foot}`}>
+      <p class="kick mono"><span>06</span><span>Or skip the form</span></p>
+      <a class="mail" href={`mailto:${contact.email}`}><span data-fit>{contact.email}</span></a>
+      <dl class="spec foot-spec">
+        <div><dt><a href={ig} target="_blank" rel="noopener">@{contact.instagram} ↗</a></dt><dd>instagram</dd></div>
+        <div><dt><a href={tw} target="_blank" rel="noopener">@{contact.x} ↗</a></dt><dd>x</dd></div>
+        <div><dt>{contact.basedIn}</dt><dd>based</dd></div>
+        <div><dt><a href="#top">top ↑</a></dt><dd>back to</dd></div>
+      </dl>
+    </footer>
+
+    <Viewer bg={T.deep} fg={S.paper} accent={S.accent} onAccent={S.ink} mono="'JetBrains Mono', ui-monospace, monospace" display="'Inter Tight', system-ui, sans-serif" bookHref="#contact" bookLabel="Contact me about a shoot →" />
+    <Switcher />
+
+    <script>
+      import { wireBook } from "@/components/photos/fable/r3/book";
+      const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      // ── bleeding headlines: every line of a block shares one size, set so the widest line overshoots the edge ──
+      function bleed() {
+        document.querySelectorAll<HTMLElement>("[data-bleed]").forEach((h) => {
+          const lines = [...h.querySelectorAll<HTMLElement>(".ln")].filter((l) => l.offsetParent);
+          if (!lines.length) return;
+          h.style.fontSize = "100px";
+          const w = Math.max(...lines.map((l) => l.scrollWidth));
+          const over = h.classList.contains("sm") ? 1.18 : 1.07;
+          h.style.fontSize = (100 * (h.clientWidth * over)) / w + "px";
+        });
+        document.querySelectorAll<HTMLElement>("[data-fit]").forEach((el) => {
+          const p = el.parentElement!; const cs = getComputedStyle(p); el.style.fontSize = "100px";
+          el.style.fontSize = (100 * (p.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight)) * 0.99) / el.scrollWidth + "px";
+        });
+      }
+      bleed(); addEventListener("resize", bleed); (document as any).fonts?.ready.then(bleed);
+
+      // ── the one scroll effect: smear-in → resolve ──
+      // each tile's <canvas> paints its own thumbnail averaged across a horizontal offset (motion smear),
+      // tinted to the accent; the canvas fades away as the tile rises to ~55% of the viewport.
+      const acc = getComputedStyle(document.documentElement).getPropertyValue("--acc").trim();
+      const deep = getComputedStyle(document.documentElement).getPropertyValue("--deep").trim();
+      type Tile = { el: HTMLElement; img: HTMLImageElement; cv: HTMLCanvasElement; last: number; seed: number };
+      const tiles: Tile[] = [...document.querySelectorAll<HTMLElement>("[data-tile]")].map((el, i) => ({
+        el, img: el.querySelector("img")!, cv: el.querySelector("canvas")!, last: -1, seed: i * 9301 + 49297,
+      }));
+
+      function paint(t: Tile, p: number) {
+        const { cv, img } = t;
+        const W = Math.max(1, Math.round(cv.clientWidth * 0.5)), H = Math.max(1, Math.round(cv.clientHeight * 0.5));
+        if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+        const x = cv.getContext("2d")!;
+        const amt = Math.pow(1 - p, 1.15); // 1 = fully smeared, 0 = sharp
+        x.globalCompositeOperation = "source-over"; x.globalAlpha = 1;
+        x.fillStyle = deep; x.fillRect(0, 0, W, H);
+        if (img.complete && img.naturalWidth) {
+          const r = Math.max(W / img.naturalWidth, H / img.naturalHeight);
+          const dw = img.naturalWidth * r, dh = img.naturalHeight * r;
+          const spread = W * 0.55 * amt, lead = W * 0.35 * amt; // arrives from the right
+          const N = 9;
+          for (let i = 0; i < N; i++) {
+            x.globalAlpha = 1 / (i + 1); // running average
+            x.drawImage(img, (W - dw) / 2 + lead + (i / (N - 1) - 0.5) * spread, (H - dh) / 2, dw, dh);
+          }
+        }
+        // monochrome tint
+        x.globalAlpha = 1; x.globalCompositeOperation = "color"; x.fillStyle = acc; x.fillRect(0, 0, W, H);
+        // light streaks
+        x.globalCompositeOperation = "screen";
+        let s = t.seed;
+        const rnd = () => ((s = (s * 16807) % 2147483647) / 2147483647);
+        for (let i = 0; i < 26; i++) {
+          const y = rnd() * H, len = (0.08 + rnd() * 0.5) * W * (0.4 + amt), x0 = rnd() * W - len * 0.3;
+          x.globalAlpha = (0.25 + rnd() * 0.6) * amt;
+          x.fillStyle = "#fff"; x.fillRect(x0, y, len, rnd() < 0.85 ? 1 : 2);
+        }
+        x.globalCompositeOperation = "source-over"; x.globalAlpha = 1;
+        cv.style.opacity = String(Math.min(1, amt * 2.2));
+      }
+
+      let raf = 0;
+      function frame() {
+        raf = 0;
+        const vh = innerHeight;
+        for (const t of tiles) {
+          const r = t.el.getBoundingClientRect();
+          if (r.bottom < -50 || r.top > vh + 50) continue;
+          // p: 0 when the tile's top is at the bottom edge, 1 when it reaches 55% up the screen
+          const p = Math.max(0, Math.min(1, (vh - r.top) / (vh * 0.45)));
+          const q = Math.round(p * 60) / 60;
+          if (q === t.last) continue;
+          t.last = q;
+          if (q >= 1) { t.cv.style.opacity = "0"; continue; }
+          paint(t, q);
+        }
+      }
+      const kick = () => { if (!raf) raf = requestAnimationFrame(frame); };
+      if (!reduced) {
+        document.documentElement.classList.add("smear-on");
+        addEventListener("scroll", kick, { passive: true });
+        addEventListener("resize", () => { tiles.forEach((t) => (t.last = -1)); kick(); });
+        tiles.forEach((t) => t.img.addEventListener("load", () => { t.last = -1; kick(); }));
+        kick();
+      }
+
+      // ── contact form → pre-filled mailto ──
+      wireBook({ form: document.getElementById("form") as HTMLFormElement, email: "hello@oscarama.dev", say: document.getElementById("say"), sent: document.getElementById("sent") });
+    </script>
+
+    <style is:inline>
+      html { -webkit-text-size-adjust: 100%; background: var(--deep); scroll-behavior: smooth; }
+      @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+      body {
+        margin: 0; overflow-x: clip; background: var(--deep); color: var(--paper);
+        font-family: "Inter Tight", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+        -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+      }
+      .defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+      a { color: inherit; }
+      .mono, .spec, .kick, figcaption, legend { font-family: "JetBrains Mono", ui-monospace, Menlo, monospace; }
+      section, header, footer { position: relative; overflow: hidden; }
+
+      /* ── grounds ── */
+      .g-fire { background: var(--fire); color: var(--fire-small); --line: color-mix(in srgb, var(--fire-small) 40%, transparent); --big: var(--fire-big); --mark: var(--hot); --strong: var(--fire-small); --on-strong: var(--fire); }
+      [data-scheme="concorde"] .g-fire { --mark: var(--ink); --on-strong: var(--paper); }
+      .g-deep { background: var(--deep); color: var(--paper); --line: color-mix(in srgb, var(--paper) 22%, transparent); --big: var(--paper); --mark: var(--acc); }
+      .g-acc { background: var(--acc); color: var(--ink); --line: color-mix(in srgb, var(--ink) 35%, transparent); --big: var(--ink); --mark: var(--ink); }
+      .g-paper { background: var(--paper); color: var(--ink); --line: color-mix(in srgb, var(--ink) 22%, transparent); --big: var(--ink); --mark: var(--acc-paper); }
+
+      /* ── textures ── */
+      .tex { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+      .streak { background-image: var(--streaks), var(--streaks2); background-size: 900px 900px, 640px 1100px; mix-blend-mode: screen; opacity: .7; }
+      .streak.soft { opacity: .28; }
+      .scan {
+        background:
+          repeating-linear-gradient(to bottom, rgba(0,0,0,.16) 0 1px, transparent 1px 3px),
+          repeating-linear-gradient(90deg, rgba(255,255,255,.045) 0 1px, transparent 1px 4px);
+        mix-blend-mode: multiply;
+      }
+      [data-scheme="concorde"] .scan { mix-blend-mode: normal; opacity: .55; }
+      .beam {
+        position: absolute; z-index: 1; pointer-events: none; height: 3px; width: 170%;
+        background: linear-gradient(90deg, transparent, var(--hot) 18%, #fff 50%, var(--hot) 82%, transparent);
+        box-shadow: 0 0 6px 1px var(--hot), 0 0 22px 4px var(--acc), 0 0 60px 10px color-mix(in srgb, var(--acc) 50%, transparent);
+        transform-origin: 0 50%; mix-blend-mode: screen; opacity: .9;
+      }
+      .b1 { left: -10%; top: -4%; transform: rotate(62deg); }
+      .b2 { left: 16%; top: -4%; transform: rotate(57deg); opacity: .65; }
+      .flare {
+        position: absolute; z-index: 1; pointer-events: none; left: -10%; top: 44%; width: 130%; height: 18px;
+        background: linear-gradient(90deg, transparent, var(--hot) 30%, #fff 62%, var(--hot) 80%, transparent);
+        filter: blur(5px); transform: rotate(-21deg); mix-blend-mode: screen; opacity: .85;
+        box-shadow: 0 0 80px 30px color-mix(in srgb, var(--acc) 55%, transparent);
+      }
+      [data-scheme="concorde"] .beam, [data-scheme="concorde"] .flare { opacity: .55; }
+
+      /* ── shared type ── */
+      .kick { display: flex; gap: 14px; margin: 0; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; }
+      .kick span:first-child { color: var(--mark); }
+      .bleed {
+        margin: 0; font-weight: 700; letter-spacing: -0.055em; line-height: .84; color: var(--big);
+        text-transform: uppercase; white-space: nowrap; font-size: 15vw; text-wrap: nowrap;
+      }
+      .bleed .ln { display: block; width: max-content; position: relative; left: 50%; transform: translateX(-50%); }
+      .bleed.sm { opacity: 1; }
+      .spec { margin: 0; display: grid; gap: 1px; font-size: 11px; line-height: 1.25; text-transform: uppercase; letter-spacing: .02em; }
+      .spec div { display: grid; grid-template-columns: minmax(7.5ch, auto) 1fr; gap: 1.6ch; }
+      .spec dt { font-weight: 500; }
+      .spec dd { margin: 0; opacity: .85; }
+
+      /* ── hero ── */
+      .hero { min-height: 100svh; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto 1fr auto; isolation: isolate; }
+      .hero-foot, .shead { min-width: 0; overflow: hidden; }
+      .hero-ph { position: absolute; inset: 0; z-index: 0; padding: 0; border: 0; background: var(--fire); cursor: zoom-in; }
+      .hero-ph img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 40%; display: block; filter: url(#mo-hero); }
+      .hero .streak { opacity: .85; }
+      .top {
+        position: relative; z-index: 3; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px;
+        padding: 14px 16px 0; font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 12px; letter-spacing: .04em; text-transform: uppercase;
+      }
+      .top a { text-decoration: none; }
+      .top a:hover, .top a:focus-visible { text-decoration: underline; text-underline-offset: 3px; outline: none; }
+      .brand { font-weight: 500; color: var(--big); }
+      [data-scheme="concorde"] .brand { color: var(--ink); }
+      .links { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 16px; order: 3; width: 100%; }
+      .links .soc:first-of-type { margin-left: auto; }
+      .cta { margin-left: auto; padding: 9px 12px; background: var(--paper); color: var(--ink); white-space: nowrap; }
+      .g-fire .cta { background: var(--fire-big); color: var(--ink); }
+      [data-scheme="concorde"] .g-fire .cta { background: var(--ink); color: var(--paper); }
+      .cta:hover, .cta:focus-visible { text-decoration: none !important; background: var(--acc) !important; color: var(--ink) !important; }
+      [data-scheme="afterburner"] .cta:hover { background: var(--hot) !important; }
+      .hero-spec { position: relative; z-index: 3; justify-self: end; margin: 22px 16px 0; font-size: 10.5px; }
+      .hero-foot { position: relative; z-index: 3; grid-row: 4; padding-bottom: 22px; }
+      .lede { max-width: 30ch; margin: 0 16px 18px; font-size: 15px; line-height: 1.3; font-weight: 500; color: var(--fire-small); }
+      [data-scheme="afterburner"] .lede { text-shadow: 0 1px 12px rgba(0,0,0,.35); }
+      .hero .bleed .d { display: none; }
+      @media (min-width: 760px) {
+        .top { padding: 18px 28px 0; flex-wrap: nowrap; gap: 28px; }
+        .links { order: 0; width: auto; gap: 26px; }
+        .links .soc:first-of-type { margin-left: 22px; }
+        .hero-spec { margin: 40px 28px 0; font-size: 11px; }
+        .lede { margin: 0 28px 26px; font-size: 17px; max-width: 34ch; }
+        .hero .bleed .d { display: block; }
+        .hero .bleed .m { display: none; }
+        .b1 { left: 8%; } .b2 { left: 30%; }
+        .flare { top: 50%; left: 10%; width: 100%; }
+      }
+
+      /* ── section shells ── */
+      .shead { position: relative; z-index: 2; padding: 64px 0 22px; display: grid; gap: 18px; }
+      .shead .kick { padding: 0 16px; }
+      .bleed.sm { font-size: 22vw; }
+      @media (min-width: 760px) { .shead { padding: 110px 0 34px; } .shead .kick { padding: 0 28px; } }
+
+      /* ── selects ── */
+      .grid { position: relative; z-index: 2; display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; padding: 0 4px 80px; grid-auto-rows: 56vw; }
+      .tile { margin: 0; grid-column: span var(--m); position: relative; display: grid; min-width: 0; }
+      .tile[style*="--m:2"] { grid-row: span 1; }
+      .ph { position: relative; display: block; width: 100%; height: 100%; padding: 0; border: 0; background: var(--deep); cursor: zoom-in; overflow: hidden; }
+      .ph img { width: 100%; height: 100%; object-fit: cover; display: block; }
+      .smr { position: absolute; inset: 0; width: 100%; height: 100%; display: none; pointer-events: none; image-rendering: auto; }
+      html.smear-on .smr { display: block; }
+      .tspec { position: absolute; top: 8px; right: 8px; z-index: 2; color: #fff; font-size: 9.5px; text-shadow: 0 0 6px rgba(0,0,0,.55); pointer-events: none; display: none; }
+      .tile figcaption {
+        position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; pointer-events: none; display: flex; gap: 10px; align-items: baseline;
+        padding: 22px 8px 7px; font-size: 10px; letter-spacing: .03em; text-transform: uppercase; color: #fff;
+        background: linear-gradient(to top, rgba(0,0,0,.55), transparent);
+      }
+      .tile figcaption span:first-child { color: var(--acc); }
+      [data-scheme="afterburner"] .tile figcaption span:first-child { color: var(--hot); }
+      .tile figcaption .ev { display: none; margin-left: auto; opacity: .75; }
+      .ph:focus-visible { outline: 3px solid var(--acc); outline-offset: -3px; }
+      @media (min-width: 760px) {
+        .grid { grid-template-columns: repeat(12, 1fr); gap: 6px; padding: 0 6px 140px; grid-auto-rows: clamp(240px, 30vw, 520px); }
+        .tile { grid-column: span var(--d); }
+        .tile[style*="--d:12"] { grid-row: span 1; }
+        .tile[style*="--d:12"] .ph img { object-position: 50% 45%; }
+        .tspec { display: grid; }
+        .tile figcaption { font-size: 11px; padding: 30px 12px 10px; }
+        .tile figcaption .ev { display: inline; }
+      }
+      @media (min-width: 760px) { .grid > .tile:first-child { grid-row: span 1; } .grid { grid-template-rows: clamp(320px, 46vw, 780px); } }
+
+      /* ── about ── */
+      .about { padding: 64px 16px 72px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 34px; }
+      .about .big { margin: 0; font-size: clamp(30px, 8.4vw, 88px); line-height: .98; letter-spacing: -0.045em; font-weight: 700; color: var(--big); max-width: 20ch; text-wrap: balance; }
+      .about-spec { font-size: 11px; gap: 4px; max-width: 520px; }
+      .about-spec div { grid-template-columns: 13ch 1fr; padding-top: 4px; border-top: 1px solid var(--line); }
+      @media (min-width: 760px) {
+        .about { padding: 120px 28px 130px; grid-template-columns: 1fr 340px; align-items: end; column-gap: 40px; }
+        .about .kick { grid-column: 1 / -1; }
+        .about-spec { font-size: 11.5px; }
+      }
+
+      /* ── services ── */
+      .svc .shead .bleed { opacity: .95; }
+      .svc-list { list-style: none; margin: 0; padding: 0 16px 90px; position: relative; z-index: 2; }
+      .svc-list li { display: grid; grid-template-columns: 4ch 1fr; column-gap: 10px; row-gap: 8px; padding: 18px 0 20px; border-top: 1px solid var(--line); }
+      .svc-list li:last-child { border-bottom: 1px solid var(--line); }
+      .svc-list .n { font-size: 12px; color: var(--mark); padding-top: .55em; }
+      .svc-list h3 { margin: 0; font-size: clamp(30px, 8vw, 76px); line-height: .92; letter-spacing: -0.05em; font-weight: 700; text-transform: uppercase; color: var(--big); }
+      .svc-list p { grid-column: 2; margin: 0; font-size: 12px; line-height: 1.45; max-width: 44ch; text-transform: uppercase; letter-spacing: .02em; opacity: .9; }
+      @media (min-width: 760px) {
+        .svc-list { padding: 0 28px 140px; }
+        .svc-list li { grid-template-columns: 6ch 1fr 34ch; align-items: baseline; padding: 22px 0 24px; }
+        .svc-list p { grid-column: 3; }
+      }
+
+      /* ── clients ── */
+      .cli { padding: 56px 16px 64px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 30px; }
+      .logos { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, 1fr); border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
+      .logos li { display: grid; place-items: center; gap: 12px; padding: 30px 10px 14px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); align-content: center; }
+      .logos img { height: 46px; width: auto; max-width: 70%; object-fit: contain; filter: brightness(0); }
+      .logos span { font-size: 10px; text-transform: uppercase; letter-spacing: .05em; opacity: .7; }
+      @media (min-width: 760px) {
+        .cli { padding: 90px 28px 100px; }
+        .logos { grid-template-columns: repeat(4, 1fr); }
+        .logos li { padding: 52px 10px 18px; }
+        .logos img { height: 64px; }
+      }
+
+      /* ── contact ── */
+      .con .shead { padding-bottom: 6px; }
+      .form { position: relative; z-index: 2; padding: 10px 16px 80px; display: grid; gap: 22px; max-width: 980px; }
+      fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: 10px; }
+      legend, .fld > span { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; padding: 0; }
+      legend { margin-bottom: 10px; }
+      .fld i, legend i { font-style: normal; opacity: .65; }
+      .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+      .chip { position: relative; cursor: pointer; }
+      .chip input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+      .chip span { display: block; padding: 10px 13px; border: 1px solid currentColor; font-size: 15px; font-weight: 600; letter-spacing: -0.01em; line-height: 1; }
+      .chip input:checked + span { background: var(--strong); color: var(--on-strong); border-color: var(--strong); }
+      .g-deep .chip input:checked + span { background: var(--acc); color: var(--ink); border-color: var(--acc); }
+      .chip input:focus-visible + span { outline: 2px solid currentColor; outline-offset: 2px; }
+      .row { display: grid; gap: 14px; }
+      .fld { display: grid; gap: 6px; }
+      .fld input, .fld textarea {
+        font: 600 18px/1.2 "Inter Tight", system-ui, sans-serif; color: inherit; background: transparent; border: 0; border-bottom: 2px solid currentColor;
+        padding: 8px 0; border-radius: 0; width: 100%; box-sizing: border-box; min-height: 44px; color-scheme: light dark;
+      }
+      .fld textarea { resize: vertical; }
+      .fld input:focus, .fld textarea:focus { outline: none; border-bottom-color: var(--big); background: color-mix(in srgb, currentColor 7%, transparent); }
+      .say { margin: 0; font-size: clamp(20px, 4.4vw, 34px); line-height: 1.08; letter-spacing: -0.03em; font-weight: 500; max-width: 30ch; }
+      .say b { font-weight: 700; color: var(--strong, var(--big)); }
+      .send {
+        justify-self: stretch; display: flex; justify-content: space-between; align-items: center; gap: 20px; cursor: pointer;
+        font: 700 clamp(30px, 7vw, 64px)/1 "Inter Tight", system-ui, sans-serif; letter-spacing: -0.05em; text-transform: uppercase;
+        padding: 18px 18px 16px; border: 0; background: var(--strong); color: var(--on-strong);
+      }
+      .g-deep .send { background: var(--acc); color: var(--ink); }
+      .send:hover, .send:focus-visible { outline: none; background: var(--paper); color: var(--ink); }
+      .fine { margin: 0; font-size: 11px; line-height: 1.5; text-transform: uppercase; letter-spacing: .03em; }
+      @media (min-width: 760px) {
+        .form { padding: 20px 28px 140px; gap: 30px; }
+        .row { grid-template-columns: 1fr 1fr 1.3fr; gap: 24px; }
+        .chip span { font-size: 18px; padding: 12px 16px; }
+      }
+
+      /* ── footer ── */
+      .foot { padding: 70px 0 96px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; }
+      .foot .kick { padding: 0 16px; }
+      .mail { display: block; text-decoration: none; padding: 0 6px; color: var(--big); }
+      .mail span { display: block; width: max-content; font-weight: 700; letter-spacing: -0.06em; line-height: .9; font-size: 12vw; }
+      .mail:hover span, .mail:focus-visible span { color: var(--acc); }
+      .g-fire .mail:hover span { color: var(--ink); }
+      .foot-spec { padding: 0 16px; grid-template-columns: 1fr 1fr; gap: 14px 18px; font-size: 11px; }
+      .foot-spec div { grid-template-columns: 1fr; gap: 2px; }
+      .foot-spec a { text-decoration: none; }
+      .foot-spec a:hover { text-decoration: underline; }
+      .b3 { left: -20%; top: 18%; transform: rotate(-9deg); opacity: .5; }
+      @media (min-width: 760px) {
+        .foot { padding: 110px 0 120px; }
+        .foot .kick, .foot-spec { padding: 0 28px; }
+        .mail { padding: 0 20px; }
+        .foot-spec { grid-template-columns: repeat(4, max-content); gap: 40px; }
+      }
+
+      @media (prefers-reduced-motion: reduce) { .smr { display: none !important; } }
+    </style>
+  </body>
+</html>

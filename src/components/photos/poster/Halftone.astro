@@ -1,9 +1,373 @@
 ---
-// STUB — to be replaced by the Halftone poster-inspired style.
+// HALFTONE — everything on the page is printed through one dot screen.
+// Art direction from the blue F-16 + grey SR-71 posters: a single-colour ground with a moiré / stipple texture,
+// a huge tight grotesk headline that bleeds off both edges and runs behind the subject, and small mono
+// "value + label" spec tables (here: the nav, the per-photo EXIF, and "what you get").
+// The one signature effect: every photo is a real halftone (CSS: greyscale + dot ramp + contrast threshold,
+// tinted to the scheme) whose dots swell into the full-colour frame when you hover / focus it — or, on touch,
+// when it crosses the middle of the screen.
 import Switcher from "@/components/photos/Switcher.astro";
-import { schemes, type SchemeId } from "@/components/photos/schemes";
+import Viewer from "@/components/photos/fable/r3/Viewer.astro";
+import { schemes, mix, alpha, type SchemeId } from "@/components/photos/schemes";
+import { allShots, services, contact, clients } from "@/data/photos";
+import { mixed, shotIndex } from "@/components/photos/fable/derive";
+
 interface Props { scheme: SchemeId }
 const S = schemes[Astro.props.scheme];
+const blue = S.id === "ultramarine";
+// the poster ground: the accent itself when it is deep enough to carry light type, else a graphite mixed toward ink
+const ground = blue ? S.accent : mix(S.accent, S.ink, 0.62);
+// what the halftone's "no dot" areas print as (so a photo's shadows dissolve into the ground it sits on)
+const tone = blue ? S.accent : mix(S.accent, S.ink, 0.86);
+const fringeA = blue ? "rgba(255,40,110,.6)" : "rgba(255,255,255,.0)";
+const fringeB = blue ? "rgba(0,225,255,.6)" : "rgba(255,255,255,.0)";
+
+
+const idx = (s: { id: string }) => shotIndex.get(s.id)!;
+const subject = allShots[17];
+const aboutShot = allShots[20];
+const used = new Set([subject.id, aboutShot.id]);
+const picks = mixed.filter((s) => !used.has(s.id)).slice(0, 16);
+// tile rhythm, 8 per cycle: desktop column spans on a 12-col grid (rows 7+5, 4+4+4, 3+3+6) and which tile sets the row height
+const D = [7, 5, 4, 4, 4, 3, 3, 6], AR = ["3/2", "", "4/5", "", "", "", "", "3/2"];
+const M = [2, 1, 1, 2, 1, 1, 1, 1], MAR = ["4/5", "3/4", "3/4", "3/2", "1/1", "1/1", "3/4", "3/4"];
+const pad = (n: number) => String(n).padStart(2, "0");
+const ig = `https://instagram.com/${contact.instagram}`, tw = `https://x.com/${contact.x}`;
+const kinds = ["conference", "hackathon", "demo night", "launch", "panel", "meetup", "offsite", "something else"];
+const needs = ["photos", "recap video", "portraits"];
+const exif = (s: (typeof allShots)[number]) => [[s.exif.lens.split(" ")[0], "lens"], [s.exif.aperture, "aperture"], [s.exif.shutter, "shutter [s]"], [String(s.exif.iso), "iso"]];
+const vars = `--accent:${S.accent};--ink:${S.ink};--paper:${S.paper};--ground:${ground};--tone:${tone};--fa:${fringeA};--fb:${fringeB};--rule:${alpha(S.paper, 0.28)};--rule-d:${alpha(S.ink, 0.22)}`;
 ---
-<!doctype html><html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Halftone — stub</title></head>
-<body style={`margin:0;min-height:100vh;background:${S.dark ? S.ink : S.paper};color:${S.accent};font:16px monospace;padding:24px`}>Halftone ({S.label}) — coming soon<Switcher /></body></html>
+<!doctype html>
+<html lang="en" class={`ht ht-${S.id}`} style={vars}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Oscar — event photography + video for tech events</title>
+    <meta name="description" content="Freelance event photography and video for tech and startup events. London, will travel." />
+    <meta name="theme-color" content={ground} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://picsum.photos" />
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <style is:inline>
+      @property --r{syntax:"<length>";inherits:true;initial-value:0px}
+      *,*::before,*::after{box-sizing:border-box}
+      /* html.ht prefix: other styles on this route leak bare html/body rules, so ours must out-rank them */
+      html.ht{-webkit-text-size-adjust:100%;scroll-behavior:smooth;background:var(--ink)}
+      html.ht body{margin:0;letter-spacing:normal;background:var(--ink);color:var(--paper);font-family:"Archivo",Helvetica,Arial,sans-serif;font-weight:500;font-size:17px;line-height:1.35;overflow-x:clip;-webkit-font-smoothing:antialiased}
+      a{color:inherit}
+      img{display:block}
+      .mono{font-family:"Geist Mono",ui-monospace,Menlo,monospace;font-weight:400;font-size:11px;line-height:1.25;letter-spacing:.04em;text-transform:uppercase}
+      .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+      :focus-visible{outline:2px solid currentColor;outline-offset:3px}
+      section,header,footer{position:relative;padding:0 var(--gx)}
+      html.ht body{--gx:16px;--s:5px}
+      @media (min-width:900px){html.ht body{--gx:28px;--s:6px}}
+      .t-g{background:var(--ground);color:var(--paper)}
+      .t-i{background:var(--ink);color:var(--paper)}
+      .t-p{background:var(--paper);color:var(--ink);--rule:var(--rule-d)}
+
+      /* ── the halftone ──
+         .sc thresholds (greyscale photo + a 45° dot ramp at 50%) into pure black/white dots; ::before lifts black to the
+         scheme tone, ::after takes white down to paper; .c is the real photo, masked by the same dot grid so the dots grow into it */
+      .ht{position:relative;display:block;overflow:hidden;isolation:isolate;background:var(--tone);width:100%;height:100%}
+      .ht .sc{position:absolute;inset:0;background:#000;filter:contrast(14)}
+      .ht .sc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(.6) brightness(.8)}
+      .ht .sc::after{content:"";position:absolute;inset:0;opacity:.5;background:
+        radial-gradient(circle at center,#fff,rgba(255,255,255,0) calc(var(--s)*.62)) 0 0/var(--s) var(--s),
+        radial-gradient(circle at center,#fff,rgba(255,255,255,0) calc(var(--s)*.62)) calc(var(--s)/2) calc(var(--s)/2)/var(--s) var(--s),#000}
+      .ht::before,.ht::after{content:"";position:absolute;inset:0;pointer-events:none}
+      .ht::before{background:var(--tone);mix-blend-mode:lighten;z-index:1}
+      .ht::after{background:var(--paper);mix-blend-mode:multiply;z-index:2}
+      .ht .c{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:3;opacity:0;--r:0px;
+        -webkit-mask:radial-gradient(circle at center,#000 var(--r),transparent calc(var(--r) + .7px)) 0 0/var(--s) var(--s),radial-gradient(circle at center,#000 var(--r),transparent calc(var(--r) + .7px)) calc(var(--s)/2) calc(var(--s)/2)/var(--s) var(--s);
+        mask:radial-gradient(circle at center,#000 var(--r),transparent calc(var(--r) + .7px)) 0 0/var(--s) var(--s),radial-gradient(circle at center,#000 var(--r),transparent calc(var(--r) + .7px)) calc(var(--s)/2) calc(var(--s)/2)/var(--s) var(--s);
+        transition:--r .55s cubic-bezier(.3,.6,.2,1),opacity .12s linear .5s}
+      .ph{display:block;position:relative;text-decoration:none;cursor:zoom-in}
+      .ph.on .c{opacity:1;--r:calc(var(--s)*.72);transition:--r .5s cubic-bezier(.3,.6,.2,1),opacity .08s linear}
+      @media (hover:hover){.ph:hover .c,.ph:focus-visible .c{opacity:1;--r:calc(var(--s)*.72);transition:--r .5s cubic-bezier(.3,.6,.2,1),opacity .08s linear}}
+      @media (prefers-reduced-motion:reduce){.ht .c,.ph.on .c,.ph:hover .c{transition:opacity .01s}html.ht{scroll-behavior:auto}}
+
+      /* ── hero ── */
+      .hero{min-height:100svh;display:grid;grid-template-rows:auto auto 1fr auto;overflow:hidden;padding-bottom:18px}
+      .tex{position:absolute;inset:0;pointer-events:none;z-index:0}
+      .ht-ultramarine .tex{background:
+        repeating-radial-gradient(circle at 18% 118%,rgba(4,2,40,.5) 0 1.6px,transparent 1.6px 5px),
+        repeating-radial-gradient(circle at 24% 126%,rgba(190,200,255,.16) 0 1.4px,transparent 1.4px 5.35px),
+        radial-gradient(120% 70% at 70% 40%,transparent 30%,rgba(4,2,40,.55))}
+      /* graphite: a stipple ground with two beams, made the same way as the photos (grey ramp → dots) */
+      .ht-graphite .tex{background:#000;filter:contrast(16);mix-blend-mode:screen;opacity:.42}
+      .ht-graphite .tex i{position:absolute;top:-25%;height:95%;width:max(30px,5.5vw);left:60%;transform-origin:50% 100%;transform:rotate(8deg);
+        background:linear-gradient(90deg,transparent,#d8d8d8 40%,#fff 50%,#d8d8d8 60%,transparent);filter:blur(5px);-webkit-mask:linear-gradient(#000 70%,transparent);mask:linear-gradient(#000 70%,transparent)}
+      .ht-graphite .tex i+i{left:78%;transform:rotate(11deg)}
+      .ht-graphite .tex b{position:absolute;inset:0;background:radial-gradient(70% 50% at 62% 55%,#4a4a4a,#1c1c1c)}
+      .ht-graphite .tex::after{content:"";position:absolute;inset:0;opacity:.5;background:
+        radial-gradient(circle at center,#fff,rgba(255,255,255,0) 2.6px) 0 0/4px 4px,radial-gradient(circle at center,#fff,rgba(255,255,255,0) 2.6px) 2px 2px/4px 4px,#000}
+      .hero>*:not(.tex){position:relative;z-index:1}
+      .bar{display:flex;justify-content:space-between;gap:12px;margin:0;padding:14px 0 10px}
+      .bar b{font-weight:500}
+      .hl{margin:0 calc(var(--gx)*-1);overflow:hidden;z-index:1}
+      .hl-in{font-weight:800;text-transform:uppercase;letter-spacing:-.05em;line-height:.84;white-space:nowrap;font-size:15.6vw;transform:translateX(-2.5%);padding:.04em 0 .06em;
+        text-shadow:.012em 0 var(--fa),-.012em 0 var(--fb);
+        -webkit-mask:radial-gradient(circle at center,#000 1.5px,rgba(0,0,0,.55) 1.9px) 0 0/3px 3px;mask:radial-gradient(circle at center,#000 1.5px,rgba(0,0,0,.55) 1.9px) 0 0/3px 3px}
+      .hl-in span{display:block}
+      .hl-in.d{display:none;font-size:6.9vw}
+      .subject{--s:6px;width:66%;aspect-ratio:4/5;margin:-27vw 0 0 auto;z-index:2 !important}
+      .subject .ht{background:transparent;-webkit-mask:radial-gradient(closest-side,#000 62%,transparent 100%);mask:radial-gradient(closest-side,#000 62%,transparent 100%);transition:-webkit-mask-size .3s,mask-size .3s}
+      .subject.on .ht{-webkit-mask:none;mask:none}
+      @media (hover:hover){.subject:hover .ht,.subject:focus-visible .ht{-webkit-mask:none;mask:none}}
+      .low{display:grid;gap:18px;margin-top:-56px;z-index:3 !important}
+      .say{margin:0;font-size:19px;line-height:1.16;letter-spacing:-.015em;max-width:15em;font-weight:500;width:60%}
+      .spec{display:grid;grid-template-columns:1fr 1fr;column-gap:16px}
+      .spec a{display:grid;grid-template-columns:3.2em 1fr;align-items:center;min-height:38px;text-decoration:none;border-top:1px solid var(--rule)}
+      .spec a:hover span:last-child,.spec a:focus-visible span:last-child{text-decoration:underline;text-underline-offset:3px}
+      .spec .nav{display:grid}.spec .soc{display:grid;align-content:start}
+      @media (min-width:900px){
+        .hero{grid-template-rows:auto auto 1fr}
+        .hl-in.m{display:none}.hl-in.d{display:block}
+        .subject{--s:7px;position:absolute !important;width:30vw;max-width:50svh;left:47%;top:calc(52px + 7.4vw);margin:0}
+        .low{grid-template-columns:1fr auto;align-items:end;align-self:end;margin-top:0}
+        .say{font-size:clamp(22px,2vw,30px);width:auto;max-width:13.5em}
+        .spec{display:block;min-width:300px}
+        .spec a{min-height:0;border:0;padding:1.5px 0;grid-template-columns:4.2em 1fr}
+        .spec .soc{margin-top:1.25em}
+      }
+
+      /* ── section furniture ── */
+      .lab{display:flex;justify-content:space-between;gap:12px;margin:0;padding:14px 0;border-bottom:1px solid var(--rule)}
+      .sec{padding-top:0;padding-bottom:clamp(56px,9vw,120px)}
+      .big{font-weight:800;text-transform:uppercase;letter-spacing:-.05em;line-height:.86;margin:0}
+
+      /* ── selects ── */
+      .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 10px;padding-top:16px}
+      .tile{grid-column:span var(--m);min-width:0;margin:0}
+      .tile .ph{aspect-ratio:var(--mar)}
+      .tile figcaption{display:flex;justify-content:space-between;gap:10px;padding-top:7px}
+      .tile figcaption span:last-child{opacity:.6;text-align:right}
+      .tile[style*="--m:1"] figcaption span:last-child{display:none}
+      .ex{position:absolute;left:8px;bottom:8px;z-index:4;display:grid;grid-template-columns:auto auto;column-gap:1.2em;margin:0;padding:6px 8px;background:var(--ink);color:var(--paper);opacity:0;transition:opacity .2s .25s;pointer-events:none;font-size:10px}
+      .ex dt,.ex dd{margin:0}.ex dd{opacity:.65}
+      .ph.on .ex{opacity:1}
+      @media (hover:hover){.ph:hover .ex,.ph:focus-visible .ex{opacity:1}}
+      .tile[style*="--m:1"] .ex{display:none}
+      @media (min-width:900px){
+        .grid{grid-template-columns:repeat(12,minmax(0,1fr));gap:30px 14px}
+        .tile{grid-column:span var(--d);display:flex;flex-direction:column}
+        .tile .ph{aspect-ratio:var(--dar,auto);flex:1;min-height:0}
+        .tile[style*="--m:1"] figcaption span:last-child{display:revert}.tile[style*="--m:1"] .ex{display:grid}
+        .tile[style*="--d:3"] .ex{display:none}
+      }
+      .more{display:flex;justify-content:space-between;gap:12px;margin:26px 0 0;padding-top:12px;border-top:1px solid var(--rule)}
+
+      /* ── about ── */
+      .about{display:grid;gap:28px;padding-top:26px}
+      .about .big{font-size:clamp(40px,7.4vw,112px)}
+      .about p{margin:0 0 1em;max-width:30em}
+      .about .txt{font-size:clamp(18px,1.6vw,22px);line-height:1.3}
+      .about .ph{aspect-ratio:3/2}
+      .kv{display:grid;grid-template-columns:auto 1fr;gap:3px 1.6em;margin:1.6em 0 0}
+      .kv dt,.kv dd{margin:0}.kv dt{opacity:.6}
+      @media (min-width:900px){.about{grid-template-columns:7fr 5fr;column-gap:48px;align-items:start}.about .big{grid-column:1/-1}.about .ph{aspect-ratio:4/3}}
+
+      /* ── what you get ── */
+      .get{list-style:none;margin:0;padding:0}
+      .get li{display:grid;grid-template-columns:2.6em 1fr;gap:4px 0;padding:18px 0 20px;border-bottom:1px solid var(--rule)}
+      .get .n{padding-top:.5em}
+      .get .big{font-size:clamp(30px,5.2vw,76px)}
+      .get .d{grid-column:2;margin:6px 0 0;max-width:36em;font-size:12px;line-height:1.45;opacity:.85}
+      @media (min-width:900px){.get li{grid-template-columns:5em 7fr 5fr;align-items:end;padding:22px 0 24px}.get .d{grid-column:3;margin:0 0 .5em}.get .n{align-self:start;padding-top:1em}}
+
+      /* ── clients ── */
+      .logos{display:grid;grid-template-columns:1fr 1fr;list-style:none;margin:0;padding:0}
+      .logos li{display:grid;justify-items:center;gap:14px;padding:34px 8px 22px;border-bottom:1px solid var(--rule)}
+      .logos li:nth-child(odd){border-right:1px solid var(--rule)}
+      .logos img{height:clamp(44px,5vw,68px);width:auto;max-width:60%;object-fit:contain;filter:brightness(0) invert(1)}
+      @media (min-width:900px){.logos{grid-template-columns:repeat(4,1fr)}.logos li{border-right:1px solid var(--rule);padding:56px 8px 30px}.logos li:last-child{border-right:0}}
+
+      /* ── contact ── */
+      .contact .big.t{font-size:clamp(64px,13.4vw,220px);padding:22px 0 8px;margin-left:-.04em}
+      .contact .lede{font-size:clamp(18px,1.6vw,22px);max-width:26em;margin:0 0 26px}
+      form{display:grid;gap:26px}
+      fieldset{border:0;margin:0;padding:0;min-width:0}
+      legend,.flab{display:flex;justify-content:space-between;width:100%;padding:0 0 9px;margin:0}
+      legend b,.flab b{font-weight:400;opacity:.6}
+      .chips{display:flex;flex-wrap:wrap;gap:6px}
+      .chip{position:relative;cursor:pointer}
+      .chip input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer}
+      .chip span{display:flex;align-items:center;min-height:44px;padding:0 14px;border:1.5px solid currentColor;font-size:12px}
+      .chip input:checked+span{background:var(--tone);border-color:var(--tone);color:var(--paper);
+        background-image:radial-gradient(circle at center,rgba(255,255,255,.3) 1px,transparent 1.4px);background-size:4px 4px}
+      .chip input:focus-visible+span{outline:2px solid var(--ink);outline-offset:2px}
+      .fld{display:block}
+      .fld input,.fld textarea{display:block;width:100%;border:0;border-bottom:1.5px solid currentColor;border-radius:0;background:transparent;color:inherit;font:500 20px/1.2 "Archivo",Helvetica,Arial,sans-serif;padding:10px 0;min-height:48px;appearance:none;-webkit-appearance:none}
+      .fld textarea{min-height:92px;resize:vertical}
+      .fld input::placeholder,.fld textarea::placeholder{color:inherit;opacity:.45}
+      .fld input:focus,.fld textarea:focus{outline:0;border-bottom-width:3px}
+      .two{display:grid;gap:26px}
+      .send{display:flex;justify-content:space-between;align-items:center;width:100%;border:0;border-radius:0;cursor:pointer;background:var(--tone);color:var(--paper);padding:20px 18px 22px;
+        font:800 clamp(30px,5vw,64px)/.9 "Archivo",Helvetica,Arial,sans-serif;letter-spacing:-.05em;text-transform:uppercase;text-align:left;
+        background-image:radial-gradient(circle at center,rgba(255,255,255,.22) 1px,transparent 1.5px);background-size:4px 4px}
+      .send:hover,.send:focus-visible{background-image:none}
+      .fine{margin:0;opacity:.8;text-transform:none;letter-spacing:0;font-size:12px;line-height:1.4}
+      @media (min-width:900px){form{grid-template-columns:1fr 1fr;column-gap:48px}.wide{grid-column:1/-1}.two{grid-template-columns:1fr 1fr;column-gap:48px}}
+
+      /* ── footer ── */
+      .foot{overflow:hidden;padding-bottom:calc(74px + env(safe-area-inset-bottom))}
+      .foot>*:not(.tex){position:relative;z-index:1}
+      .foot .tex i{display:none}
+      .mailw{display:block;margin:28px calc(var(--gx)*-1) 18px;padding:0 var(--gx);text-decoration:none;overflow:hidden}
+      .mail{display:inline-block;font-weight:800;letter-spacing:-.05em;line-height:1;white-space:nowrap;font-size:9.6vw;text-shadow:.012em 0 var(--fa),-.012em 0 var(--fb)}
+      .mailw:hover .mail{text-decoration:underline;text-decoration-thickness:.05em;text-underline-offset:.08em}
+      .socs{display:grid;border-top:1px solid var(--rule)}
+      .socs a{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:14px 0 16px;border-bottom:1px solid var(--rule);text-decoration:none}
+      .socs a .big{font-size:clamp(34px,5vw,72px)}
+      .socs a:hover .big{text-decoration:underline;text-decoration-thickness:.06em;text-underline-offset:.08em}
+      @media (min-width:900px){.socs{grid-template-columns:1fr 1fr;column-gap:48px}}
+      .end{display:flex;justify-content:space-between;gap:12px;margin:0;padding-top:16px}
+      .end a,.more a,.lab a{text-underline-offset:3px}
+    </style>
+  </head>
+  <body>
+    <header class="hero t-g" id="top">
+      <div class="tex" aria-hidden="true"><b></b><i></i><i></i></div>
+      <p class="bar mono"><span><b>Oscar</b> — event photo + video</span><span>{contact.basedIn}, will travel</span></p>
+      <div class="hl" aria-hidden="true">
+        <div class="hl-in m" data-fit><span>Event photo</span><span>+ video for</span><span>tech events</span><span>// London /</span></div>
+        <div class="hl-in d" data-fit><span>Event photography + video</span><span>for tech &amp; startup events /</span><span>// London + will travel //</span></div>
+      </div>
+      <h1 class="sr">Oscar — event photography and video for tech and startup events. {contact.basedIn}, will travel.</h1>
+      <a class="ph subject" href={subject.src} data-shot={idx(subject)} aria-label={`open photo: ${subject.caption}`}>
+        <span class="ht"><span class="sc"><img src={subject.thumb} alt="" decoding="async" fetchpriority="high" /></span><img class="c" data-live src={subject.thumb} srcset={`${subject.thumb} 533w, ${subject.src} 1600w`} sizes="(min-width:900px) 30vw, 66vw" alt="" decoding="async" /></span>
+      </a>
+      <div class="low">
+        <p class="say">I photograph and film conferences, hackathons, demo nights and launches. You get photos people actually post.</p>
+        <nav class="spec mono" aria-label="page">
+          <div class="nav">
+            <a href="#selects"><span>01</span><span>Selects</span></a>
+            <a href="#about"><span>02</span><span>About</span></a>
+            <a href="#get"><span>03</span><span>What you get</span></a>
+            <a href="#contact"><span>04</span><span>Contact me</span></a>
+          </div>
+          <div class="soc">
+            <a href={ig} target="_blank" rel="noopener"><span>IG</span><span>@{contact.instagram} ↗</span></a>
+            <a href={tw} target="_blank" rel="noopener"><span>X</span><span>@{contact.x} ↗</span></a>
+            <a href={`mailto:${contact.email}`}><span>@</span><span>Email ↗</span></a>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="sec t-i" id="selects">
+        <p class="lab mono"><span>01 — Selects</span><span class="hint"></span></p>
+        <div class="grid">
+          {picks.map((s, i) => {
+            const c = i % 8;
+            return (
+              <figure class="tile" style={`--m:${M[c]};--d:${D[c]};--mar:${MAR[c]};${AR[c] ? `--dar:${AR[c]}` : ""}`}>
+                <a class="ph" href={s.src} data-shot={idx(s)} aria-label={`open photo: ${s.caption}, ${s.event.name}`}>
+                  <span class="ht">
+                    <span class="sc"><img src={s.thumb} alt="" loading="lazy" decoding="async" /></span>
+                    <img class="c" data-live src={s.thumb} srcset={D[c] >= 5 ? `${s.thumb} 533w, ${s.src} 1600w` : undefined} sizes={D[c] >= 5 ? `(min-width:900px) ${Math.round((D[c] / 12) * 100)}vw, ${M[c] * 50}vw` : undefined} alt={s.caption} loading="lazy" decoding="async" />
+                  </span>
+                  <dl class="ex mono" aria-hidden="true">{exif(s).map(([v, l]) => <><dt>{v}</dt><dd>{l}</dd></>)}</dl>
+                </a>
+                <figcaption class="mono"><span>{pad(i + 1)}&nbsp; {s.caption}</span><span>{s.event.name}</span></figcaption>
+              </figure>
+            );
+          })}
+        </div>
+        <p class="more mono"><span>{picks.length} of many</span><a href="#contact">Ask for a full gallery →</a></p>
+      </section>
+
+      <section class="sec t-p" id="about">
+        <p class="lab mono"><span>02 — About</span><span>What I shoot</span></p>
+        <div class="about">
+          <h2 class="big">In the room,<br />not in the way.</h2>
+          <div class="txt">
+            <p>I'm Oscar. I shoot photo and video at tech and startup events: the keynote, the hallway, the 3am of a hackathon, the moment the demo works.</p>
+            <p>I come from that world, so I know who and what matters in the room. Candid over posed, and edited fast enough that you can post while people are still talking about it.</p>
+            <dl class="kv mono">
+              <dt>Based</dt><dd>{contact.basedIn}, will travel</dd>
+              <dt>Shoots</dt><dd>Photo + video</dd>
+              <dt>Events</dt><dd>Conferences, hackathons, demo nights, launches, panels, offsites</dd>
+            </dl>
+          </div>
+          <a class="ph" href={aboutShot.src} data-shot={idx(aboutShot)} aria-label={`open photo: ${aboutShot.caption}`}>
+            <span class="ht"><span class="sc"><img src={aboutShot.thumb} alt="" loading="lazy" decoding="async" /></span><img class="c" data-live src={aboutShot.thumb} alt={aboutShot.caption} loading="lazy" decoding="async" /></span>
+          </a>
+        </div>
+      </section>
+
+      <section class="sec t-g" id="get">
+        <p class="lab mono"><span>03 — What you get</span><span>Mix and match</span></p>
+        <ol class="get">
+          {services.map((s, i) => (
+            <li><span class="n mono">{pad(i + 1)}</span><h3 class="big">{s.name}</h3><p class="d mono">{s.detail}</p></li>
+          ))}
+        </ol>
+      </section>
+
+      <section class="sec t-i" id="clients">
+        <p class="lab mono"><span>Clients</span><span>Shot events for</span></p>
+        <ul class="logos">
+          {clients.map((c) => <li><img src={c.name === "SpaceX AI" ? "/photos/opus/spacexai-mark.svg" : c.logo.src} alt="" loading="lazy" /><span class="mono">{c.name}</span></li>)}
+        </ul>
+      </section>
+
+      <section class="sec t-p contact" id="contact">
+        <p class="lab mono"><span>04 — Contact me</span><span>Takes a minute</span></p>
+        <h2 class="big t">Contact me</h2>
+        <p class="lede">Tell me what the event is and where to reply. I'll come back within a day with availability and a quote.</p>
+        <form id="form" novalidate>
+          <fieldset class="wide"><legend class="mono"><span>What is it?</span><b>pick one</b></legend>
+            <div class="chips">{kinds.map((k) => <label class="chip mono"><input type="radio" name="kind" value={k} /><span>{k}</span></label>)}</div>
+          </fieldset>
+          <fieldset><legend class="mono"><span>What do you need?</span><b>pick any</b></legend>
+            <div class="chips">{needs.map((k, i) => <label class="chip mono"><input type="checkbox" name="need" value={k} checked={i === 0} /><span>{k}</span></label>)}</div>
+          </fieldset>
+          <label class="fld"><span class="flab mono"><span>When is it?</span><b>optional</b></span><input type="date" name="date" /></label>
+          <div class="two wide">
+            <label class="fld"><span class="flab mono"><span>Your name</span></span><input type="text" name="name" autocomplete="name" placeholder="Name" /></label>
+            <label class="fld"><span class="flab mono"><span>Where do I reply?</span></span><input type="email" name="email" autocomplete="email" placeholder="you@company.com" required /></label>
+          </div>
+          <label class="fld wide"><span class="flab mono"><span>Anything else?</span><b>optional</b></span><textarea name="note" placeholder="Venue, size, what you want out of it"></textarea></label>
+          <button class="send wide" type="submit"><span>Send message</span><span aria-hidden="true">→</span></button>
+          <p class="fine mono wide" id="sent" aria-live="polite">Opens your email app with this written out. Or write to <a href={`mailto:${contact.email}`}>{contact.email}</a></p>
+        </form>
+      </section>
+    </main>
+
+    <footer class="foot t-g" id="direct">
+      <div class="tex" aria-hidden="true"><b></b><i></i><i></i></div>
+      <p class="lab mono"><span>Or skip the form</span><span>{contact.basedIn}, will travel</span></p>
+      <a class="mailw" href={`mailto:${contact.email}`}><span class="mail" id="mail">{contact.email}</span></a>
+      <div class="socs">
+        <a href={ig} target="_blank" rel="noopener"><span class="big">Instagram ↗</span><span class="mono">@{contact.instagram}</span></a>
+        <a href={tw} target="_blank" rel="noopener"><span class="big">X ↗</span><span class="mono">@{contact.x}</span></a>
+      </div>
+      <p class="end mono"><span>Oscar — event photo + video</span><a href="#top">Back to top ↑</a></p>
+    </footer>
+
+    <Viewer bg={S.ink} fg={S.paper} accent={S.paper} onAccent={blue ? S.accent : S.ink} bookHref="#contact" bookLabel="contact me about a shoot like this →" mono='"Geist Mono", ui-monospace, monospace' display='"Archivo", sans-serif' />
+    <Switcher />
+    <script define:vars={{ email: contact.email }}>window.__mail = email;</script>
+    <script>
+      import { wireBook, fitText } from "@/components/photos/fable/r3/book";
+      // poster headline: the longest line is set a little wider than the page, so it bleeds off both edges
+      document.querySelectorAll<HTMLElement>("[data-fit]").forEach((el) => fitText(el, 1.05));
+      fitText(document.getElementById("mail")!, 1);
+
+      // touch: a photo resolves to full colour while it crosses the middle of the screen (hover / focus do it on desktop)
+      const hint = document.querySelector<HTMLElement>(".hint");
+      if (matchMedia("(hover:none)").matches) {
+        if (hint) hint.textContent = "Tap to open";
+        const io = new IntersectionObserver((es) => es.forEach((e) => e.target.classList.toggle("on", e.isIntersecting)), { rootMargin: "-34% 0px -34% 0px" });
+        document.querySelectorAll(".ph:not(.subject)").forEach((p) => io.observe(p));
+      } else if (hint) hint.textContent = "Hover to develop · click to open";
+
+      wireBook({ form: document.getElementById("form") as HTMLFormElement, email: (window as any).__mail, sent: document.getElementById("sent") });
+    </script>
+  </body>
+</html>
