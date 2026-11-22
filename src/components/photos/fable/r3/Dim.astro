@@ -1,9 +1,0 @@
----
-// Dimension line for the blueprint pages: extension lines + arrowheads at both ends, the figure breaking the line.
-//   dir     "h" | "v"
-//   measure "size" → appends the element's real length in px; "sec" → "<cols> × <col width> = <section width>"
-// Place it with class/style (it is a plain box: a grid child via --am/--ad, or absolutely positioned inside a cell).
-interface Props { dir?: "h" | "v"; label?: string; measure?: "size" | "sec"; class?: string; style?: string }
-const { dir = "h", label = "", measure, class: cls, style } = Astro.props;
----
-<span class:list={["dim", dir, cls]} style={style} data-dim={measure} aria-hidden="true"><i class="dl"></i><b>{label && <span class="dk">{label}</span>}<em></em></b><i class="dl"></i></span>

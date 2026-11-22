@@ -1,14 +1,9 @@
 ---
 // The prototype matrix: /photos/<style>/<scheme>. The site builds statically, so every pair is prerendered here
 // and anything else is a 404. Styles + schemes live in src/components/photos/schemes.ts.
-import Opus from "@/components/photos/opus/r3/Opus.astro";
 import Module from "@/components/photos/fable/r3/Module.astro";
-import ModuleBlueprint from "@/components/photos/fable/r3/ModuleBlueprint.astro";
+import ModuleSimple from "@/components/photos/fable/r3/ModuleSimple.astro";
 import BitsPage from "@/components/photos/fable/r3/BitsPage.astro";
-import Motion from "@/components/photos/poster/Motion.astro";
-import Halftone from "@/components/photos/poster/Halftone.astro";
-import Raptor from "@/components/photos/poster/Raptor.astro";
-import Hubble from "@/components/photos/poster/Hubble.astro";
 import { styles, type SchemeId, type StyleId } from "@/components/photos/schemes";
 
 export function getStaticPaths() {
@@ -16,11 +11,6 @@ export function getStaticPaths() {
 }
 const { style, scheme } = Astro.params as { style: StyleId; scheme: SchemeId };
 ---
-{style === "opus-1" && <Opus scheme={scheme} />}
 {style === "fable-2" && <Module scheme={scheme} />}
-{style === "fable-2-blueprint" && <ModuleBlueprint scheme={scheme} />}
+{style === "fable-2-simple" && <ModuleSimple scheme={scheme} />}
 {style === "fable-4" && <BitsPage scheme={scheme} />}
-{style === "motion" && <Motion scheme={scheme} />}
-{style === "halftone" && <Halftone scheme={scheme} />}
-{style === "raptor" && <Raptor scheme={scheme} />}
-{style === "hubble" && <Hubble scheme={scheme} />}

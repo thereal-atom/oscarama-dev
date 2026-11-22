@@ -1,6 +1,6 @@
 ---
 // Neutral prototype picker: row 1 = style, row 2 = colour scheme. Changing one keeps the other.
-// Keys 1–8 switch style, Q/W/E/R switch scheme (only the current style's schemes are shown) (ignored while typing).
+// Keys 1–3 switch style, Q/W/E/R switch scheme (only the current style's schemes are shown) (ignored while typing).
 import { styles, schemes, schemeKeys, isScheme, isStyle, type SchemeId, type StyleId } from "@/components/photos/schemes";
 
 const [, , st, sc] = Astro.url.pathname.replace(/\/$/, "").split("/");
