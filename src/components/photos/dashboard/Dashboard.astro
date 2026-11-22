@@ -1,0 +1,609 @@
+---
+// citadel's dashboard, redrawn in the fable 2 ("MODULE") language: one square module (1/6 of a phone, 1/16 of a
+// desktop) under the whole page, construction lines that draw in per section, a sticky column ruler + row numbers,
+// Inter Tight 900 caps on whole modules, Geist Mono labels, Geist Pixel figures, 9×9 bitmap icons, a dither dissolve
+// and the pixel hover. Charts are drawn in the grid: bars are stacks of quarter-module cells, sparklines are pixel steps.
+// Sections map to citadel's pages: A overview + nav + TV greeting · B invoices · C saved payment details / numbers ·
+// D my account (profile + sign-in connections) · E settings (theme) · F the TV dashboard (fullscreen greeting).
+// All data is mocked in ./data.ts.
+import Switcher from "@/components/photos/Switcher.astro";
+import Bits from "@/components/photos/fable/r3/Bits.astro";
+import { dissolve } from "@/components/photos/fable/r3/bits";
+import { schemes, alpha, mix, contrast, onAccent, type SchemeId } from "@/components/photos/schemes";
+import { dash } from "./icons";
+import { user, currency, currencies, months, invoices, statusCounts, statusLabel, kpis, payments, numbers, nextNumber, connections, formatMoney, formatDate, type Status } from "./data";
+
+interface Props { scheme: SchemeId }
+const S = schemes[Astro.props.scheme];
+const ink = S.dark ? S.paper : S.ink, paper = S.dark ? S.ink : S.paper;
+const onA = S.dark ? paper : onAccent(S, "paper", 3);
+const accInk = contrast(S.accent, ink) >= 3 ? S.accent : mix(S.accent, paper, 0.5); // accent marks on the ink ground
+// pixel hover masks (as fable 2): scattered 16×16 dithers at 1/4, 1/2, 3/4, each a subset of the next
+const PX = 16;
+const order = (() => {
+  let seed = 7;
+  const rnd = () => ((seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff);
+  const a = Array.from({ length: PX * PX }, (_, i) => i);
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+})();
+const dither = (k: number) => {
+  const d = order.slice(0, Math.round((k / 16) * PX * PX)).map((c) => `M${c % PX} ${Math.floor(c / PX)}h1v1h-1z`).join("");
+  return `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 ${PX} ${PX}' shape-rendering='crispEdges'><path d='${d}'/></svg>`)}")`;
+};
+const vars = [
+  `--d4:${dither(4)}`, `--d8:${dither(8)}`, `--d12:${dither(12)}`,
+  `--acc:${S.accent}`, `--ink:${ink}`, `--paper:${paper}`, `--on-a:${onA}`, `--acc-ink:${accInk}`,
+  `--l-paper:${alpha(S.accent, 0.42)}`, `--l-ink:${alpha(paper, S.dark ? 0.2 : 0.26)}`, `--l-acc:${alpha(onA, S.dark ? 0.3 : 0.45)}`,
+  `--sub:${alpha(S.accent, 0.5)}`,
+].join(";");
+
+const pad = (n: number) => String(n).padStart(2, "0");
+const L = Array.from({ length: 17 }, (_, i) => i);
+/** grid area on a phone (6 columns) and on desktop (16) */
+const A = (m: string, d: string) => `--am:${m};--ad:${d}`;
+const invoiceHref = `/photos/invoice/${S.id}`;
+
+const nav = [
+  { t: "Invoices", href: "#invoices", icon: dash.invoice },
+  { t: "Overview", href: "#top", icon: dash.overview, on: true },
+  { t: "TV", href: "#tv-mode", icon: dash.tv },
+  { t: "Settings", href: "#settings", icon: dash.gear },
+];
+
+// bar chart: steps are quarter modules. Desktop: 5 rows = 20 steps (1 for the month letters, headroom 2) · phone: 4 rows
+const top = Math.max(...months.map((m) => m.total));
+const steps = (v: number, n: number) => Math.max(1, Math.round((v / top) * n));
+const bars = months.map((m, i) => ({ ...m, vd: steps(m.total, 17), vm: steps(m.total, 13), now: i === months.length - 1 }));
+const nowM = bars[bars.length - 1];
+
+// sparkline: N columns × 8 rows of square pixels, a stepped area with its top pixel solid
+const spark = (vals: number[]) => {
+  const H = 8, mx = Math.max(...vals, 1);
+  return vals.map((v, x) => { const h = Math.max(1, Math.round((v / mx) * (H - 1)) + (v > 0 ? 1 : 0)); return { x, h: Math.min(H, h), y: H - Math.min(H, h) }; });
+};
+
+const order4: Status[] = ["paid", "sent", "overdue", "draft"];
+const waffle = order4.flatMap((s) => Array.from({ length: statusCounts[s] }, () => s));
+const totalCount = waffle.length;
+
+const dzM = dissolve(52, 6, 4), dzD = dissolve(19, 16, 4);
+const cellsOf = (rows: string[]) => rows.flatMap((row, y) => [...row].flatMap((ch, x) => (ch === "#" ? [`${y + 1}/${x + 1}/span 1/span 1`] : [])));
+---
+<!--
+  DASHBOARD (F2) — citadel's workspace on the fable 2 module.
+  Charts: bars are stacks of quarter-module cells (hover/focus a month to read it out), the year's invoices are a
+  waffle of quarter cells (paid · awaiting · overdue · draft), KPI sparklines are 16 × 8 pixel steps.
+  Interactions (all local, nothing is saved or sent): theme cells switch this prototype's scheme, currency + PDF theme
+  toggles, "link Google" fakes the connect flow, TV mode opens the fullscreen greeting with a pixel clock.
+-->
+<!doctype html>
+<html lang="en" style={vars} data-scheme={S.id}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content={paper} />
+    <title>citadel — overview</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;800;900&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <script is:inline>document.documentElement.classList.add("js")</script>
+    <style is:inline>
+      @font-face{font-family:"Geist Pixel";src:url("https://cdn.jsdelivr.net/npm/geist@1.9.2/dist/fonts/geist-pixel/GeistPixel-Square.woff2") format("woff2");font-display:swap}
+      :root{--base:6;--gut:16px;--pad:8px;
+        --sans:"Inter Tight","Helvetica Neue",Helvetica,Arial,sans-serif;--mono:"Geist Mono",ui-monospace,monospace;--px:"Geist Pixel","Geist Mono",monospace}
+      @media (min-width:900px){:root{--base:16;--gut:26px;--pad:12px}}
+      *{box-sizing:border-box}
+      html{background:var(--paper);scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+      body{margin:0;background:var(--paper);color:var(--ink);font:500 15px/1.4 var(--sans);overflow-x:clip;-webkit-font-smoothing:antialiased}
+      a{color:inherit;text-decoration:none}
+      p,h1,h2,h3,dl,dd{margin:0}
+      button{font:inherit;color:inherit;border:0;border-radius:0;background:none;padding:0;cursor:pointer;text-align:left}
+      ::selection{background:var(--acc);color:var(--on-a)}
+      :focus-visible{outline:3px solid var(--acc);outline-offset:-3px}
+      .t-acc :focus-visible{outline-color:var(--on-a)}
+      .mono{font:500 11px/1.35 var(--mono);text-transform:uppercase;letter-spacing:.04em}
+      .px{font-family:var(--px);font-weight:400}
+
+      /* ── the module ── */
+      .page{container-type:inline-size;position:relative}
+      .page>*,.body>*{--r:calc((100cqw - var(--gut)) / var(--base))}
+      @supports (width:round(down,10.5px,1px)){.page>*,.body>*{--r:round(down,calc((100cqw - var(--gut)) / var(--base)),1px)}}
+      .body{position:relative}
+      .g{--cols:var(--cm);--q:calc(var(--r) / 4);width:calc(var(--r) * var(--base));margin-left:auto;position:relative;display:grid;
+        grid-template-columns:repeat(var(--cols),minmax(0,1fr));grid-auto-rows:var(--r);background:var(--bg);color:var(--fg)}
+      @media (min-width:900px){.g{--cols:var(--cd)}}
+      .t-paper{--bg:var(--paper);--fg:var(--ink);--line:var(--l-paper);--hi:var(--acc);--on:var(--paper);--mk:var(--acc)}
+      .t-ink{--bg:var(--ink);--fg:var(--paper);--line:var(--l-ink);--hi:var(--paper);--on:var(--ink);--mk:var(--acc-ink)}
+      .t-acc{--bg:var(--acc);--fg:var(--on-a);--line:var(--l-acc);--hi:var(--on-a);--on:var(--acc);--mk:var(--on-a)}
+      .g::before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/100% var(--r)}
+      .vl{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+      .vl i{position:absolute;top:0;bottom:0;width:1px;background:var(--line);left:calc(var(--i) * 100% / var(--cols));transform-origin:top}
+      .js .vl i{transform:scaleY(0);transition:transform 1s cubic-bezier(.3,.7,.1,1);transition-delay:calc(var(--i) * 40ms)}
+      .js .g::before{clip-path:inset(0 100% 0 0);transition:clip-path 1s cubic-bezier(.3,.7,.1,1)}
+      .js .g.in .vl i{transform:none}
+      .js .g.in::before{clip-path:inset(0)}
+      .g>:not(.vl),.g .cap,.g .nv{position:relative;z-index:1;min-width:0;grid-area:var(--am)}
+      @media (min-width:900px){.g>:not(.vl),.g .cap,.g .nv{grid-area:var(--ad,var(--am))}}
+      @media (max-width:899px){.dk{display:none !important}}
+      @media (min-width:900px){.mo{display:none !important}}
+      .c{background:var(--bg);box-shadow:inset 1px 0 var(--line),inset 0 1px var(--line);padding:var(--pad);display:block}
+      .fill{background:var(--hi);color:var(--on);--mk:var(--on);box-shadow:inset 1px 0 var(--bg)}
+      a.c,button.c{transition:background-color .1s,color .1s;cursor:pointer}
+      a.c:hover,a.c:focus-visible,button.c:hover{background:var(--hi);color:var(--on);--mk:var(--on)}
+      a.fill:hover,a.fill:focus-visible,button.fill:hover{background:var(--fg);color:var(--bg);--mk:var(--bg)}
+      .lab{display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
+      .lab b{font-weight:500;color:var(--hi);text-align:right}
+      .lab.c{background:none;box-shadow:none}
+      .k{display:block;color:var(--hi)}
+      .fill .k,a.c:hover .k,button.c:hover .k{color:inherit;opacity:.8}
+      /* display type: cap-height = k modules, sitting on the row rules */
+      .cap{font:900 calc(var(--r) * 1.3755 * var(--k,1))/calc(var(--r) * var(--k,1)) var(--sans);letter-spacing:-.04em;text-transform:uppercase;white-space:nowrap;padding-left:.035em;color:var(--hi);display:block}
+      .cap.fg{color:var(--fg)}
+      .cap .w{display:inline-block}
+      @media (min-width:900px){.cap{--k:2}}
+      /* 9×9 bitmaps: one bitmap pixel = --p (a module / 11) */
+      .bm{display:block;flex:none;width:calc(var(--bw) * var(--p));height:calc(var(--bh) * var(--p));fill:currentColor;stroke:currentColor;stroke-width:.04;overflow:visible}
+      .bm .ac{fill:var(--mk);stroke:var(--mk)}
+      .ic{flex:0 0 var(--r);width:var(--r);height:var(--r);display:grid;place-items:center;--p:calc(var(--r) / 11)}
+
+      /* ── rulers ── */
+      .rl{position:sticky;top:0;z-index:40;height:16px;background:var(--paper);color:var(--sub);display:flex;border-bottom:1px solid var(--l-paper);font:500 8px/15px var(--mono)}
+      .rl b{flex:0 0 calc(100cqw - var(--r) * var(--base));font-weight:500;text-align:center;color:var(--acc)}
+      .rl i{flex:1 1 0;min-width:0;overflow:hidden;font-style:normal;padding-left:3px;box-shadow:inset 1px 0 var(--l-paper);white-space:nowrap;transition:flex-grow .6s cubic-bezier(.3,.7,.1,1)}
+      .rl i.off{flex-grow:0;padding:0;box-shadow:none}
+      .rr{position:absolute;left:0;top:0;bottom:0;width:calc(100cqw - var(--r) * var(--base));overflow:hidden;color:var(--sub);font:500 7px/1 var(--mono);pointer-events:none}
+      .rr span{display:block;height:var(--r);padding:3px 2px 0 0;text-align:right}
+      @media (min-width:900px){.rr{font-size:8px}.rr span{padding:4px 4px 0 0}}
+
+      /* ── A: header + greeting ── */
+      .brand{display:flex;flex-direction:column;justify-content:space-between}
+      .brand b{font:900 17px/1 var(--sans);letter-spacing:-.02em;text-transform:uppercase}
+      .crumb{display:flex;align-items:flex-end;gap:8px;white-space:nowrap}
+      .crumb span{opacity:.55}
+      .nv{display:flex;align-items:stretch;padding:0}
+      .nv .t{flex:1;display:flex;flex-direction:column;justify-content:space-between;padding:var(--pad);min-width:0}
+      .nv .t b{font:800 19px/1 var(--sans);letter-spacing:-.02em;text-transform:uppercase}
+      .nv.on{box-shadow:inset 1px 0 var(--line),inset 0 1px var(--line),inset 0 -4px var(--acc)}
+      @media (max-width:899px){.nv .t{display:none}.nv .ic{flex:1;width:auto}}
+      @media (min-width:900px){.nv .ic{box-shadow:inset -1px 0 var(--line)}}
+      .clock{display:flex;flex-direction:column;justify-content:space-between}
+      .clock b{font:400 clamp(30px,6.5cqw,104px)/.8 var(--px);color:var(--acc);white-space:nowrap}
+      .clock b i{font-style:normal;animation:blink 1s steps(1) infinite}
+      @keyframes blink{50%{opacity:0}}
+      @media (max-width:899px){.clock b{font-size:28px}}
+      .tvb{display:flex;align-items:center;gap:var(--pad);padding:0 var(--pad) 0 0}
+      .tvb .ic{box-shadow:inset -1px 0 var(--line)}
+      .tvb>span:last-child{flex:1;display:flex;justify-content:space-between;align-items:center}
+      .lede{display:flex;align-items:flex-end;text-transform:none;letter-spacing:0;font-size:12px}
+      @media (min-width:900px){.lede{font-size:13px}}
+      .kpi{display:flex;flex-direction:column;justify-content:space-between;gap:4px}
+      .kpi .v{font:400 clamp(30px,4.2cqw,64px)/.85 var(--px);white-space:nowrap}
+      .kpi .s{opacity:.62;text-transform:none;letter-spacing:0}
+      .kpi .sp{position:absolute;right:0;top:0;width:calc(var(--r) * 2);height:var(--r);display:block;box-shadow:inset 1px 0 var(--line),inset 0 -1px var(--line);padding:calc(var(--r) / 8 - 1px) 0 0 0}
+      .sp svg{display:block;width:100%;height:100%;shape-rendering:crispEdges}
+      .sp .lo{fill:currentColor;opacity:.22}.sp .hi{fill:var(--mk)}
+      @media (max-width:899px){.kpi{padding-right:calc(var(--r) * 2 + var(--pad))}.kpi .v{font-size:30px}.kpi .top{display:flex;gap:10px;white-space:nowrap;overflow:hidden}}
+      @media (min-width:900px){.kpi .s{position:absolute;right:var(--pad);bottom:var(--pad);text-align:right}}
+
+      /* ── B: invoices ── */
+      .new{display:flex;align-items:stretch;padding:0}
+      .new .ic{box-shadow:inset -1px 0 var(--bg)}
+      .new .t{flex:1;display:flex;flex-direction:column;justify-content:space-between;padding:var(--pad);font:900 clamp(26px,2.6cqw,42px)/.95 var(--sans);letter-spacing:-.035em;text-transform:uppercase}
+      .new .t .mono{letter-spacing:.04em}
+      @media (min-width:900px){.new{flex-direction:column}.new .ic{box-shadow:inset 0 -1px var(--bg),inset -1px 0 var(--bg)}}
+      .readout{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
+      .readout b{font:400 clamp(22px,2.4cqw,38px)/.9 var(--px);color:var(--mk);white-space:nowrap}
+      .chart{display:flex;flex-direction:column}
+      .bars{flex:1;display:grid;grid-template-columns:repeat(12,1fr);align-items:end}
+      .bar{--v:var(--vm);--bc:var(--fg);display:block;height:calc(var(--v) * var(--q));margin:0 25%;
+        background:linear-gradient(var(--bg) 1px,transparent 1px) 0 0/100% var(--q),linear-gradient(to right,var(--bg) 1px,transparent 1px) 0 0/var(--q) 100%,var(--bc)}
+      @media (min-width:900px){.bar{--v:var(--vd)}}
+      .bar.now{--bc:var(--mk)}
+      .bar:hover,.bar:focus-visible,.bar.sel{--bc:var(--mk);outline:none}
+      .bar.now:not(.sel){-webkit-mask:var(--d12) 0 0/var(--q) var(--q),linear-gradient(#000,#000) 0 var(--q)/100% 100% no-repeat;mask:var(--d12) 0 0/var(--q) var(--q),linear-gradient(#000,#000) 0 var(--q)/100% 100% no-repeat}
+      .mlab{height:var(--q);display:grid;grid-template-columns:repeat(12,1fr);text-align:center;align-items:center;font:500 8px/1 var(--mono);text-transform:uppercase;opacity:.7}
+      @media (min-width:900px){.mlab{font-size:10px}}
+      .wf{display:grid;grid-template-columns:repeat(auto-fill,var(--q));grid-auto-rows:var(--q);align-content:start;padding:0;background:none;box-shadow:none}
+      .wf i,.sw{display:block;width:var(--q);height:var(--q);box-shadow:inset 1px 0 var(--bg),inset 0 1px var(--bg)}
+      .s-paid{background:var(--fg)}
+      .s-sent{background:color-mix(in srgb,var(--fg) 34%,var(--bg))}
+      .s-overdue{background:var(--mk)}
+      .s-draft{background:var(--fg);-webkit-mask:var(--d4) 0 0/var(--q) var(--q);mask:var(--d4) 0 0/var(--q) var(--q)}
+      .lg{display:flex;align-items:center;gap:var(--pad);padding:0 var(--pad) 0 0}
+      .lg .sw{flex:0 0 var(--q);margin-left:calc(var(--r) / 2 - var(--q) / 2);margin-right:calc(var(--r) / 2 - var(--q) / 2 - var(--pad))}
+      .lg .n{margin-left:auto;font:400 26px/1 var(--px)}
+      @media (max-width:899px){.lg .sw{margin:0 0 0 var(--pad)}.lg .n{font-size:22px}}
+      .tr{display:grid;grid-template-columns:subgrid;padding:0;color:var(--fg)}
+      .tr>span{display:flex;align-items:center;padding:0 var(--pad);min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+      .tr>span+span{box-shadow:inset 1px 0 var(--line)}
+      .th>span{align-items:flex-end;padding-bottom:6px;color:var(--mk)}
+      .th{box-shadow:inset 0 -3px var(--mk)}
+      .tr .num{font:400 13px/1 var(--mono);font-variant-numeric:tabular-nums}
+      .tr .cl{font:800 19px/1 var(--sans);letter-spacing:-.02em;text-transform:uppercase}
+      .tr .amt{justify-content:flex-end;font:400 24px/1 var(--px)}
+      .tr .st{gap:8px}
+      .tr .st .sw{flex:none;box-shadow:none}
+      .tr .mut{opacity:.62}
+      .tr.late .st{background:var(--mk);color:var(--bg);--fg:var(--bg)}
+      .tr.late .st .sw{background:var(--bg)}
+      .tr:hover .st,.tr:focus-visible .st{background:none;color:inherit}
+      .tr:hover .sw,.tr:focus-visible .sw{background:currentColor;-webkit-mask:none;mask:none}
+      .tr .two{flex-direction:column;align-items:flex-start;justify-content:center;gap:5px}
+      .tr .two .cl{font-size:17px;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+      .tr .rt{flex-direction:column;align-items:flex-end;justify-content:center;gap:5px}
+      .tr .rt .amt{font-size:20px;padding:0}
+      @media (max-width:899px){.tr .amt{font-size:20px}}
+
+      /* ── C: saved ── */
+      .body2{font:400 13px/1.55 var(--mono)}
+      .pm{display:flex;flex-direction:column;justify-content:space-between;padding-right:calc(var(--r) + var(--pad))}
+      .pm .ic{position:absolute;top:0;right:0;box-shadow:inset 1px 0 var(--line),inset 0 -1px var(--line)}
+      .pm h3{font:800 clamp(24px,2.4cqw,36px)/1 var(--sans);letter-spacing:-.03em;text-transform:uppercase;margin:4px 0 2px}
+      .pm dl{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font:400 13px/1.3 var(--mono)}
+      .pm dt{opacity:.62;text-transform:uppercase;font-size:11px;letter-spacing:.04em;line-height:1.55}
+      .pm .rm{position:absolute;right:var(--pad);bottom:var(--pad);text-decoration:underline;text-underline-offset:3px;opacity:.7}
+      .pm .rm:hover{opacity:1;color:var(--acc)}
+      .nums{display:flex;flex-direction:column;justify-content:space-between;gap:8px}
+      .nums b{font:400 clamp(30px,3.4cqw,52px)/.85 var(--px);color:var(--acc)}
+      .nums ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:4px}
+      .nums li{font:400 11px/1 var(--mono);padding:4px 5px;box-shadow:inset 0 0 0 1px var(--line)}
+      .opt{display:flex;align-items:flex-end;justify-content:space-between;gap:6px}
+      .opt[aria-pressed="true"]{background:var(--hi);color:var(--on)}
+      .opt[aria-pressed="true"]::before{content:"";position:absolute;right:var(--pad);top:var(--pad);width:var(--q);height:var(--q);max-width:12px;max-height:12px;background:currentColor}
+      .opt b{font:400 22px/1 var(--px)}
+      @media (max-width:899px){.opt b{font-size:17px}}
+      .add{display:flex;align-items:center;gap:0;padding:0}
+      .add .ic{box-shadow:inset -1px 0 var(--line)}
+      .add span:last-child{padding:0 var(--pad)}
+
+      /* ── D: account ── */
+      .fld{display:flex;flex-direction:column;justify-content:space-between}
+      .fld .nm{font:900 clamp(34px,4.8cqw,76px)/.9 var(--sans);letter-spacing:-.04em;text-transform:uppercase;white-space:nowrap}
+      .fld .em{font:400 clamp(24px,3.4cqw,52px)/.9 var(--px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+      .cn{display:flex;align-items:stretch;padding:0}
+      .cn .ic{box-shadow:inset -1px 0 var(--line)}
+      .cn .t{flex:1;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 var(--pad);min-width:0}
+      .cn .t b{font:800 19px/1 var(--sans);letter-spacing:-.02em;text-transform:uppercase}
+      .cn .on{display:flex;align-items:center;gap:8px}
+      .cn .on::before{content:"";width:10px;height:10px;background:currentColor}
+      .cn .on.off::before{background:none;box-shadow:inset 0 0 0 1px currentColor}
+      .lnk{display:flex;align-items:center;justify-content:space-between;font:900 clamp(22px,2cqw,30px)/1 var(--sans);letter-spacing:-.03em;text-transform:uppercase}
+      .lnk[disabled]{cursor:default}
+
+      /* ── E: settings ── */
+      .th3{display:flex;flex-direction:column;justify-content:space-between;padding:0}
+      .th3 .ic{box-shadow:inset -1px 0 var(--line),inset 0 -1px var(--line)}
+      .th3 .t{padding:var(--pad)}
+      .th3 b{display:block;font:900 clamp(26px,3cqw,48px)/.9 var(--sans);letter-spacing:-.04em;text-transform:uppercase}
+      .th3 .d{display:block;margin-top:6px;opacity:.7;text-transform:none;letter-spacing:0;font-size:12px}
+      .th3[aria-pressed="true"]{background:var(--hi);color:var(--on);--mk:var(--on)}
+      .th3[aria-pressed="true"] .ic{box-shadow:inset -1px 0 var(--bg),inset 0 -1px var(--bg)}
+      @media (max-width:899px){.th3{flex-direction:row;justify-content:flex-start}.th3 .ic{box-shadow:inset -1px 0 var(--line)}.th3 .t{display:flex;flex-direction:column;justify-content:center;padding:0 var(--pad)}.th3 b{font-size:24px}}
+      .sess{display:flex;flex-direction:column;justify-content:space-between}
+      .sess b{font:400 18px/1.1 var(--px);word-break:break-all}
+
+      /* ── dissolve + footer ── */
+      .dz{grid-template-rows:repeat(4,var(--r))}
+      .dz .c{--bg:var(--ink);--line:var(--l-ink);padding:0}
+      .big{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;font:900 clamp(40px,8cqw,170px)/.8 var(--sans);letter-spacing:-.045em;text-transform:uppercase;padding-bottom:calc(var(--pad) * .5)}
+      .big small{font:500 11px/1.2 var(--mono);letter-spacing:.04em}
+
+      /* ── TV mode: the fullscreen greeting ── */
+      .tv{position:fixed;inset:0;z-index:2147483100;background:var(--paper);color:var(--ink);display:none;place-items:center;
+        background-image:linear-gradient(to right,var(--l-paper) 1px,transparent 1px),linear-gradient(var(--l-paper) 1px,transparent 1px);background-size:6.25vw 6.25vw;background-position:center}
+      .tv.on{display:grid}
+      .tv h2{font:900 min(16vw,28vh)/.9 var(--sans);letter-spacing:-.05em;text-transform:uppercase;text-align:center}
+      .tv h2 span{color:var(--acc)}
+      .tv .tc{position:absolute;left:3vw;bottom:3vw;font:400 min(9vw,14vh)/.8 var(--px);color:var(--acc)}
+      .tv .td{position:absolute;right:3vw;bottom:3vw}
+      .tv .x{position:absolute;top:16px;right:16px;background:var(--acc);color:var(--on-a);padding:10px 12px}
+      .tv.full .x{opacity:0;transition:opacity .2s}.tv.full .x:hover,.tv.full .x:focus-visible{opacity:1}
+
+      [id]{scroll-margin-top:16px}
+      /* ── pixel hover: the old colour breaks up in scattered pixels over the new one ── */
+      a.c,button.c{--was:var(--bg)}
+      a.fill,button.fill,.opt[aria-pressed="true"],.th3[aria-pressed="true"]{--was:var(--hi)}
+      a.c::after,button.c::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:0;background:var(--was);
+        -webkit-mask-size:calc(var(--r,60px) * 16 / 7) calc(var(--r,60px) * 16 / 7);mask-size:calc(var(--r,60px) * 16 / 7) calc(var(--r,60px) * 16 / 7)}
+      a.c:hover::after,button.c:hover::after{animation:px-out .12s step-end}
+      a.c,button.c{isolation:isolate}
+      @keyframes px-out{
+        0%{opacity:1;-webkit-mask-image:var(--d12);mask-image:var(--d12)}
+        33%{opacity:1;-webkit-mask-image:var(--d8);mask-image:var(--d8)}
+        66%{opacity:1;-webkit-mask-image:var(--d4);mask-image:var(--d4)}
+        100%{opacity:0}}
+      @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.js .vl i,.js .g::before,.rl i{transition:none}a.c:hover::after,button.c:hover::after{animation:none}.clock b i{animation:none}}
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div class="rl mono" id="rl" aria-hidden="true"><b id="rl-s">A</b>{L.slice(0, 16).map((i) => <i>{pad(i + 1)}</i>)}</div>
+      <div class="body" id="body">
+        <div class="rr" id="rr" aria-hidden="true"></div>
+
+        <!-- A — overview: nav, greeting, clock, KPIs -->
+        <header class="g t-paper" id="top" data-sec="A" style="--cm:6;--cd:16">
+          <div class="vl" aria-hidden="true">{L.map((i) => <i style={`--i:${i}`} />)}</div>
+          <a class="c brand" href="#top" style={A("1/1/span 1/span 2", "1/1/span 1/span 2")}><b>Citadel</b><span class="mono">workspace</span></a>
+          <p class="c mono crumb dk" style={A("1/1", "1/3/span 1/span 2")}><span>Workspace</span><span>/</span>Overview</p>
+          <nav style="display:contents" aria-label="main navigation">
+            {nav.map((n, i) => (
+              <a class:list={["c nv", { on: n.on }]} href={n.href} aria-current={n.on ? "page" : undefined} aria-label={n.t} style={A(`1/${3 + i}/span 1/span 1`, `1/${5 + i * 3}/span 1/span 3`)}>
+                <span class="ic" aria-hidden="true"><Bits rows={n.icon} /></span>
+                <span class="t"><span class="mono">{pad(i + 1)}</span><b>{n.t}</b></span>
+              </a>
+            ))}
+          </nav>
+          <h1 style="display:contents" aria-label={`Hello, ${user.first}.`}>
+            <span class="cap fg fit" aria-hidden="true" style={A("2/1/span 1/span 6", "2/1/span 2/span 12")}><span class="w">Hello,</span></span>
+            <span class="cap fit" aria-hidden="true" style={A("3/1/span 1/span 6", "4/1/span 2/span 12")}><span class="w">{user.first}.</span></span>
+          </h1>
+          <div class="c clock" style={A("4/1/span 1/span 3", "2/13/span 3/span 4")}>
+            <span class="mono k" id="clk-d">sun 22 nov</span>
+            <b id="clk" aria-label="local time">09<i>:</i>41</b>
+          </div>
+          <button class="c fill tvb mono" type="button" data-tv style={A("4/4/span 1/span 3", "5/13/span 1/span 4")}>
+            <span class="ic" aria-hidden="true"><Bits rows={dash.tv} /></span>
+            <span><span>TV mode</span><span class="dk" aria-hidden="true">↗</span></span>
+          </button>
+          <p class="c mono lede" style={A("5/1/span 1/span 6", "6/1/span 1/span 8")}>Your personal workspace, at a glance. Invoices, account and settings in one place.</p>
+          <a class="c mono lede dk" href="#account" style={A("5/1", "6/13/span 1/span 4")}>Open account →</a>
+          {kpis.map((k, i) => {
+            const sp = spark(k.spark);
+            return (
+              <div class:list={["c kpi", { fill: k.alert }]} style={A(`${6 + i}/1/span 1/span 6`, `7/${1 + i * 4}/span 2/span 4`)}>
+                <span class="top"><span class="mono k">{k.label}</span><span class="mono s mo">{k.sub}</span></span>
+                <b class="v">{k.money ? formatMoney(k.value) : k.value}</b>
+                <span class="mono s dk">{k.sub}</span>
+                <span class="sp" aria-hidden="true"><svg viewBox={`0 0 ${sp.length} 8`} preserveAspectRatio="none">{sp.map((p) => <><rect class="lo" x={p.x} y={p.y + 1} width="1" height={Math.max(0, p.h - 1)} /><rect class="hi" x={p.x} y={p.y} width="1" height="1" /></>)}</svg></span>
+              </div>
+            );
+          })}
+        </header>
+
+        <!-- B — invoices -->
+        <section class="g t-ink" id="invoices" data-sec="B" style="--cm:6;--cd:16">
+          <div class="vl" aria-hidden="true">{L.map((i) => <i style={`--i:${i}`} />)}</div>
+          <p class="c lab mono" style={A("1/1/span 1/span 6", "1/1/span 1/span 16")}><span>B — Invoices</span><b>{currency} · last 12 months</b></p>
+          <h2 class="cap fit" style={A("2/1/span 1/span 6", "2/1/span 2/span 12")}><span class="w">Invoices</span></h2>
+          <a class="c fill new" href={invoiceHref} style={A("3/1/span 1/span 6", "2/13/span 2/span 4")}>
+            <span class="ic" aria-hidden="true"><Bits rows={dash.plus} /></span>
+            <span class="t"><span class="mono">next: {nextNumber}</span><span>New invoice →</span></span>
+          </a>
+          <p class="c readout" style={A("4/1/span 1/span 6", "4/1/span 1/span 12")} aria-live="polite">
+            <span class="mono"><span class="k">Invoiced per month</span><span id="ro-m">{nowM.label} · {nowM.count} invoices · so far</span></span>
+            <b id="ro-v">{formatMoney(nowM.total)}</b>
+          </p>
+          <div class="chart" style={A("5/1/span 4/span 6", "5/1/span 5/span 12")} role="group" aria-label="invoiced per month">
+            <div class="bars">
+              {bars.map((b) => (
+                <button type="button" class:list={["bar", { now: b.now }]} style={`--vm:${b.vm};--vd:${b.vd}`} data-m={`${b.label} · ${b.count} invoices${b.now ? " · so far" : ""}`} data-v={formatMoney(b.total)} aria-label={`${b.label}: ${formatMoney(b.total)}`}></button>
+              ))}
+            </div>
+            <div class="mlab" aria-hidden="true">{bars.map((b) => <span>{b.short}</span>)}</div>
+          </div>
+          <p class="c lab mono" style={A("9/1/span 1/span 6", "4/13/span 1/span 4")}><span>This year</span><b class="px" style="font-size:20px">{totalCount}</b></p>
+          <div class="wf" style={A("10/1/span 1/span 6", "5/13/span 1/span 4")} role="img" aria-label={order4.map((s) => `${statusCounts[s]} ${statusLabel[s]}`).join(", ")}>
+            {waffle.map((s) => <i class={`s-${s}`} />)}
+          </div>
+          {order4.map((s, i) => (
+            <p class="c lg mono" style={A(`${11 + Math.floor(i / 2)}/${1 + (i % 2) * 3}/span 1/span 3`, `${6 + i}/13/span 1/span 4`)}>
+              <span class={`sw s-${s}`} aria-hidden="true"></span><span>{statusLabel[s]}</span><b class="n">{statusCounts[s]}</b>
+            </p>
+          ))}
+
+          <p class="c lab mono mo" style={A("13/1/span 1/span 6", "1/1")}><span>Recent</span><b>tap to open</b></p>
+          <div class="tr th mono dk" style={A("1/1", "10/1/span 1/span 16")} aria-hidden="true">
+            <span style="grid-column:span 2">No.</span><span style="grid-column:span 5">Client</span><span style="grid-column:span 2">Issued</span>
+            <span style="grid-column:span 2">Due</span><span style="grid-column:span 2">Status</span><span style="grid-column:span 3;justify-content:flex-end">Amount</span>
+          </div>
+          {invoices.map((v, i) => (
+            <a class:list={["c tr", { late: v.status === "overdue" }]} href={invoiceHref} style={A(`${14 + i}/1/span 1/span 6`, `${11 + i}/1/span 1/span 16`)} aria-label={`${v.number}, ${v.client}, ${formatMoney(v.amount)}, ${statusLabel[v.status]}`}>
+              <span class="num dk" style="grid-column:span 2">{v.number}</span>
+              <span class="cl dk" style="grid-column:span 5">{v.client}</span>
+              <span class="num mut dk" style="grid-column:span 2">{formatDate(v.issued)}</span>
+              <span class="num mut dk" style="grid-column:span 2">{formatDate(v.due)}</span>
+              <span class="st mono dk" style="grid-column:span 2"><span class={`sw s-${v.status}`} aria-hidden="true"></span>{statusLabel[v.status]}</span>
+              <span class="amt dk" style="grid-column:span 3">{formatMoney(v.amount)}</span>
+              <span class="two mo" style="grid-column:span 4"><span class="num">{v.number} · <span class="mut">{v.status === "draft" ? "not sent" : `due ${formatDate(v.due)}`}</span></span><span class="cl">{v.client}</span></span>
+              <span class="rt mo" style="grid-column:span 2"><span class="amt">{formatMoney(v.amount)}</span><span class="st mono" style="padding:0"><span class={`sw s-${v.status}`} aria-hidden="true"></span>{statusLabel[v.status]}</span></span>
+            </a>
+          ))}
+        </section>
+
+        <!-- C — saved payment details + invoice numbers (citadel keeps these on the device) -->
+        <section class="g t-paper" id="saved" data-sec="C" style="--cm:6;--cd:16">
+          <div class="vl" aria-hidden="true">{L.map((i) => <i style={`--i:${i}`} />)}</div>
+          <p class="c lab mono" style={A("1/1/span 1/span 6", "1/1/span 1/span 16")}><span>C — Saved for next time</span><b>kept on this device</b></p>
+          <h2 class="cap fit" style={A("2/1/span 1/span 6", "2/1/span 2/span 8")}><span class="w">Saved</span></h2>
+          <p class="c body2" style={A("3/1/span 1/span 6", "2/9/span 2/span 8")}>Payment details and invoice numbers you've used before, ready to drop into the next invoice.</p>
+          {payments.map((p, i) => (
+            <article class="c pm" style={A(`${4 + i * 3}/1/span 3/span 6`, `4/${1 + i * 6}/span 3/span 6`)}>
+              <span class="ic" aria-hidden="true"><Bits rows={dash.card} /></span>
+              <div><span class="mono k">{pad(i + 1)} — {p.kind}</span><h3>{p.accountName}</h3><span class="mono" style="opacity:.62">{p.bankName}</span></div>
+              <dl>{p.rows.map(([l, v]) => <><dt>{l}</dt><dd>{v}</dd></>)}</dl>
+              <button type="button" class="mono rm" data-rm>remove</button>
+            </article>
+          ))}
+          <div class="c nums" style={A("10/1/span 2/span 6", "4/13/span 3/span 4")}>
+            <span class="mono k">Invoice numbers · next</span>
+            <b>{nextNumber}</b>
+            <ul aria-label="used invoice numbers">{numbers.map((n) => <li>{n}</li>)}</ul>
+          </div>
+          <p class="c lab mono" style={A("12/1/span 1/span 3", "7/1/span 1/span 2")}><span>Currency</span></p>
+          {currencies.map((c, i) => (
+            <button type="button" class="c opt mono" data-group="cur" aria-pressed={c === currency ? "true" : "false"} style={A(`12/${4 + i}/span 1/span 1`, `7/${3 + i * 2}/span 1/span 2`)}><b>{c}</b></button>
+          ))}
+          <p class="c lab mono" style={A("13/1/span 1/span 3", "7/9/span 1/span 2")}><span>PDF theme</span></p>
+          {["light", "dark"].map((t, i) => (
+            <button type="button" class="c opt mono" data-group="pdf" aria-pressed={i === 0 ? "true" : "false"} style={A(`13/${4 + i}/span 1/span 1`, `7/${11 + i * 2}/span 1/span 2`)}><span>{t}</span></button>
+          ))}
+          <a class="c add mono" href={invoiceHref} style={A("14/1/span 1/span 6", "7/15/span 1/span 2")}><span class="ic" aria-hidden="true"><Bits rows={dash.plus} /></span><span>Add details</span></a>
+        </section>
+
+        <!-- D — my account: profile + sign-in connections -->
+        <section class="g t-acc" id="account" data-sec="D" style="--cm:6;--cd:16">
+          <div class="vl" aria-hidden="true">{L.map((i) => <i style={`--i:${i}`} />)}</div>
+          <p class="c lab mono" style={A("1/1/span 1/span 6", "1/1/span 1/span 16")}><span>D — My account</span><b>profile + sign-in</b></p>
+          <h2 class="cap fit" style={A("2/1/span 1/span 6", "2/1/span 2/span 12")}><span class="w">Account</span></h2>
+          <div class="c ic dk" aria-hidden="true" style={A("1/1", "2/16/span 1/span 1")}><Bits rows={dash.user} /></div>
+          <div class="c fld" style={A("3/1/span 2/span 6", "4/1/span 2/span 8")}><span class="mono k">Name</span><span class="nm fitb"><span class="w">{user.name}</span></span></div>
+          <div class="c fld" style={A("5/1/span 2/span 6", "4/9/span 2/span 8")}><span class="mono k">Email</span><span class="em">{user.email}</span></div>
+          <p class="c lab mono" style={A("7/1/span 1/span 6", "6/1/span 1/span 16")}><span>Sign-in connections</span><b>use either to sign in</b></p>
+          <div class="c cn" style={A("8/1/span 1/span 6", "7/1/span 1/span 8")}>
+            <span class="ic" aria-hidden="true"><Bits rows={dash.lock} /></span>
+            <span class="t"><b>Email + password</b><span class="mono on">{connections.password ? "on" : "off"}</span></span>
+          </div>
+          <div class="c cn" style={A("9/1/span 1/span 6", "7/9/span 1/span 5")}>
+            <span class="ic" aria-hidden="true"><Bits rows={dash.link} /></span>
+            <span class="t"><b>Google</b><span class="mono on off" id="g-st">not linked</span></span>
+          </div>
+          <button type="button" class="c fill lnk" id="g-btn" style={A("10/1/span 1/span 6", "7/14/span 1/span 3")}><span>Link Google</span><span aria-hidden="true">→</span></button>
+          <p class="c mono lede" id="g-note" style={A("11/1/span 1/span 6", "8/1/span 1/span 16")}>Connect the Google account for {user.email} to sign in with Google or your existing password.</p>
+        </section>
+
+        <!-- E — settings: appearance -->
+        <section class="g t-paper" id="settings" data-sec="E" style="--cm:6;--cd:16">
+          <div class="vl" aria-hidden="true">{L.map((i) => <i style={`--i:${i}`} />)}</div>
+          <p class="c lab mono" style={A("1/1/span 1/span 6", "1/1/span 1/span 16")}><span>E — Settings · appearance</span><b>make it your own</b></p>
+          <h2 class="cap fit" style={A("2/1/span 1/span 6", "2/1/span 2/span 8")}><span class="w">Theme</span></h2>
+          <p class="c body2" style={A("3/1/span 1/span 6", "2/9/span 2/span 8")}>Choose a theme, or follow your device's appearance. (Here it switches this prototype's colour scheme.)</p>
+          {([
+            ["light", "Light", "paper ground, ink type", dash.sun],
+            ["dark", "Dark", "ink and paper swap", dash.moon],
+            ["system", "System", "follows your device", dash.auto],
+          ] as const).map(([id, t, d, icon], i) => (
+            <button type="button" class="c th3" data-theme={id} aria-pressed={(id === "dark") === S.dark && id !== "system" ? "true" : "false"} style={A(`${4 + i}/1/span 1/span 6`, `4/${1 + i * 4}/span 3/span 4`)}>
+              <span class="ic" aria-hidden="true"><Bits rows={icon} /></span>
+              <span class="t"><b>{t}</b><span class="mono d">{d}</span></span>
+            </button>
+          ))}
+          <div class="c sess" style={A("7/1/span 2/span 6", "4/13/span 2/span 4")}><span class="mono k">Signed in as</span><b>{user.email}</b></div>
+          <a class="c fill mono lede" href="#top" style={A("9/1/span 1/span 6", "6/13/span 1/span 4")}>Sign out →</a>
+        </section>
+
+        <div class="g t-paper dz" data-sec="E" aria-hidden="true" style="--cm:6;--cd:16">
+          <div class="vl">{L.map((i) => <i style={`--i:${i}`} />)}</div>
+          {cellsOf(dzM).map((a) => <i class="c mo" style={`--am:${a}`} />)}
+          {cellsOf(dzD).map((a) => <i class="c dk" style={`--ad:${a}`} />)}
+        </div>
+
+        <!-- F — the TV dashboard -->
+        <footer class="g t-ink" id="tv-mode" data-sec="F" style="--cm:6;--cd:16">
+          <div class="vl" aria-hidden="true">{L.map((i) => <i style={`--i:${i}`} />)}</div>
+          <p class="c lab mono" style={A("1/1/span 1/span 6", "1/1/span 1/span 16")}><span>F — Dashboard</span><b>for the screen on the wall</b></p>
+          <button type="button" class="c big" data-tv style={A("2/1/span 2/span 6", "2/1/span 3/span 11")}><span>TV mode</span><small class="dk">fullscreen ↗</small></button>
+          <p class="c body2" style={A("4/1/span 1/span 6", "2/12/span 3/span 5")}>A fullscreen "hello" with the time, for a spare screen. Esc to leave.</p>
+          <p class="c lab mono" style={A("5/1/span 2/span 6", "5/1/span 1/span 16")}><span>Citadel — personal workspace · prototype, every figure here is made up</span><a href="#top">top ↑</a></p>
+        </footer>
+      </div>
+    </div>
+
+    <div class="tv" id="tv" role="dialog" aria-modal="true" aria-label="TV dashboard" tabindex="-1">
+      <h2>Hello,<br /><span>{user.first}.</span></h2>
+      <b class="tc" id="tv-clk">09:41</b>
+      <span class="td mono" id="tv-d">sun 22 nov</span>
+      <button type="button" class="x mono" id="tv-x">Exit (esc)</button>
+    </div>
+
+    <Switcher />
+
+    <script>
+      const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+      const gs = [...document.querySelectorAll<HTMLElement>(".g")];
+      const rowH = () => parseFloat(getComputedStyle(gs[0]).gridAutoRows) || 60;
+
+      // caps that run wider than their columns shrink to fit (on the same baseline)
+      function fit() {
+        document.querySelectorAll<HTMLElement>(".fit,.fitb").forEach((el) => {
+          const w = el.querySelector<HTMLElement>(".w"); if (!w) return;
+          w.style.fontSize = "";
+          const cs = getComputedStyle(el), avail = el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+          if (w.offsetWidth > avail) w.style.fontSize = (parseFloat(getComputedStyle(w).fontSize) * avail / w.offsetWidth) * 0.985 + "px";
+        });
+      }
+      function rows() {
+        const r = rowH(), rr = $("rr"), n = Math.round($("body").offsetHeight / r);
+        if (rr.childElementCount !== n) rr.innerHTML = Array.from({ length: n }, (_, i) => `<span>${String(i + 1).padStart(3, "0")}</span>`).join("");
+      }
+      const layout = () => { fit(); rows(); };
+      layout(); addEventListener("resize", layout); addEventListener("load", layout); (document as any).fonts?.ready.then(layout);
+
+      // the grid draws itself, once per section
+      const draw = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); draw.unobserve(e.target); } }), { rootMargin: "0px 0px -12% 0px" });
+      gs.forEach((g) => draw.observe(g));
+
+      // sticky ruler: current section letter, ticks re-divide to its columns
+      const ticks = [...$("rl").querySelectorAll<HTMLElement>("i")], letter = $("rl-s");
+      let curG: HTMLElement | null = null;
+      function ruler() {
+        let g = gs[0];
+        for (const x of gs) if (x.getBoundingClientRect().top <= 60) g = x;
+        if (g === curG) return; curG = g;
+        const n = parseInt(getComputedStyle(g).getPropertyValue("--cols")) || 6;
+        ticks.forEach((t, i) => t.classList.toggle("off", i >= n));
+        letter.textContent = g.dataset.sec ?? "";
+      }
+      let tick = false;
+      addEventListener("scroll", () => { if (!tick) { tick = true; requestAnimationFrame(() => { tick = false; ruler(); }); } }, { passive: true });
+      addEventListener("resize", () => { curG = null; ruler(); }); ruler();
+
+      // clocks
+      const two = (n: number) => String(n).padStart(2, "0");
+      const day = (d: Date) => d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" }).replace(",", "").toLowerCase();
+      function clock() {
+        const d = new Date(), h = two(d.getHours()), m = two(d.getMinutes());
+        $("clk").innerHTML = `${h}<i>:</i>${m}`; $("tv-clk").textContent = `${h}:${m}`;
+        $("clk-d").textContent = day(d); $("tv-d").textContent = day(d);
+      }
+      clock(); setInterval(clock, 10000);
+
+      // chart readout: hover / focus a month
+      const roM = $("ro-m"), roV = $("ro-v"), bs = [...document.querySelectorAll<HTMLElement>(".bar")];
+      const show = (b: HTMLElement) => { bs.forEach((x) => x.classList.toggle("sel", x === b)); roM.textContent = b.dataset.m ?? ""; roV.textContent = b.dataset.v ?? ""; };
+      const reset = () => { bs.forEach((x) => x.classList.remove("sel")); const b = bs[bs.length - 1]; roM.textContent = b.dataset.m ?? ""; roV.textContent = b.dataset.v ?? ""; };
+      bs.forEach((b) => { b.addEventListener("pointerenter", () => show(b)); b.addEventListener("focus", () => show(b)); b.addEventListener("click", () => show(b)); });
+      document.querySelector(".chart")?.addEventListener("pointerleave", reset);
+
+      // toggle groups (currency, PDF theme) — local only
+      document.querySelectorAll<HTMLButtonElement>("[data-group]").forEach((b) => b.addEventListener("click", () => {
+        document.querySelectorAll<HTMLButtonElement>(`[data-group="${b.dataset.group}"]`).forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+      }));
+      document.querySelectorAll<HTMLButtonElement>("[data-rm]").forEach((b) => b.addEventListener("click", () => { b.textContent = b.textContent === "remove" ? "removed (not really)" : "remove"; }));
+
+      // theme → this prototype's scheme (dark = ink/paper swapped)
+      const [, , style, scheme] = location.pathname.replace(/\/$/, "").split("/");
+      const isDark = scheme.endsWith("-dark");
+      const go = (dark: boolean) => { if (dark !== isDark) location.href = `/${"photos"}/${style}/${dark ? "orange-dark" : "orange-light"}`; };
+      try { if (sessionStorage.getItem("dash-theme") === "system") document.querySelectorAll<HTMLButtonElement>("[data-theme]").forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.theme === "system"))); } catch {}
+      document.querySelectorAll<HTMLButtonElement>("[data-theme]").forEach((b) => b.addEventListener("click", () => {
+        const t = b.dataset.theme!;
+        document.querySelectorAll<HTMLButtonElement>("[data-theme]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+        try { sessionStorage.setItem("dash-theme", t); } catch {}
+        go(t === "system" ? matchMedia("(prefers-color-scheme: dark)").matches : t === "dark");
+      }));
+
+      // "link Google": a fake connect flow
+      const gb = $<HTMLButtonElement>("g-btn"), gs2 = $("g-st"), gn = $("g-note");
+      gb.addEventListener("click", () => {
+        if (gb.disabled) return;
+        gb.disabled = true; gb.firstElementChild!.textContent = "Connecting…";
+        setTimeout(() => { gs2.textContent = "linked"; gs2.classList.remove("off"); gb.firstElementChild!.textContent = "Linked"; gb.lastElementChild!.textContent = "✓"; gn.textContent = "Google is linked. You can use Google to sign in to this account."; }, 900);
+      });
+
+      // TV mode: fullscreen greeting
+      const tv = $("tv"), tvx = $<HTMLButtonElement>("tv-x");
+      let opener: HTMLElement | null = null;
+      const close = () => { tv.classList.remove("on", "full"); if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); opener?.focus(); };
+      document.querySelectorAll<HTMLElement>("[data-tv]").forEach((b) => b.addEventListener("click", async () => {
+        opener = b; tv.classList.add("on"); tv.focus();
+        try { await tv.requestFullscreen?.(); } catch {}
+      }));
+      document.addEventListener("fullscreenchange", () => { if (document.fullscreenElement === tv) tv.classList.add("full"); else if (tv.classList.contains("full")) close(); });
+      tvx.addEventListener("click", close);
+      addEventListener("keydown", (e) => { if (e.key === "Escape" && tv.classList.contains("on")) close(); });
+    </script>
+  </body>
+</html>

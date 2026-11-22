@@ -4,6 +4,7 @@
 import Module from "@/components/photos/fable/r3/Module.astro";
 import BitsPage from "@/components/photos/fable/r3/BitsPage.astro";
 import Invoice from "@/components/photos/invoice/Invoice.astro";
+import Dashboard from "@/components/photos/dashboard/Dashboard.astro";
 import { styles, type SchemeId, type StyleId } from "@/components/photos/schemes";
 
 export function getStaticPaths() {
@@ -14,3 +15,4 @@ const { style, scheme } = Astro.params as { style: StyleId; scheme: SchemeId };
 {style === "fable-2" && <Module scheme={scheme} />}
 {style === "fable-4" && <BitsPage scheme={scheme} />}
 {style === "invoice" && <Invoice scheme={scheme} />}
+{style === "dashboard" && <Dashboard scheme={scheme} />}
