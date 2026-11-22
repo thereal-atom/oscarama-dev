@@ -14,11 +14,19 @@ const ink = S.dark ? S.paper : S.ink, paper = S.dark ? S.ink : S.paper;
 // type on the accent slabs (contact form, captions, cta): paper on blue/orange (as the page was drawn), ink on green
 const onA = S.dark ? paper : onAccent(S, "paper", 3);
 const inkOnA = onA === S.ink; // ink type on the accent → the contact form's selected/hover states flip to suit
-// pixel hover: ordered-dither masks at 4/16, 8/16, 12/16 coverage, used to step a colour change in/out
-const BAYER = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]];
+// pixel hover: scattered (seeded-random, not ordered) 16×16 masks at 3/4, 1/2 and 1/4 coverage. Each one is a
+// subset of the next, so stepping through them reads as pixels dropping out at random.
+const PX = 16;
+const order = (() => {
+  let seed = 7;
+  const rnd = () => ((seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff);
+  const a = Array.from({ length: PX * PX }, (_, i) => i);
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+})();
 const dither = (k: number) => {
-  const d = BAYER.flatMap((row, y) => row.flatMap((v, x) => (v < k ? [`M${x} ${y}h1v1h-1z`] : []))).join("");
-  return `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 4' shape-rendering='crispEdges'><path d='${d}'/></svg>`)}")`;
+  const d = order.slice(0, Math.round((k / 16) * PX * PX)).map((c) => `M${c % PX} ${Math.floor(c / PX)}h1v1h-1z`).join("");
+  return `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 ${PX} ${PX}' shape-rendering='crispEdges'><path d='${d}'/></svg>`)}")`;
 };
 const vars = [
   `--d4:${dither(4)}`, `--d8:${dither(8)}`, `--d12:${dither(12)}`,
@@ -295,7 +303,7 @@ const ig = `https://instagram.com/${contact.instagram}`, tw = `https://x.com/${c
       .cta.on{transform:none}
       .cta:hover{background:var(--hov-bg);color:var(--hov-fg)}
       [id]{scroll-margin-top:16px}
-      /* ── pixel hover: the old colour breaks up in dither steps over the new one (~0.2s, then gone) ──
+      /* ── pixel hover: the old colour breaks up in scattered pixels over the new one (~0.12s, then gone) ──
          The ::after sits under the text (z-index:-1 inside the element's own stacking context) and is only
          visible while the animation runs. Captions do the reverse: they build up from sparse pixels. */
       a.c,button.c,.sv,.mailw,.send,.cta{--was:var(--bg)}
@@ -303,9 +311,9 @@ const ig = `https://instagram.com/${contact.instagram}`, tw = `https://x.com/${c
       .send{--was:var(--key)}
       .cta{--was:var(--blue);z-index:60}
       a.c::after,button.c::after,.sv::after,.mailw::after,.send::after,.cta::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:0;background:var(--was);
-        -webkit-mask-size:calc(var(--r,60px) / 1.5) calc(var(--r,60px) / 1.5);mask-size:calc(var(--r,60px) / 1.5) calc(var(--r,60px) / 1.5)}
-      a.c:hover::after,button.c:hover::after,.sv:hover::after,.mailw:hover::after,.send:hover::after,.cta:hover::after{animation:px-out .21s step-end}
-      .ph:hover .cp,.ph:focus-visible .cp{animation:px-in .21s step-end;-webkit-mask-size:calc(var(--r,60px) / 3) calc(var(--r,60px) / 3);mask-size:calc(var(--r,60px) / 3) calc(var(--r,60px) / 3)}
+        -webkit-mask-size:calc(var(--r,60px) * 16 / 7) calc(var(--r,60px) * 16 / 7);mask-size:calc(var(--r,60px) * 16 / 7) calc(var(--r,60px) * 16 / 7)}
+      a.c:hover::after,button.c:hover::after,.sv:hover::after,.mailw:hover::after,.send:hover::after,.cta:hover::after{animation:px-out .12s step-end}
+      .ph:hover .cp,.ph:focus-visible .cp{animation:px-in .12s step-end;-webkit-mask-size:calc(var(--r,60px) * 8 / 7) calc(var(--r,60px) * 8 / 7);mask-size:calc(var(--r,60px) * 8 / 7) calc(var(--r,60px) * 8 / 7)}
       @keyframes px-out{
         0%{opacity:1;-webkit-mask-image:var(--d12);mask-image:var(--d12)}
         33%{opacity:1;-webkit-mask-image:var(--d8);mask-image:var(--d8)}
@@ -356,7 +364,7 @@ const ig = `https://instagram.com/${contact.instagram}`, tw = `https://x.com/${c
         <section class="g t-ink" id="about" data-sec="B" style="--cm:3;--cd:8">
           <div class="vl" aria-hidden="true">{L.map((i) => <i style={`--i:${i}`} />)}</div>
           <p class="c lab mono" style="--am:1/1/span 1/span 3;--ad:1/1/span 1/span 8"><span>B — Who's holding the camera</span></p>
-          <p class="c say" data-snap style="--am:2/1/span var(--rs,7)/span 3;--ad:2/1/span var(--rs,4)/span 6"><span class="in" style="display:block">I'm Oscar. I've hosted <em>40+ events</em>, been to <em>100+ more</em>, and shot for teams like OpenAI and Vercel — so I know every side of the room.</span></p>
+          <p class="c say" data-snap style="--am:2/1/span var(--rs,7)/span 3;--ad:2/1/span var(--rs,4)/span 6"><span class="in" style="display:block">I'm Oscar. I've hosted <em>40+ events</em>, been to <em>100+ more</em>, and shot for teams like OpenAI and Vercel.</span></p>
           <p class="c body2" data-snap style="--am:auto/1/span var(--rs,3)/span 3;--ad:2/7/span var(--rs,4)/span 2"><span class="in" style="display:block">Organiser, guest, photographer: I've been all three, often on the same night. I know what the run sheet needs, which moments people actually share, and how to get them without getting in the way. Mostly startup and tech events, but product shoots, sports, launch videos and other odd bits too.</span></p>
         </section>
 
