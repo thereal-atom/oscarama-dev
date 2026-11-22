@@ -2,7 +2,8 @@
 // Invoice in the fable 2 language: an A4 sheet on a square module (12 mm, 15 × 22) with the construction lines
 // left on, giant Inter Tight caps, Geist Pixel figures, an accent slab for the total and the same dither dissolve
 // into the footer. Sized in mm so it prints 1:1 (Print → Save as PDF). Two modes share the page: the full invoice and
-// a "simple" one (who, what, how much, when, how to pay) — toggled by the button or `?simple`, both one A4 page.
+// a "simple" one — every field of the full invoice, in a calmer layout (qty × unit folded into each line, one big
+// amount-due slab) — toggled by the button or `?simple`, both one A4 page with the sample data.
 // Data: ./data.ts (same shape as citadel's InvoiceData).
 import Switcher from "@/components/photos/Switcher.astro";
 import Bits from "@/components/photos/fable/r3/Bits.astro";
@@ -46,11 +47,11 @@ const at = (r: number, c: number, h: number, w: number) => `grid-area:${r}/${c}/
 // dissolve: 4 mm pixels (3 to a module) — two dithered rows, then a solid one sitting on the footer slab
 const dz = dissolve(42, COLS * 3, 2).flatMap((line, y) => [...line].flatMap((ch, x) => (ch === "#" ? [`${y + 1}/${x + 1}`] : [])));
 
-// ── simple mode plan: same module, only the essentials ──
-const sItems = items.slice(0, 6);
-const sRow0 = 10; // 9 = "for" head
-const sTot = Math.max(15, sRow0 + Math.max(sItems.length, 1) + 1);
-const sLast = 22;
+// ── simple mode plan: same rows as the full one up to the totals, then pay | sums + a 3-row amount-due slab ──
+const sDue = t0 + sums.length;
+const sPaySpan = pay.length ? Math.max(3, paySpan) : 0;
+const sNotesRow = Math.max(sDue + 3, t0 + sPaySpan);
+const sLast = Math.max(22, sNotesRow + notesSpan + 1); // notes sit right on the dissolve
 ---
 <!doctype html>
 <html lang="en" style={vars} data-scheme={S.id}>
@@ -129,6 +130,8 @@ const sLast = 22;
       .due{display:flex;flex-direction:column;justify-content:space-between;padding:calc(2 * var(--mm)) calc(2.4 * var(--mm))}
       .due b{align-self:flex-end;font:900 calc(var(--m) * 1.3755)/var(--m) var(--sans);letter-spacing:-.04em;white-space:nowrap}
       .due .by{display:flex;justify-content:space-between}
+      .sline{justify-content:space-between;gap:calc(4 * var(--mm))}
+      .sline .qty{font-size:calc(2.6 * var(--mm))}
       .foot{display:flex;align-items:flex-end;justify-content:space-between;gap:calc(4 * var(--mm));padding:0 calc(2 * var(--mm)) 0 0}
       .foot .cap{color:var(--on-a)}
       .foot .mono{padding-bottom:calc(2 * var(--mm));text-align:right}
@@ -215,38 +218,44 @@ const sLast = 22;
 
         <div class="c meta" style={at(4, 1, 1, 4)}><span class="mono lab">No.</span><b>{data.number || "—"}</b></div>
         <div class="c meta" style={at(4, 5, 1, 4)}><span class="mono lab">Issued</span><b>{formatDate(data.issueDate)}</b></div>
+        <div class="c meta" style={at(4, 9, 1, 4)}><span class="mono lab">Due</span><b>{formatDate(data.dueDate)}</b></div>
 
-        <div class="c party" style={at(6, 1, 2, 7)}>
+        <div class="c party" style={at(6, 1, 3, 7)}>
           <span class="mono lab">Billed to</span>
-          <h2>{data.customer.company || data.customer.contactName || "customer"}</h2>
-          <p>{custLines.slice(0, 2).join("\n")}</p>
+          <h2>{data.customer.company || "customer"}</h2>
+          <p>{custLines.join("\n")}</p>
         </div>
-        <div class="c party" style={at(6, 9, 2, 7)}>
+        <div class="c party" style={at(6, 9, 3, 7)}>
           <span class="mono lab">From</span>
           <h2>{data.from.name}</h2>
-          <p>{fromLines.slice(0, 2).join("\n")}</p>
+          <p>{fromLines.join("\n")}</p>
         </div>
 
-        <span class="th mono" style={at(9, 1, 1, 12)}>For</span>
-        <span class="th mono r" style={at(9, 13, 1, 3)}>Amount</span>
-        {sItems.map((it, i) => (
+        <span class="th mono" style={at(10, 1, 1, 12)}>For</span>
+        <span class="th mono r" style={at(10, 13, 1, 3)}>Amount</span>
+        {rows.map(({ it, r, h }) => (
           <>
-            <span class="c td desc" style={at(sRow0 + i, 1, 1, 12)}>{it.quantity > 1 ? `${it.description} × ${it.quantity}` : it.description || "—"}</span>
-            <span class="c td r num amt" style={at(sRow0 + i, 13, 1, 3)}>{money(lineTotal(it))}</span>
+            <span class="c td sline" style={at(r, 1, h, 12)}>
+              <span class="desc">{it.description || "—"}</span>
+              <span class="num qty">{it.quantity || 0} × {money(Number(it.unitPrice) || 0)}</span>
+            </span>
+            <span class="c td r num amt" style={at(r, 13, h, 3)}>{money(lineTotal(it))}</span>
           </>
         ))}
-        {items.length > sItems.length && <span class="c td qty" style={at(sRow0 + sItems.length, 1, 1, 15)}>+ {items.length - sItems.length} more — see full invoice</span>}
+        {items.length === 0 && <span class="c td qty" style={at(11, 1, 1, 15)}>no line items yet</span>}
 
         {pay.length > 0 && (
-          <div class="c pay" style={at(sTot, 1, 3, 6)}>
-            <span class="mono lab">Pay to</span>
+          <div class="c pay" style={at(t0, 1, sPaySpan, 6)}>
+            <span class="mono lab">Payment details</span>
             <dl>{pay.map(([l, v]) => <><dt>{l}</dt><dd>{v}</dd></>)}</dl>
           </div>
         )}
-        <div class="c fill due" style={at(sTot, 7, 3, 9)}>
+        {sums.map(([l, v], i) => <div class="c sum num" style={at(t0 + i, 7, 1, 9)}><span>{l}</span><span>{v}</span></div>)}
+        <div class="c fill due" style={at(sDue, 7, 3, 9)}>
           <span class="mono lab by"><span>Amount due · {data.currency}</span><span>by {formatDate(data.dueDate)}</span></span>
           <b>{money(T.total)}</b>
         </div>
+        {notes && <div class="c notes" style={at(sNotesRow, 1, notesSpan, 15)}><span class="mono lab">Notes</span><p>{notes}</p></div>}
 
         <div class="dz" style={at(sLast - 1, 1, 1, 15)} aria-hidden="true">{dz.map((a) => <i style={`grid-area:${a}`} />)}<i class="solid" /></div>
         <div class="fill foot" style={at(sLast, 1, 1, 15)}>
