@@ -402,10 +402,16 @@ const ig = `https://www.instagram.com/${contact.instagram}/`, tw = `https://x.co
           {pd.holes.map((h, i) => <i class:list={["hole dk", { x: i % 4 === 0 }]} style={`--ad:${area(h)}`} aria-hidden="true" />)}
         </section>
 
-
-        <section class="g t-paper" id="get" data-sec="D" style="--cm:2;--cd:4">
+        <section class="g t-ink" id="clients" data-sec="D" style="--cm:2;--cd:6">
           <div class="vl" aria-hidden="true">{L.map((i) => <i style={`--i:${i}`} />)}</div>
-          <p class="c lab mono" style="--am:1/1/span 1/span 2;--ad:1/1/span 1/span 4"><span>D — What I shoot</span><b>mostly events, plus the rest</b></p>
+          <p class="c lab mono" style="--am:1/1/span 1/span 2;--ad:1/1/span 1/span 6"><span>D — Shot for</span></p>
+          {clients.map((c, i) => <div class="logo" style={`--am:${2 + Math.floor(i / 2) * 2}/${(i % 2) + 1}/span 2/span 1;--ad:2/${i + 1}/span 2/span 1`}><img class:list={{ sm: c.name === "SPACEXAI" }} src={S.dark && c.name === "SPACEXAI" ? "/photos/spacexai-mark.svg" : c.logo.src} alt={c.name} loading="lazy" style={S.dark ? "filter:brightness(0)" : undefined} /><span class="mono">{c.name}</span></div>)}
+          <a class="c fill you" href="#contact" style="--am:6/2/span 2/span 1;--ad:2/6/span 2/span 1"><span class="mono">next</span><b>YOUR LOGO →</b></a>
+        </section>
+
+        <section class="g t-paper" id="get" data-sec="E" style="--cm:2;--cd:4">
+          <div class="vl" aria-hidden="true">{L.map((i) => <i style={`--i:${i}`} />)}</div>
+          <p class="c lab mono" style="--am:1/1/span 1/span 2;--ad:1/1/span 1/span 4"><span>E — What I shoot</span><b>mostly events, plus the rest</b></p>
           <h2 style="display:contents" aria-label="What I shoot">
             <span class="cap" aria-hidden="true" style="--am:2/1/span 1/span 2;--ad:2/1/span 2/span 4">What I</span>
             <span class="cap" aria-hidden="true" style="--am:3/1/span 1/span 2;--ad:4/1/span 2/span 4">shoot</span>
@@ -422,13 +428,6 @@ const ig = `https://www.instagram.com/${contact.instagram}/`, tw = `https://x.co
             <span class="in"><b>And more</b> — sports, portraits, offsites, recap reels. If it's startup-y or tech-y, just ask.</span>
             <span class="ar dk" aria-hidden="true">→</span>
           </a>
-        </section>
-
-        <section class="g t-ink" id="clients" data-sec="E" style="--cm:2;--cd:6">
-          <div class="vl" aria-hidden="true">{L.map((i) => <i style={`--i:${i}`} />)}</div>
-          <p class="c lab mono" style="--am:1/1/span 1/span 2;--ad:1/1/span 1/span 6"><span>E — Shot for</span></p>
-          {clients.map((c, i) => <div class="logo" style={`--am:${2 + Math.floor(i / 2) * 2}/${(i % 2) + 1}/span 2/span 1;--ad:2/${i + 1}/span 2/span 1`}><img class:list={{ sm: c.name === "SPACEXAI" }} src={S.dark && c.name === "SPACEXAI" ? "/photos/spacexai-mark.svg" : c.logo.src} alt={c.name} loading="lazy" style={S.dark ? "filter:brightness(0)" : undefined} /><span class="mono">{c.name}</span></div>)}
-          <a class="c fill you" href="#contact" style="--am:6/2/span 2/span 1;--ad:2/6/span 2/span 1"><span class="mono">next</span><b>YOUR LOGO →</b></a>
         </section>
 
         {showSaid && (
