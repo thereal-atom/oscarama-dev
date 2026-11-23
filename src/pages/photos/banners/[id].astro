@@ -9,10 +9,12 @@ import openai from "@/assets/logos/openai.png";
 import vercel from "@/assets/logos/vercel.png";
 import corgi from "@/assets/logos/corgi.png";
 
-type Spec = { w: number; h: number; safe: [number, number, number, number]; align: "center" | "end"; kind: "banner" | "avatar"; bg?: "dark" | "accent" };
+type Spec = { w: number; h: number; safe: [number, number, number, number]; align: "center" | "end"; kind: "banner" | "avatar"; bg?: "dark" | "accent"; dz?: number };
 const specs: Record<string, Spec> = {
   x: { w: 1500, h: 500, safe: [380, 60, 1060, 380], align: "end", kind: "banner" },
   linkedin: { w: 1584, h: 396, safe: [560, 40, 984, 316], align: "end", kind: "banner" },
+  // LinkedIn company page cover (personal profiles use the 1584×396 one above); the logo sits over the bottom-left
+  "linkedin-page": { w: 1128, h: 191, safe: [300, 16, 800, 159], align: "end", kind: "banner", dz: 2 },
   youtube: { w: 2560, h: 1440, safe: [507, 508, 1546, 423], align: "center", kind: "banner" },
   "avatar-dark": { w: 800, h: 800, safe: [0, 0, 800, 800], align: "center", kind: "avatar", bg: "dark" },
   "avatar-orange": { w: 800, h: 800, safe: [0, 0, 800, 800], align: "center", kind: "avatar", bg: "accent" },
@@ -24,11 +26,11 @@ const specs: Record<string, Spec> = {
 // d: two tiers: wordmark, then one line with "photo + video · London" on the left and the logos on the right
 type Variant = "a" | "b" | "c" | "d";
 export function getStaticPaths() {
-  const banners = ["x", "linkedin", "youtube"], variants = ["a", "b", "c", "d"];
+  const banners = ["x", "linkedin", "linkedin-page", "youtube"], variants = ["a", "b", "c", "d"];
   return [...banners.flatMap((b) => variants.map((v) => `${b}-${v}`)), "avatar-dark", "avatar-orange"].map((id) => ({ params: { id } }));
 }
 const { id: full } = Astro.params as { id: string };
-const vm = full.match(/^(x|linkedin|youtube)-([a-d])$/);
+const vm = full.match(/^(x|linkedin-page|linkedin|youtube)-([a-d])$/);
 const id = vm ? vm[1] : full, v = (vm ? vm[2] : "a") as Variant;
 const s = specs[id];
 const ACC = "#FF3B1F", INK = "#111111", PAPER = "#F3F1EA";
@@ -46,13 +48,13 @@ const worked = [
 // the grid module: banners get 10 rows of module across their height (YouTube: across the safe strip)
 const m = s.kind === "avatar" ? s.w / 8 : id === "youtube" ? sh / 6 : s.h / 8;
 // wordmark: fit the safe width (banners) or ~62% of the avatar
-const dzH = s.kind === "avatar" ? 0 : 3 * (m / 2);
+const dzH = s.kind === "avatar" ? 0 : (s.dz ?? 3) * (m / 2);
 const bottom = Math.min(sy + sh, s.h - dzH - m / 2);
 const b = s.kind === "avatar" ? burstO : burstWord;
 const cell = s.kind === "avatar" ? Math.floor((s.w * 0.5) / b.w) : Math.floor(Math.min((sw * 0.92) / b.w, (bottom - sy) / (b.h + ({ a: 15, b: 12, c: 12, d: 8 } as const)[v])));
 const ww = cell * b.w, wh = cell * b.h;
 // bottom dissolve, the F2 footer, in module-sized cells
-const dzCols = Math.ceil(s.w / (m / 2)), dzRows = s.kind === "avatar" ? 0 : 3;
+const dzCols = Math.ceil(s.w / (m / 2)), dzRows = s.kind === "avatar" ? 0 : s.dz ?? 3;
 const dz = dzRows ? dissolve(id.length * 7 + 3, dzCols, dzRows) : [];
 const dzPath = dz.map((row, y) => [...row].map((c, x) => (c === "#" ? `M${x} ${y}h1v1h-1z` : "")).join("")).join("");
 ---
