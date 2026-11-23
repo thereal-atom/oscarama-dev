@@ -3,7 +3,7 @@
 Burst-in-pixels logo. Rendered from `/photos/banners/<id>` (src/pages/photos/banners/[id].astro) on the experiment branch.
 
 Banners come in four layouts, suffixed -a to -d (see the Socials section on /photos/logos/orange-dark, which has download buttons):
-a: as before (tagline, divider, clients with names) · b: no divider, one-line tagline · c: like b with client marks only · d: two tiers, wordmark then tagline + marks.
+a: wordmark, divider, clients with names · b: wordmark, clients with names · c: wordmark, tagline, client marks only · d: two tiers, wordmark then tagline + marks.
 
 | File | Size | Use |
 |---|---|---|

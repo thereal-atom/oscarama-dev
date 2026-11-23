@@ -20,8 +20,8 @@ const specs: Record<string, Spec> = {
   "avatar-orange": { w: 800, h: 800, safe: [0, 0, 800, 800], align: "center", kind: "avatar", bg: "accent" },
 };
 // banner variants, from busiest to calmest:
-// a: wordmark / tagline + London / divider / "shot for" + logos with names
-// b: no divider, tagline and London on one line
+// a: wordmark / divider / "shot for" + logos with names
+// b: wordmark, then "shot for" + logos with names (no divider)
 // c: like b, logos without names or label
 // d: two tiers: wordmark, then one line with "photo + video · London" on the left and the logos on the right
 type Variant = "a" | "b" | "c" | "d";
@@ -51,7 +51,7 @@ const m = s.kind === "avatar" ? s.w / 8 : id === "youtube" ? sh / 6 : s.h / 8;
 const dzH = s.kind === "avatar" ? 0 : (s.dz ?? 3) * (m / 2);
 const bottom = Math.min(sy + sh, s.h - dzH - m / 2);
 const b = s.kind === "avatar" ? burstO : burstWord;
-const cell = s.kind === "avatar" ? Math.floor((s.w * 0.5) / b.w) : Math.floor(Math.min((sw * 0.92) / b.w, (bottom - sy) / (b.h + ({ a: 15, b: 12, c: 12, d: 8 } as const)[v])));
+const cell = s.kind === "avatar" ? Math.floor((s.w * 0.5) / b.w) : Math.floor(Math.min((sw * 0.92) / b.w, (bottom - sy) / (b.h + ({ a: 10, b: 8, c: 12, d: 8 } as const)[v])));
 const ww = cell * b.w, wh = cell * b.h;
 // bottom dissolve, the F2 footer, in module-sized cells
 const dzCols = Math.ceil(s.w / (m / 2)), dzRows = s.kind === "avatar" ? 0 : s.dz ?? 3;
@@ -95,12 +95,7 @@ const dzPath = dz.map((row, y) => [...row].map((c, x) => (c === "#" ? `M${x} ${y
           {b.echoes.map((e) => <path d={e.d} fill={echo} fill-opacity={e.o} />)}
           <path d={b.ink} fill={fg} />
         </svg>
-        {s.kind === "banner" && v === "a" && (
-          <p class="tag" style={`--ts:${Math.round(cell * 1.9)}px;margin:${Math.round(cell * 3.2)}px 0 0;width:${ww}px;justify-content:space-between`}>
-            <span>Photo + video for startups &amp; tech</span><b style={`color:${ACC}`}>London</b>
-          </p>
-        )}
-        {s.kind === "banner" && (v === "b" || v === "c") && (
+        {s.kind === "banner" && v === "c" && (
           <p class="tag" style={`--ts:${Math.round(cell * 1.9)}px;margin:${Math.round(cell * 3.2)}px 0 0;width:${ww}px;justify-content:space-between`}>
             <span>Photo + video for startups &amp; tech <span style={`color:${ACC}`}>·</span> <b style={`color:${ACC}`}>London</b></span>
           </p>
