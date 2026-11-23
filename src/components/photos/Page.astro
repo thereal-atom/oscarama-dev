@@ -1,5 +1,6 @@
 ---
 import Viewer from "@/components/photos/Viewer.astro";
+import Posthog from "@/components/posthog.astro";
 import Bits from "@/components/photos/Bits.astro";
 import { icons, dissolve } from "@/components/photos/bits";
 import { events, contact, clients, shotLabel } from "@/data/photos";
@@ -132,6 +133,7 @@ const ig = `https://www.instagram.com/${contact.instagram}/`, tw = `https://x.co
 <html lang="en" style={vars} data-scheme={S.id}>
   <head>
     <meta charset="UTF-8" />
+    <Posthog />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content={paper} />
     <title>Oscar — photo + video for startups and tech, London</title>
@@ -144,7 +146,6 @@ const ig = `https://www.instagram.com/${contact.instagram}/`, tw = `https://x.co
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
     <link rel="preconnect" href="https://cdn.sanity.io" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;800;900&family=Geist+Mono:wght@400;500&family=Caveat:wght@600&display=swap" rel="stylesheet" />
-    <script is:inline>document.documentElement.classList.add("js")</script>
     <style is:inline>
       @font-face{font-family:"Geist Pixel";src:url("https://cdn.jsdelivr.net/npm/geist@1.9.2/dist/fonts/geist-pixel/GeistPixel-Square.woff2") format("woff2");font-display:swap}
       :root{--base:6;--gut:16px;--pad:8px;--inset:2px;
@@ -220,7 +221,8 @@ const ig = `https://www.instagram.com/${contact.instagram}/`, tw = `https://x.co
 
       /* ── hero ── */
       .brand{display:flex;flex-direction:column;justify-content:space-between}
-      .brand b{font:900 17px/1 var(--sans);letter-spacing:-.02em}
+      .brand b{font:900 clamp(12px,3.6vw,17px)/1 var(--sans);letter-spacing:-.02em}
+      @media (max-width:375px){.brand{padding:4px}.brand .mono{font-size:10px;line-height:1.1;white-space:nowrap}}
       .soc{display:flex;align-items:flex-end;white-space:nowrap}
       .lede{display:flex;align-items:flex-end;text-transform:none;letter-spacing:0;font-size:12px}
       .lk{display:flex;align-items:stretch;padding:0}
@@ -323,6 +325,7 @@ const ig = `https://www.instagram.com/${contact.instagram}/`, tw = `https://x.co
       .big small{font:500 11px/1.2 var(--mono);letter-spacing:.02em;text-transform:none}
 
       .cta{position:fixed;left:0;bottom:calc(10px + env(safe-area-inset-bottom));z-index:60;background:var(--blue);color:var(--on-a);padding:11px 13px 10px;transform:translateX(-101%);transition:transform .2s;box-shadow:0 0 0 1px var(--paper)}
+      .cta:not(.on){visibility:hidden}
       .cta.on{transform:none}
       .cta:hover{background:var(--hov-bg);color:var(--hov-fg)}
       [id]{scroll-margin-top:16px}
@@ -409,7 +412,7 @@ const ig = `https://www.instagram.com/${contact.instagram}/`, tw = `https://x.co
           <div class="vl" aria-hidden="true">{L.map((i) => <i style={`--i:${i}`} />)}</div>
           {picks.map((s, i) => (
             <a class="ph" href={s.src} data-shot={shotIndex.get(s.id)} aria-label={shotLabel(s) || `Open photo ${i + 1}`} style={`--am:${area(pm.out[i])};--ad:${area(pd.out[i])}`}>
-              <img src={s.thumb} srcset={`${s.thumb} 533w, ${s.src} 1600w`} sizes={`(min-width:900px) ${(pd.out[i].w * 6.2).toFixed(0)}vw, ${(pm.out[i].w * 16).toFixed(0)}vw`} alt="" width={s.width} height={s.height} loading="lazy" decoding="async" />
+              <img src={s.thumb} srcset={s.thumb === s.src ? undefined : `${s.thumb} ${s.thumbWidth}w, ${s.src} ${s.srcWidth}w`} sizes={`(min-width:900px) ${(pd.out[i].w * 6.2).toFixed(0)}vw, ${(pm.out[i].w * 16).toFixed(0)}vw`} alt="" width={s.width} height={s.height} loading="lazy" decoding="async" />
               {shotLabel(s) && <span class="cp">{shotLabel(s)}</span>}
             </a>
           ))}
@@ -472,13 +475,13 @@ const ig = `https://www.instagram.com/${contact.instagram}/`, tw = `https://x.co
             </h2>
             <p class="c say" data-snap style="--am:4/1/span var(--rs,3)/span 6;--ad:4/9/span 2/span 8;font-size:clamp(20px,2.2cqw,32px);line-height:1.12"><span class="in" style="display:block">Tell me what you're planning — an event, a launch, a product, anything. I'll get back to you with availability and a quote.</span></p>
           </div>
-          <form class="g t-blue" id="form" data-sec={sec.contact} novalidate style="--cm:6;--cd:16">
+          <form class="g t-blue ph-no-capture" id="form" data-sec={sec.contact} action={`mailto:${contact.email}`} method="post" enctype="text/plain" style="--cm:6;--cd:16">
             <div class="vl" aria-hidden="true">{L.map((i) => <i style={`--i:${i}`} />)}</div>
             <div class="fld" style="--am:1/1/span 1/span 6;--ad:1/1/span 1/span 8"><input type="text" name="name" placeholder="Your name" autocomplete="name" aria-label="your name" /></div>
-            <div class="fld" style="--am:2/1/span 1/span 6;--ad:1/9/span 1/span 8"><input type="email" name="email" placeholder="Your email" autocomplete="email" aria-label="your email" required /></div>
+            <div class="fld" style="--am:2/1/span 1/span 6;--ad:1/9/span 1/span 8"><input type="email" name="email" placeholder="Your email" autocomplete="email" aria-label="your email" aria-describedby="sent" required /></div>
             <div class="fld" style="--am:3/1/span 3/span 6;--ad:2/1/span 3/span 12"><textarea name="note" placeholder="What's the plan? Date, place, rough idea — whatever you know so far" aria-label="your message"></textarea></div>
             <button class="send" type="submit" style="--am:6/1/span 2/span 6;--ad:2/13/span 3/span 4"><span>Send message</span><span aria-hidden="true">→</span></button>
-            <p class="c fine" data-snap style="--am:8/1/span var(--rs,1)/span 6;--ad:5/1/span var(--rs,1)/span 16"><span class="in" id="sent" style="display:block">Opens your email app with this written out. Or just write to <a href={`mailto:${contact.email}`}>{contact.email}</a></span></p>
+            <p class="c fine" data-snap style="--am:8/1/span var(--rs,1)/span 6;--ad:5/1/span var(--rs,1)/span 16"><span class="in" style="display:block">Submitting records your enquiry in PostHog and opens your email app. <span id="sent" role="status"></span>Or write directly to <a href={`mailto:${contact.email}`}>{contact.email}</a>.</span></p>
           </form>
         </section>
 
@@ -502,15 +505,24 @@ const ig = `https://www.instagram.com/${contact.instagram}/`, tw = `https://x.co
 
     <Viewer viewerData={viewerData} bg={S.ink} fg={S.paper} accent={S.paper} onAccent={S.accent} bookHref="#contact" bookLabel="contact me about a shoot like this →" mono='"Geist Mono", ui-monospace, monospace' display='"Inter Tight", sans-serif' />
 
-    <script define:vars={{ email: contact.email }}>window.__mail = email;</script>
     <script>
       import { fitText } from "@/components/photos/book";
+      import { capturePhotoEvent } from "./analytics";
       const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+      document.documentElement.classList.add("js");
       const gs = [...document.querySelectorAll<HTMLElement>(".g")];
+
+      document.addEventListener("click", (event) => {
+        const link = event.target instanceof Element && event.target.closest<HTMLAnchorElement>("a[href]");
+        if (!link || link.hasAttribute("data-shot")) return;
+        const source = link.closest("[id='rv'], section[id], header[id], footer[id]")?.id ?? link.id;
+        const destination = link.protocol === "mailto:" ? "email" : link.hash || link.hostname;
+        capturePhotoEvent("link_clicked", { source, destination });
+      });
 
       // ── photos pixel in once downloaded (see .ph img.ld) ──
       document.querySelectorAll<HTMLImageElement>(".ph img").forEach((img) => {
-        if (img.complete && img.naturalWidth) { img.classList.add("ld"); return; }
+        if (img.complete) { img.classList.add("ld"); return; }
         const show = () => img.classList.add("ld", "px");
         img.addEventListener("load", show, { once: true });
         img.addEventListener("error", show, { once: true });
@@ -534,7 +546,19 @@ const ig = `https://www.instagram.com/${contact.instagram}/`, tw = `https://x.co
       snap(); addEventListener("resize", snap); addEventListener("load", snap); (document as any).fonts?.ready.then(snap);
 
       // ── the grid draws itself, once per section ──
-      const draw = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); draw.unobserve(e.target); } }), { rootMargin: "0px 0px -18% 0px" });
+      const viewedSections = new Set<string>();
+      const draw = new IntersectionObserver((entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          entry.target.classList.add("in");
+          draw.unobserve(entry.target);
+          const section = entry.target.closest("section[id], header[id], footer[id]")?.id;
+          if (section && !viewedSections.has(section)) {
+            viewedSections.add(section);
+            capturePhotoEvent("section_viewed", { section });
+          }
+        }
+      }, { rootMargin: "0px 0px -18% 0px" });
       gs.forEach((g) => draw.observe(g));
 
       // ── sticky ruler re-divides to the current section's columns ──
@@ -557,14 +581,33 @@ const ig = `https://www.instagram.com/${contact.instagram}/`, tw = `https://x.co
       new IntersectionObserver(([e]) => $("cta").classList.toggle("on", !e.isIntersecting && e.boundingClientRect.top < 0)).observe($("top"));
 
       // ── contact: name / email / message → a pre-written email ──
-      const form = $<HTMLFormElement>("form"), sent = $("sent"), to: string = (window as any).__mail;
+      const form = $<HTMLFormElement>("form"), sent = $("sent");
+      const replyEmail = form.elements.namedItem("email") as HTMLInputElement;
+      form.noValidate = true; // Capture each attempt before reporting a validation error.
+      form.addEventListener("input", () => {
+        replyEmail.removeAttribute("aria-invalid");
+        if (sent.textContent) { sent.textContent = ""; snap(); }
+      });
       form.addEventListener("submit", (e) => {
         e.preventDefault();
         const f = new FormData(form), name = String(f.get("name") ?? "").trim(), email = String(f.get("email") ?? "").trim(), note = String(f.get("note") ?? "").trim();
-        if (!/^\S+@\S+\.\S+$/.test(email)) { (form.elements.namedItem("email") as HTMLInputElement).focus(); sent.textContent = "Pop your email in so I can reply."; return; }
+        const validEmail = replyEmail.validity.valid && /^\S+@\S+\.\S+$/.test(email);
+        capturePhotoEvent("contact_form_attempted", {
+          name: f.get("name"), email: f.get("email"), note: f.get("note"),
+          validation: validEmail ? "passed" : email ? "invalid_email" : "missing_email",
+        });
+        if (!validEmail) {
+          replyEmail.setAttribute("aria-invalid", "true");
+          sent.textContent = "Enter a valid email address so I can reply. ";
+          snap();
+          replyEmail.focus();
+          return;
+        }
+        replyEmail.removeAttribute("aria-invalid");
         const body = ["Hi Oscar,", "", note || "I'd like to talk about a shoot.", "", name || "—", email].join("\n");
-        const url = `mailto:${to}?subject=${encodeURIComponent(`Shoot enquiry${name ? ` — ${name}` : ""}`)}&body=${encodeURIComponent(body)}`;
-        sent.innerHTML = `Opening your email app… nothing happened? Write to <a href="${url}">${to}</a>`;
+        const url = `${form.action}?subject=${encodeURIComponent(`Shoot enquiry${name ? ` — ${name}` : ""}`)}&body=${encodeURIComponent(body)}`;
+        sent.textContent = "Opening your draft… ";
+        snap();
         location.href = url;
       });
 
