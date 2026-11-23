@@ -6,13 +6,20 @@ interface Props {
   description?: string;
   ogImage?: string;
   ogUrl?: string;
+  noindex?: boolean;
   class?: string;
 }
 
-const { title, description, ogImage, ogUrl, class: className } = Astro.props;
+const { title, description, ogImage, ogUrl, noindex, class: className } = Astro.props;
 ---
 
-<BaseLayout title={title} description={description} ogImage={ogImage} ogUrl={ogUrl}>
+<BaseLayout
+  title={title}
+  description={description}
+  ogImage={ogImage}
+  ogUrl={ogUrl}
+  noindex={noindex}
+>
   <div class="flex flex-col items-center">
     <div
       class:list={[

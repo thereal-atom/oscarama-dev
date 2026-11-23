@@ -1,0 +1,19 @@
+---
+import PageLayout from "@/layouts/PageLayout.astro";
+import InvoiceGenerator from "@/components/InvoiceGenerator.svelte";
+---
+
+<PageLayout
+  title="invoice | oscarama"
+  description="stateless invoice generator"
+  ogUrl="https://oscarama.dev/invoice"
+  noindex
+  class="pt-12 pb-12 max-sm:pt-12"
+>
+  <h1 class="text-3xl font-bold">invoice generator</h1>
+  <p class="text-sm text-white/70 mt-4">
+    fill in the details below and grab a pdf. nothing is stored - it all happens in your browser.
+  </p>
+
+  <InvoiceGenerator client:only="svelte" />
+</PageLayout>
