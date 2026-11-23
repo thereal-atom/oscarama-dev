@@ -5,6 +5,7 @@
 //   the full-res frame fades in over it once decoded (and is pre-warmed on hover / touchstart)
 // - mechanical shutter sound + a ~70ms mirror blackout
 // Theme with the props (they become CSS custom properties) or override .rv* in the page.
+import PhotoLoader from "./PhotoLoader.astro";
 import type { loadSelects } from "./derive";
 import { schemes } from "@/components/photos/schemes";
 interface Props { viewerData: Awaited<ReturnType<typeof loadSelects>>["viewerData"]; bg?: string; fg?: string; accent?: string; onAccent?: string; mono?: string; display?: string; radius?: string; bookHref?: string; bookLabel?: string }
@@ -21,6 +22,7 @@ const { viewerData, bg = D.ink, fg = D.paper, accent = D.accent, onAccent = D.in
   </div>
   <div class="rv-stage" id="rv-stage">
     <div class="rv-frame" id="rv-frame">
+      <PhotoLoader />
       <canvas id="rv-thumb" aria-hidden="true"></canvas>
       <img id="rv-img" alt="" draggable="false" decoding="async" />
       <i class="rv-black" aria-hidden="true"></i>
@@ -128,14 +130,32 @@ const { viewerData, bg = D.ink, fg = D.paper, accent = D.accent, onAccent = D.in
     img.classList.remove("in"); img.removeAttribute("src"); img.alt = [s.cap, s.ev].filter(Boolean).join(" — ") || `Portfolio photo ${cur + 1}`;
     $("rv-error").textContent = "";
     const th = loadedThumb(cur, from);
+    frame.toggleAttribute("data-loading", !th);
     if (th) paintThumb(th, s);
-    else { cv.getContext("2d")!.clearRect(0, 0, cv.width, cv.height); const t = new Image(); t.onload = () => { if (my === token && !img.classList.contains("in")) paintThumb(t, s); }; t.src = s.thumb; }
+    else {
+      cv.getContext("2d")!.clearRect(0, 0, cv.width, cv.height);
+      const thumb = new Image();
+      thumb.onload = () => {
+        if (my !== token || img.classList.contains("in")) return;
+        paintThumb(thumb, s);
+        frame.removeAttribute("data-loading");
+      };
+      thumb.src = s.thumb;
+    }
     root.classList.remove("snap"); void root.offsetWidth; root.classList.add("snap");
     shutter(soft);
     const index = cur, full = warm(index)!;
-    const done = () => { if (my !== token) return; img.src = s.src; img.classList.add("in"); };
+    const done = () => {
+      if (my !== token) return;
+      img.src = s.src;
+      img.classList.add("in");
+      frame.removeAttribute("data-loading");
+    };
     const failed = () => {
-      if (my === token) $("rv-error").textContent = "Full-size photo unavailable.";
+      if (my === token) {
+        frame.removeAttribute("data-loading");
+        $("rv-error").textContent = "Full-size photo unavailable.";
+      }
       if (warmed.get(index) === full) warmed.delete(index);
     };
     if (full.complete && full.naturalWidth) done();

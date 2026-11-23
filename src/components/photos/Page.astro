@@ -1,4 +1,5 @@
 ---
+import PhotoLoader from "./PhotoLoader.astro";
 import Viewer from "@/components/photos/Viewer.astro";
 import Posthog from "@/components/posthog.astro";
 import Bits from "@/components/photos/Bits.astro";
@@ -134,6 +135,7 @@ const ig = `https://www.instagram.com/${contact.instagram}/`, tw = `https://x.co
   <head>
     <meta charset="UTF-8" />
     <Posthog />
+    <noscript><style is:inline>.photo-loader{display:none}</style></noscript>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content={paper} />
     <title>Oscar — photo + video for startups and tech, London</title>
@@ -248,6 +250,7 @@ const ig = `https://www.instagram.com/${contact.instagram}/`, tw = `https://x.co
       /* first load: a photo stays hidden on the ground colour until it has downloaded, then pixels in (the hover
          dither at 1/4 → 1/2 → 3/4 → full). Photos already in the cache when the script runs just appear. */
       .js .ph img:not(.ld){visibility:hidden}
+      .js .ph.me:has(img:not(.ld)) :is(.me-tag,.me-arrow){visibility:hidden}
       .ph img.ld.px{animation:px-in .32s step-end;-webkit-mask-size:calc(var(--r,60px) * 16 / 7) calc(var(--r,60px) * 16 / 7);mask-size:calc(var(--r,60px) * 16 / 7) calc(var(--r,60px) * 16 / 7)}
       @media (prefers-reduced-motion:reduce){.ph img.ld.px{animation:none}}
       /* handwritten name + arrow onto the face; the face sits ~70% across, ~30-40% down in both the phone and desktop crops */
@@ -380,12 +383,14 @@ const ig = `https://www.instagram.com/${contact.instagram}/`, tw = `https://x.co
           <p class="c mono lede dk" style="--ad:8/13/span 2/span 4">Mostly events, plus product shoots, founder portraits, launch videos and other bits.</p>
           {heroPhoto ? (
             <div class="ph me" style="--am:10/1/span 4/span 6;--ad:2/13/span 6/span 4">
+              <PhotoLoader />
               <img src={heroPhoto.src} alt="Oscar Falemara holding a camera up to his eye" width={heroPhoto.width} height={heroPhoto.height} style={`object-position:${heroPhoto.focus}`} decoding="async" fetchpriority="high" />
               <span class="me-tag" aria-hidden="true">oscarama</span>
               <svg class="me-arrow" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M83 13 C 88 19, 82 25, 71 28 M71 28 l4.5 -0.6 M71 28 l1.6 -3.6" /></svg>
             </div>
           ) : lead && (
             <a class="ph" href={lead.src} data-shot={shotIndex.get(lead.id)} aria-label={`open photo${lead.caption ? `: ${lead.caption}` : ""}`} style="--am:10/1/span 4/span 6;--ad:2/13/span 6/span 4">
+              <PhotoLoader />
               <img src={lead.src} alt={lead.caption} width={lead.width} height={lead.height} decoding="async" fetchpriority="high" />
               {shotLabel(lead) && <span class="cp">{shotLabel(lead)}</span>}
             </a>
@@ -409,6 +414,7 @@ const ig = `https://www.instagram.com/${contact.instagram}/`, tw = `https://x.co
           <div class="vl" aria-hidden="true">{L.map((i) => <i style={`--i:${i}`} />)}</div>
           {picks.map((s, i) => (
             <a class="ph" href={s.src} data-shot={shotIndex.get(s.id)} aria-label={shotLabel(s) || `Open photo ${i + 1}`} style={`--am:${area(pm.out[i])};--ad:${area(pd.out[i])}`}>
+              <PhotoLoader />
               <img src={s.thumb} srcset={s.thumb === s.src ? undefined : `${s.thumb} ${s.thumbWidth}w, ${s.src} ${s.srcWidth}w`} sizes={`(min-width:900px) ${(pd.out[i].w * 6.2).toFixed(0)}vw, ${(pm.out[i].w * 16).toFixed(0)}vw`} alt="" width={s.width} height={s.height} loading="lazy" decoding="async" />
               {shotLabel(s) && <span class="cp">{shotLabel(s)}</span>}
             </a>
@@ -519,10 +525,13 @@ const ig = `https://www.instagram.com/${contact.instagram}/`, tw = `https://x.co
 
       // ── photos pixel in once downloaded (see .ph img.ld) ──
       document.querySelectorAll<HTMLImageElement>(".ph img").forEach((img) => {
-        if (img.complete) { img.classList.add("ld"); return; }
-        const show = () => img.classList.add("ld", "px");
-        img.addEventListener("load", show, { once: true });
-        img.addEventListener("error", show, { once: true });
+        const update = () => {
+          img.classList.toggle("ld", img.naturalWidth > 0);
+          img.classList.toggle("failed", img.naturalWidth === 0);
+        };
+        img.addEventListener("load", () => { update(); img.classList.add("px"); });
+        img.addEventListener("error", update);
+        if (img.complete) update();
       });
 
       // ── snap: text blocks grow in whole rows ──

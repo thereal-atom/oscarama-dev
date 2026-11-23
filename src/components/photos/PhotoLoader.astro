@@ -1,0 +1,70 @@
+---
+import Bits from "./Bits.astro";
+import { icons } from "./bits";
+---
+
+<span class="photo-loader" aria-hidden="true">
+  <span class="camera-track">
+    <Bits rows={icons.camera} />
+    <span class="film-perforations"></span>
+  </span>
+  <span class="loading-label">Loading photo</span>
+  <span class="error-label">Photo unavailable</span>
+</span>
+
+<style is:global>
+  .photo-loader {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    pointer-events: none;
+    color: var(--rv-fg, var(--ink));
+    font: 500 11px/1.35 var(--mono);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    --p: clamp(3px, .5vw, 5px);
+  }
+  .camera-track {
+    display: grid;
+    justify-items: center;
+    gap: var(--p);
+    --travel: calc(4 * var(--p));
+  }
+  .camera-track .bm { shape-rendering: crispEdges; }
+  .film-perforations {
+    width: calc(10 * var(--p));
+    height: var(--p);
+    background: repeating-linear-gradient(to right, currentColor 0 var(--p), transparent var(--p) calc(2 * var(--p)));
+    background-position: calc(.5 * var(--p)) 0;
+    position: relative;
+  }
+  .film-perforations::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    width: calc(2 * var(--p));
+    margin-inline: auto;
+    background: var(--blue);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .camera-track .bm,
+    .film-perforations::after { animation: advance-frame .85s steps(4, end) infinite alternate; }
+    .camera-track .bm { --lift: calc(-2 * var(--p)); }
+  }
+  @keyframes advance-frame {
+    from { transform: translateX(calc(-1 * var(--travel))); }
+    50% { transform: translateY(var(--lift, 0px)); }
+    to { transform: translateX(var(--travel)); }
+  }
+  .photo-loader .error-label,
+  .ph:has(img.ld) .photo-loader,
+  .ph:has(img.failed) .loading-label,
+  .rv-frame:not([data-loading]) .photo-loader { display: none; }
+  .ph:has(img.failed) .error-label { display: inline; }
+  .ph:has(img.failed) .camera-track .bm { animation: none; }
+  .ph:has(img.failed) .film-perforations { display: none; }
+</style>
