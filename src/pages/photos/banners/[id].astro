@@ -51,7 +51,7 @@ const m = s.kind === "avatar" ? s.w / 8 : id === "youtube" ? sh / 6 : s.h / 8;
 const dzH = s.kind === "avatar" ? 0 : (s.dz ?? 3) * (m / 2);
 const bottom = Math.min(sy + sh, s.h - dzH - m / 2);
 const b = s.kind === "avatar" ? burstO : burstWord;
-const cell = s.kind === "avatar" ? Math.floor((s.w * 0.5) / b.w) : Math.floor(Math.min((sw * 0.92) / b.w, (bottom - sy) / (b.h + ({ a: 10, b: 8, c: 12, d: 8 } as const)[v])));
+const cell = s.kind === "avatar" ? Math.floor((s.w * 0.5) / b.w) : Math.floor(Math.min((sw * 0.92) / b.w, (bottom - sy) / (b.h + (id === "linkedin" && (v === "a" || v === "b") ? 12 : ({ a: 10, b: 8, c: 12, d: 8 } as const)[v]))));
 const ww = cell * b.w, wh = cell * b.h;
 // bottom dissolve, the F2 footer, in module-sized cells
 const dzCols = Math.ceil(s.w / (m / 2)), dzRows = s.kind === "avatar" ? 0 : s.dz ?? 3;
