@@ -263,6 +263,10 @@ const names: Array<{ group: string; items: Array<{ n: string; d: string; px?: bo
       .social figure.wide{grid-column:1/-1}
       .social img{display:block;width:100%;height:auto;outline:1px solid var(--line)}
       .social figure.sq img{max-width:320px;border-radius:50%}
+      .dlr{display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px 14px;border-top:1px solid var(--line)}
+      .dlr button{cursor:pointer;border:1px solid var(--acc0);background:transparent;color:var(--ink);padding:5px 8px;font:500 10.5px/1 "Geist Mono",monospace;text-transform:uppercase;letter-spacing:.04em}
+      .dlr button:hover{background:var(--acc0);color:var(--paper)}
+      .dlr button[disabled]{opacity:.5;cursor:wait}
       .social .vh{grid-column:1/-1;background:var(--paper);padding:22px 14px 4px}
       .social .vh h2{margin:0;display:flex;gap:10px;align-items:baseline;font:500 13px/1.2 "Geist Mono",monospace;text-transform:uppercase;letter-spacing:.04em}
       .social .vh h2 .n{font:400 18px/1 "Geist Pixel","Geist Mono",monospace;color:var(--acc0)}
@@ -389,5 +393,59 @@ const names: Array<{ group: string; items: Array<{ n: string; d: string; px?: bo
       </main>
     </div>
     <Switcher />
-  </body>
+    <script>
+    // Download buttons for every logo card: the full lockup (on the page ground, or transparent) and the
+    // compact mark on the accent. Rendered from the live DOM, so fonts and colours match what's on screen.
+    import { toCanvas } from "html-to-image";
+    const slug = (t: string) => t.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    // SVG paint that comes from the stylesheet (e.g. the accent echoes) doesn't survive the clone, so pin it inline first
+    function pinSvgPaint(node: HTMLElement) {
+      const undo: Array<() => void> = [];
+      node.querySelectorAll<SVGElement>("svg *").forEach((el) => {
+        const cs = getComputedStyle(el), prev = el.getAttribute("style");
+        el.style.fill = cs.fill; el.style.stroke = cs.stroke; el.style.fillOpacity = cs.fillOpacity; el.style.opacity = cs.opacity;
+        undo.push(() => (prev === null ? el.removeAttribute("style") : el.setAttribute("style", prev)));
+      });
+      return () => undo.forEach((u) => u());
+    }
+    async function save(node: HTMLElement, name: string, width: number, opts: { bg?: string; pad?: number } = {}) {
+      await document.fonts.ready;
+      const r = node.getBoundingClientRect();
+      const pad = opts.pad ?? 0;
+      const inner = width / (1 + pad * 2);
+      const restore = pinSvgPaint(node);
+      let c: HTMLCanvasElement;
+      try { c = await toCanvas(node, { pixelRatio: inner / r.width, style: { margin: "0" } }); } finally { restore(); }
+      const px = Math.round(c.width * pad), out = document.createElement("canvas");
+      out.width = c.width + px * 2; out.height = c.height + px * 2;
+      const g = out.getContext("2d")!;
+      if (opts.bg) { g.fillStyle = opts.bg; g.fillRect(0, 0, out.width, out.height); }
+      g.drawImage(c, px, px);
+      const a = document.createElement("a");
+      a.href = out.toDataURL("image/png"); a.download = `${name}.png`; a.click();
+    }
+    document.querySelectorAll<HTMLElement>("section.card").forEach((card) => {
+      const name = "oscar-shoots-" + slug(card.getAttribute("aria-label") || "logo");
+      const stage = card.querySelector<HTMLElement>(".stage");
+      const lock = stage?.firstElementChild as HTMLElement | null;
+      const mark = card.querySelector<HTMLElement>(".sw.on-a");
+      if (!stage || !lock) return;
+      const ground = getComputedStyle(card).backgroundColor;
+      const btns: Array<[string, () => Promise<void>]> = [
+        ["Lockup PNG", () => save(lock, name, 2400, { bg: ground, pad: 0.08 })],
+        ["Lockup, transparent", () => save(lock, `${name}-transparent`, 2400, { pad: 0.08 })],
+      ];
+      if (mark) btns.push(["Mark PNG", () => save(mark, `${name}-mark`, 1024, { bg: getComputedStyle(mark).backgroundColor })]);
+      const row = document.createElement("div");
+      row.className = "dlr";
+      for (const [label, fn] of btns) {
+        const b = document.createElement("button");
+        b.type = "button"; b.textContent = label;
+        b.onclick = async () => { b.disabled = true; try { await fn(); } catch (e) { console.error(e); b.textContent = "Failed"; } b.disabled = false; };
+        row.append(b);
+      }
+      card.append(row);
+    });
+  </script>
+</body>
 </html>
