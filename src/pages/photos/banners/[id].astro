@@ -17,10 +17,19 @@ const specs: Record<string, Spec> = {
   "avatar-dark": { w: 800, h: 800, safe: [0, 0, 800, 800], align: "center", kind: "avatar", bg: "dark" },
   "avatar-orange": { w: 800, h: 800, safe: [0, 0, 800, 800], align: "center", kind: "avatar", bg: "accent" },
 };
+// banner variants, from busiest to calmest:
+// a: wordmark / tagline + London / divider / "shot for" + logos with names
+// b: no divider, tagline and London on one line
+// c: like b, logos without names or label
+// d: two tiers: wordmark, then one line with "photo + video · London" on the left and the logos on the right
+type Variant = "a" | "b" | "c" | "d";
 export function getStaticPaths() {
-  return ["x", "linkedin", "youtube", "avatar-dark", "avatar-orange"].map((id) => ({ params: { id } }));
+  const banners = ["x", "linkedin", "youtube"], variants = ["a", "b", "c", "d"];
+  return [...banners.flatMap((b) => variants.map((v) => `${b}-${v}`)), "avatar-dark", "avatar-orange"].map((id) => ({ params: { id } }));
 }
-const { id } = Astro.params as { id: string };
+const { id: full } = Astro.params as { id: string };
+const vm = full.match(/^(x|linkedin|youtube)-([a-d])$/);
+const id = vm ? vm[1] : full, v = (vm ? vm[2] : "a") as Variant;
 const s = specs[id];
 const ACC = "#FF3B1F", INK = "#111111", PAPER = "#F3F1EA";
 const accentBg = s.bg === "accent";
@@ -40,7 +49,7 @@ const m = s.kind === "avatar" ? s.w / 8 : id === "youtube" ? sh / 6 : s.h / 8;
 const dzH = s.kind === "avatar" ? 0 : 3 * (m / 2);
 const bottom = Math.min(sy + sh, s.h - dzH - m / 2);
 const b = s.kind === "avatar" ? burstO : burstWord;
-const cell = s.kind === "avatar" ? Math.floor((s.w * 0.5) / b.w) : Math.floor(Math.min((sw * 0.92) / b.w, (bottom - sy) / (b.h + 15)));
+const cell = s.kind === "avatar" ? Math.floor((s.w * 0.5) / b.w) : Math.floor(Math.min((sw * 0.92) / b.w, (bottom - sy) / (b.h + ({ a: 15, b: 12, c: 12, d: 8 } as const)[v])));
 const ww = cell * b.w, wh = cell * b.h;
 // bottom dissolve, the F2 footer, in module-sized cells
 const dzCols = Math.ceil(s.w / (m / 2)), dzRows = s.kind === "avatar" ? 0 : 3;
@@ -51,7 +60,7 @@ const dzPath = dz.map((row, y) => [...row].map((c, x) => (c === "#" ? `M${x} ${y
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>{id}</title>
+    <title>{full}</title>
     <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@500&display=block" rel="stylesheet" />
     <style is:inline>
       html,body{margin:0;padding:0}
@@ -84,15 +93,37 @@ const dzPath = dz.map((row, y) => [...row].map((c, x) => (c === "#" ? `M${x} ${y
           {b.echoes.map((e) => <path d={e.d} fill={echo} fill-opacity={e.o} />)}
           <path d={b.ink} fill={fg} />
         </svg>
-        {s.kind === "banner" && (
+        {s.kind === "banner" && v === "a" && (
           <p class="tag" style={`--ts:${Math.round(cell * 1.9)}px;margin:${Math.round(cell * 3.2)}px 0 0;width:${ww}px;justify-content:space-between`}>
             <span>Photo + video for startups &amp; tech</span><b style={`color:${ACC}`}>London</b>
           </p>
         )}
-        {s.kind === "banner" && (
+        {s.kind === "banner" && (v === "b" || v === "c") && (
+          <p class="tag" style={`--ts:${Math.round(cell * 1.9)}px;margin:${Math.round(cell * 3.2)}px 0 0;width:${ww}px;justify-content:space-between`}>
+            <span>Photo + video for startups &amp; tech <span style={`color:${ACC}`}>·</span> <b style={`color:${ACC}`}>London</b></span>
+          </p>
+        )}
+        {s.kind === "banner" && v === "a" && (
           <div class="shot" style={`--ts:${Math.round(cell * 1.5)}px;--lh:${Math.round(cell * 2.4)}px;margin-top:${Math.round(cell * 2.6)}px;width:${ww}px;gap:${Math.round(cell * 1.6)}px;justify-content:space-between;padding-top:${Math.round(cell * 2.6)}px;border-top:1px solid ${ACC}55`}>
             <span class="lbl">Shot for</span>
             {worked.map((c) => <span class="co"><i style={`--u:url(${c.src});width:${Math.round(cell * 2.4 * c.ar)}px`} /><span>{c.name}</span></span>)}
+          </div>
+        )}
+        {s.kind === "banner" && v === "b" && (
+          <div class="shot" style={`--ts:${Math.round(cell * 1.5)}px;--lh:${Math.round(cell * 2.4)}px;margin-top:${Math.round(cell * 3.6)}px;width:${ww}px;gap:${Math.round(cell * 1.6)}px;justify-content:space-between`}>
+            <span class="lbl">Shot for</span>
+            {worked.map((c) => <span class="co"><i style={`--u:url(${c.src});width:${Math.round(cell * 2.4 * c.ar)}px`} /><span>{c.name}</span></span>)}
+          </div>
+        )}
+        {s.kind === "banner" && v === "c" && (
+          <div class="shot" style={`--lh:${Math.round(cell * 2.6)}px;margin-top:${Math.round(cell * 3.6)}px;width:${ww}px;gap:${Math.round(cell * 4)}px;justify-content:flex-start;opacity:.85`}>
+            {worked.map((c) => <i style={`--u:url(${c.src});width:${Math.round(cell * 2.6 * c.ar)}px`} />)}
+          </div>
+        )}
+        {s.kind === "banner" && v === "d" && (
+          <div class="shot" style={`--ts:${Math.round(cell * 1.9)}px;--lh:${Math.round(cell * 2.4)}px;margin-top:${Math.round(cell * 3.4)}px;width:${ww}px;justify-content:space-between`}>
+            <span class="tag" style="gap:.6em"><span>Photo + video</span><span style={`color:${ACC}`}>·</span><b style={`color:${ACC}`}>London</b></span>
+            <span style={`display:flex;align-items:center;gap:${Math.round(cell * 2.8)}px;opacity:.85`}>{worked.map((c) => <i style={`--u:url(${c.src});width:${Math.round(cell * 2.4 * c.ar)}px`} />)}</span>
           </div>
         )}
       </div>

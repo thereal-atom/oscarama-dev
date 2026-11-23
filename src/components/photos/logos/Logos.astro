@@ -6,11 +6,6 @@ import Switcher from "@/components/photos/Switcher.astro";
 import Mark from "./Mark.astro";
 import ShootsMark from "./ShootsMark.astro";
 import IdeaMark from "./IdeaMark.astro";
-import xPng from "../../../../design/social/oscar-shoots-x.png?url";
-import liPng from "../../../../design/social/oscar-shoots-linkedin.png?url";
-import ytPng from "../../../../design/social/oscar-shoots-youtube.png?url";
-import avDarkPng from "../../../../design/social/oscar-shoots-avatar-dark.png?url";
-import avOrangePng from "../../../../design/social/oscar-shoots-avatar-orange.png?url";
 import type { MarkId, ShootsId, IdeaId } from "./marks";
 import { schemes, alpha, onAccent, type SchemeId } from "@/components/photos/schemes";
 
@@ -35,12 +30,22 @@ const concepts: Array<{ id: MarkId; t: string; d: string }> = [
   { id: "app", t: "App tile", d: "o. on an accent square. Built for avatars and favicons first." },
 ];
 // social banners for the burst-in-pixels mark: design/social/*.png, exported from /photos/banners/<id>
-const social = [
-  { t: "X header", size: "1500×500", src: xPng, cls: "wide" },
-  { t: "LinkedIn banner", size: "1584×396", src: liPng, cls: "wide" },
-  { t: "YouTube banner", size: "2560×1440", src: ytPng, cls: "wide" },
-  { t: "Avatar, dark", size: "800×800", src: avDarkPng, cls: "sq" },
-  { t: "Avatar, orange", size: "800×800", src: avOrangePng, cls: "sq" },
+const pngs = import.meta.glob<string>("../../../../design/social/*.png", { query: "?url", import: "default", eager: true });
+const png = (name: string) => pngs[`../../../../design/social/oscar-shoots-${name}.png`];
+const platforms = [
+  { id: "x", t: "X header", size: "1500×500" },
+  { id: "linkedin", t: "LinkedIn banner", size: "1584×396" },
+  { id: "youtube", t: "YouTube banner", size: "2560×1440" },
+];
+const bannerVariants = [
+  { v: "a", t: "As before", d: "Wordmark, tagline with London, a divider, then the clients with names." },
+  { v: "b", t: "No divider", d: "Tagline and London on one line, clients with names. Three tiers." },
+  { v: "c", t: "Marks only", d: "Like B, but the client marks on their own: no label, no names." },
+  { v: "d", t: "Two tiers", d: "Wordmark, then one line: photo + video · London on the left, client marks on the right. Biggest wordmark." },
+];
+const avatars = [
+  { name: "avatar-dark", t: "Avatar, dark", size: "800×800" },
+  { name: "avatar-orange", t: "Avatar, orange", size: "800×800" },
 ];
 const pad = (n: number) => String(n).padStart(2, "0");
 
@@ -258,6 +263,13 @@ const names: Array<{ group: string; items: Array<{ n: string; d: string; px?: bo
       .social figure.wide{grid-column:1/-1}
       .social img{display:block;width:100%;height:auto;outline:1px solid var(--line)}
       .social figure.sq img{max-width:320px;border-radius:50%}
+      .social .vh{grid-column:1/-1;background:var(--paper);padding:22px 14px 4px}
+      .social .vh h2{margin:0;display:flex;gap:10px;align-items:baseline;font:500 13px/1.2 "Geist Mono",monospace;text-transform:uppercase;letter-spacing:.04em}
+      .social .vh h2 .n{font:400 18px/1 "Geist Pixel","Geist Mono",monospace;color:var(--acc0)}
+      .social .vh p{margin:6px 0 0;color:var(--sub);font-size:12px}
+      .social figcaption{align-items:center}
+      .social figcaption .dl{margin-left:auto;margin-right:12px;color:var(--paper);background:var(--acc0);text-decoration:none;padding:5px 9px;font:500 11px/1 "Geist Mono",monospace;text-transform:uppercase;letter-spacing:.04em}
+      .social figcaption .dl:hover{background:var(--ink)}
       .social figcaption{display:flex;justify-content:space-between;font:500 11px/1.2 "Geist Mono",monospace;text-transform:uppercase;letter-spacing:.04em}
       .social figcaption b{font-weight:500;color:var(--sub)}
     </style>
@@ -287,15 +299,27 @@ const names: Array<{ group: string; items: Array<{ n: string; d: string; px?: bo
         ))}
       </main>
       <header class="h2">
-        <p class="lab mono"><span>Socials — Burst, in pixels</span><b>{social.length} files</b></p>
+        <p class="lab mono"><span>Socials — Burst, in pixels</span><b>{bannerVariants.length} layouts · {platforms.length * bannerVariants.length + avatars.length} files</b></p>
         <h1>Socials</h1>
-        <p>Banners and profile pictures for the burst-in-pixels mark. On X and LinkedIn the profile photo covers the bottom left, so everything sits on the right; on YouTube it stays inside the strip that shows on every screen. Avatars are shown cropped to a circle, the way every platform shows them.</p>
+        <p>Banners and profile pictures for the burst-in-pixels mark, in four layouts from busiest to calmest. Every file has a download button. On X and LinkedIn the profile photo covers the bottom left, so everything sits on the right; on YouTube it stays inside the strip that shows on every screen. Avatars are shown cropped to a circle, the way every platform shows them.</p>
       </header>
       <section class="social" aria-label="social banners">
-        {social.map((f) => (
-          <figure class={f.cls}>
-            <img src={f.src} alt={f.t} loading="lazy" />
-            <figcaption><span>{f.t}</span><b>{f.size}</b></figcaption>
+        {bannerVariants.map((bv) => (
+          <>
+            <div class="vh"><h2><span class="n">{bv.v.toUpperCase()}</span><span>{bv.t}</span></h2><p>{bv.d}</p></div>
+            {platforms.map((p) => (
+              <figure class="wide">
+                <img src={png(`${p.id}-${bv.v}`)} alt={`${p.t}, ${bv.t}`} loading="lazy" />
+                <figcaption><span>{p.t}</span><a class="dl" href={png(`${p.id}-${bv.v}`)} download={`oscar-shoots-${p.id}-${bv.v}.png`}>Download PNG</a><b>{p.size}</b></figcaption>
+              </figure>
+            ))}
+          </>
+        ))}
+        <div class="vh"><h2><span class="n">PFP</span><span>Profile pictures</span></h2><p>Same for every platform. Shown cropped to a circle; the download is the full square.</p></div>
+        {avatars.map((f) => (
+          <figure class="sq">
+            <img src={png(f.name)} alt={f.t} loading="lazy" />
+            <figcaption><span>{f.t}</span><a class="dl" href={png(f.name)} download={`oscar-shoots-${f.name}.png`}>Download PNG</a><b>{f.size}</b></figcaption>
           </figure>
         ))}
       </section>
