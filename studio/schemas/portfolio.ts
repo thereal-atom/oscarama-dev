@@ -17,12 +17,21 @@ export const portfolio = defineType({
       name: "photos",
       title: "Photos",
       type: "array",
-      description: "Drag files in to add. Drag to reorder: this is the order on the site.",
+      description: "Open a photo to mark it for selects. Drag to set the order on the site.",
       options: { layout: "grid" },
       of: [
         defineArrayMember({
           type: "image",
-          fields: [defineField({ name: "caption", title: "Caption (optional)", type: "string" })],
+          fields: [
+            defineField({ name: "caption", title: "Caption (optional)", type: "string" }),
+            defineField({
+              name: "showInSelects",
+              title: "Show in selects",
+              type: "boolean",
+              initialValue: false,
+              description: "Include this photo in the selects grid and viewer.",
+            }),
+          ],
         }),
       ],
     }),

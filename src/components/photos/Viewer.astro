@@ -5,11 +5,11 @@
 //   the full-res frame fades in over it once decoded (and is pre-warmed on hover / touchstart)
 // - mechanical shutter sound + a ~70ms mirror blackout
 // Theme with the props (they become CSS custom properties) or override .rv* in the page.
-import { viewerData } from "./derive";
+import type { loadSelects } from "./derive";
 import { schemes } from "@/components/photos/schemes";
-interface Props { bg?: string; fg?: string; accent?: string; onAccent?: string; mono?: string; display?: string; radius?: string; bookHref?: string; bookLabel?: string }
+interface Props { viewerData: Awaited<ReturnType<typeof loadSelects>>["viewerData"]; bg?: string; fg?: string; accent?: string; onAccent?: string; mono?: string; display?: string; radius?: string; bookHref?: string; bookLabel?: string }
 const D = schemes["orange-light"];
-const { bg = D.ink, fg = D.paper, accent = D.accent, onAccent = D.ink, mono = "ui-monospace, monospace", display = "inherit", radius = "0px", bookHref = "#book", bookLabel = "book a shoot like this →" } = Astro.props;
+const { viewerData, bg = D.ink, fg = D.paper, accent = D.accent, onAccent = D.ink, mono = "ui-monospace, monospace", display = "inherit", radius = "0px", bookHref = "#book", bookLabel = "book a shoot like this →" } = Astro.props;
 ---
 <div class="rv" id="rv" hidden role="dialog" aria-modal="true" aria-label="photo viewer"
   style={`--rv-bg:${bg};--rv-fg:${fg};--rv-accent:${accent};--rv-on:${onAccent};--rv-mono:${mono};--rv-display:${display};--rv-radius:${radius}`}>

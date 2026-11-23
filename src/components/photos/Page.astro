@@ -2,8 +2,8 @@
 import Viewer from "@/components/photos/Viewer.astro";
 import Bits from "@/components/photos/Bits.astro";
 import { icons, dissolve } from "@/components/photos/bits";
-import { events, contact, clients, heroPhoto } from "@/data/photos";
-import { mixed, shotIndex, shotLabel, hasRealPhotos } from "@/components/photos/derive";
+import { events, contact, clients, shotLabel } from "@/data/photos";
+import { loadSelects } from "@/components/photos/derive";
 import { schemes, alpha, onAccent, type SchemeId } from "@/components/photos/schemes";
 
 interface Props { scheme: SchemeId }
@@ -43,7 +43,8 @@ const testimonials: Array<{ text: string; by: string; role?: string }> = [];
 const showSaid = testimonials.length > 0;
 const sec = { said: "F", contact: showSaid ? "G" : "F", direct: showSaid ? "H" : "G" };
 
-const picks = mixed.slice(0, 24);
+const { heroPhoto, hasPortfolio, mixed, viewerData, shotIndex, openingRow } = await loadSelects();
+const picks = hasPortfolio ? mixed : mixed.slice(0, 24);
 type Size = [number, number];
 type Box = { c: number; r: number; w: number; h: number };
 
@@ -77,18 +78,20 @@ function pack(cols: number, pref: (i: number, portrait: boolean) => Size[]) {
 }
 // sizes tuned on the real set: 24 frames at roughly twice the area each fill about the space 49 small ones did
 const pm = pack(6, (i, p) => p ? [[3, 4], [2, 3]] : i % 3 === 0 ? [[6, 4], [3, 2]] : [[3, 2], [6, 4]]);
-const pd = pack(16, (i, p) => p
-  ? [[4, 6], [4, 5], [3, 4], [2, 3]]
-  : ([[[9, 6], [6, 4], [3, 2]], [[7, 5], [6, 4], [3, 2]], [[6, 4], [3, 2]], [[6, 4], [3, 2]]] as Size[][])[i % 4]);
+const pd = pack(16, (i, portrait) => {
+  if (i < openingRow.length) return portrait ? [[4, 6]] : [[8, 6]];
+  if (portrait) return [[4, 6], [4, 5], [3, 4], [2, 3]];
+  return ([[[9, 6], [6, 4], [3, 2]], [[7, 5], [6, 4], [3, 2]], [[6, 4], [3, 2]], [[6, 4], [3, 2]]] as Size[][])[i % 4];
+});
 const area = (b: Box) => `${b.r + 1}/${b.c + 1}/span ${b.h}/span ${b.w}`;
 const pad = (n: number) => String(n).padStart(2, "0");
 
-const lead = hasRealPhotos ? (mixed.find((s) => s.height > s.width) ?? mixed[0]) : { ...events[2].shots[4], event: events[2] }; // a portrait frame beside the headline
+const lead = hasPortfolio ? (mixed.find((s) => s.height > s.width) ?? mixed[0]) : { ...events[2].shots[4], event: events[2] }; // a portrait frame beside the headline
 const L = Array.from({ length: 17 }, (_, i) => i);
 
 const links = [
   { href: "#about", t: "About", d: "who's holding the camera" },
-  { href: "#work", t: "Work", d: "24 selects" },
+  { href: "#work", t: "Work", d: `${picks.length} select${picks.length === 1 ? "" : "s"}` },
   { href: "#get", t: "What I shoot", d: "events, products + more" },
   { href: "#contact", t: "Contact", d: "send a message" },
 ];
@@ -381,7 +384,7 @@ const ig = `https://www.instagram.com/${contact.instagram}/`, tw = `https://x.co
               <span class="me-tag" aria-hidden="true">oscarama</span>
               <svg class="me-arrow" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M83 13 C 88 19, 82 25, 71 28 M71 28 l4.5 -0.6 M71 28 l1.6 -3.6" /></svg>
             </div>
-          ) : (
+          ) : lead && (
             <a class="ph" href={lead.src} data-shot={shotIndex.get(lead.id)} aria-label={`open photo${lead.caption ? `: ${lead.caption}` : ""}`} style="--am:10/1/span 4/span 6;--ad:2/13/span 6/span 4">
               <img src={lead.src} alt={lead.caption} width={lead.width} height={lead.height} decoding="async" fetchpriority="high" />
               {shotLabel(lead) && <span class="cp">{shotLabel(lead)}</span>}
@@ -398,9 +401,9 @@ const ig = `https://www.instagram.com/${contact.instagram}/`, tw = `https://x.co
 
         <section class="g t-paper" id="work" data-sec="C" style="--cm:6;--cd:16">
           <div class="vl" aria-hidden="true">{L.map((i) => <i style={`--i:${i}`} />)}</div>
-          <p class="c lab mono" style="--am:1/1/span 1/span 6;--ad:1/1/span 1/span 16"><span>C — Selects</span><b>{picks.length} frames · tap any</b></p>
+          <p class="c lab mono" style="--am:1/1/span 1/span 6;--ad:1/1/span 1/span 16"><span>C — Selects</span><b>{picks.length} {picks.length === 1 ? "frame" : "frames"}{picks.length > 0 && " · tap any"}</b></p>
           <h2 class="cap" style="--am:2/1/span 1/span 6;--ad:2/1/span 2/span 12">Selects</h2>
-          <p class="c body2" data-snap style="--am:3/1/span var(--rs,2)/span 6;--ad:2/13/span 2/span 4"><span class="in">Mostly events — hackathons, demo nights, launches — plus the odd product shoot. Tap any frame to open it.</span></p>
+          <p class="c body2" data-snap style="--am:3/1/span var(--rs,2)/span 6;--ad:2/13/span 2/span 4"><span class="in">Mostly events — hackathons, demo nights, launches — plus the odd product shoot. {picks.length > 0 && "Tap any frame to open it."}</span></p>
         </section>
         <section class="g t-paper" data-sec="C" aria-label="selected photos" style="--cm:6;--cd:16">
           <div class="vl" aria-hidden="true">{L.map((i) => <i style={`--i:${i}`} />)}</div>
@@ -497,7 +500,7 @@ const ig = `https://www.instagram.com/${contact.instagram}/`, tw = `https://x.co
     </div>
     <a class="cta mono" id="cta" href="#contact">Contact →</a>
 
-    <Viewer bg={S.ink} fg={S.paper} accent={S.paper} onAccent={S.accent} bookHref="#contact" bookLabel="contact me about a shoot like this →" mono='"Geist Mono", ui-monospace, monospace' display='"Inter Tight", sans-serif' />
+    <Viewer viewerData={viewerData} bg={S.ink} fg={S.paper} accent={S.paper} onAccent={S.accent} bookHref="#contact" bookLabel="contact me about a shoot like this →" mono='"Geist Mono", ui-monospace, monospace' display='"Inter Tight", sans-serif' />
 
     <script define:vars={{ email: contact.email }}>window.__mail = email;</script>
     <script>
