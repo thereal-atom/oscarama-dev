@@ -1,0 +1,120 @@
+---
+import { getImage } from "astro:assets";
+import avatar from "@/assets/oscarama.png";
+import "./styles.css";
+
+interface Props {
+  title: string;
+  description: string;
+  path: string;
+  nav?: "play" | "events";
+}
+const { title, description, path, nav } = Astro.props;
+const av = await getImage({ src: avatar, width: 96 });
+const url = `https://oscarama.dev${path}`;
+const socials = [
+  { href: "https://github.com/thereal-atom", label: "github" },
+  { href: "https://linkedin.com/in/oscarfalemara", label: "linkedin" },
+  { href: "https://x.com/oscarfalll", label: "x" },
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#1b1525" />
+    <link rel="canonical" href={url} />
+    <link rel="icon" href="/favicon.ico" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={url} />
+    <meta property="og:image" content="https://oscarama.dev/og.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content="https://oscarama.dev/og.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Figtree:wght@400..900&display=swap"
+      rel="stylesheet"
+    />
+    <noscript>
+      <style>
+        .js-only {
+          display: none !important;
+        }
+        .nojs-only {
+          display: block !important;
+        }
+        .arena {
+          height: auto !important;
+          min-height: 0 !important;
+        }
+      </style>
+    </noscript>
+  </head>
+  <body>
+    <a class="sr" href="#everything">skip the game: just show me everything</a>
+    <header class="bar">
+      <a class="me" href="/v4/fable">
+        <img src={av.src} alt="" width="30" height="30" />
+        <span>oscar falemara</span>
+      </a>
+      <nav aria-label="site">
+        <a href="/v4/fable#play" aria-current={nav === "play" ? "page" : undefined}>play</a>
+        <a href="/v4/fable#everything">everything</a>
+        <a href="/v4/fable/events" aria-current={nav === "events" ? "page" : undefined}>events</a>
+      </nav>
+      <div class="soc">
+        {
+          socials.map((s) => (
+            <a href={s.href} target="_blank" rel="noopener noreferrer">
+              {s.label}
+            </a>
+          ))
+        }
+      </div>
+      <a class="hub" href="/v4" title="back to the redesign hub">v4</a>
+    </header>
+
+    <slot />
+
+    <footer class="foot">
+      <div class="wrap">
+        <p class="big">
+          plus one?<br />
+          <a href="https://luma.com/londonmaxxing-ai" target="_blank" rel="noopener noreferrer"
+            >come to an event ↗</a
+          >
+        </p>
+        <div class="links">
+          {
+            socials.map((s) => (
+              <a href={s.href} target="_blank" rel="noopener noreferrer">
+                {s.label} ↗
+              </a>
+            ))
+          }
+          <a href="https://luma.com/oscarama" target="_blank" rel="noopener noreferrer"
+            >my calendar ↗</a
+          >
+          <a href="/v4/fable/events">events</a>
+        </div>
+        <div class="fine">
+          <span>oscar falemara · london · dms are open</span>
+          <span>
+            <a href="/v4/fable#play">play again</a> · v4 / fable ·
+            <a href="/v4">all the redesigns</a> · <a href="/">the real site</a>
+          </span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

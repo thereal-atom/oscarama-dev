@@ -1,0 +1,163 @@
+---
+import { Image } from "astro:assets";
+import SceneHead from "./SceneHead.astro";
+import { links, sponsors, studios, logos } from "../content";
+
+const crew = [
+  ["producer", "oscar"],
+  ["director", "oscar"],
+  ["sponsorships", "oscar"],
+  ["logistics", "oscar"],
+  ["everything else", "also oscar"],
+];
+---
+
+<section
+  id="call-sheet"
+  class="scene callsheet"
+  data-scene
+  data-no="05"
+  data-title="the call sheet"
+>
+  <SceneHead
+    scene="05"
+    title="the call sheet"
+    dek="he's hosted or helped organise <strong>30+ events</strong> for <strong>2,000+ people</strong>. this is the one he produced entirely by himself."
+  />
+
+  <div class="cs">
+    <article class="sheet" aria-labelledby="cs-title" data-cut>
+      <header class="sheet__head">
+        <p>oscarama pictures</p>
+        <p class="sheet__kind">call sheet</p>
+        <p>day 1 of 1</p>
+      </header>
+
+      <div class="sheet__prod">
+        <div>
+          <p class="sheet__k">production</p>
+          <h3 id="cs-title" class="sheet__title">zero to agent: london</h3>
+          <p class="sheet__sub">
+            the london stop of <a href={links.z2aVercel} target="_blank" rel="noopener noreferrer"
+              >vercel's zero to agent</a
+            > global build week
+          </p>
+        </div>
+        <Image src={logos.vercel} alt="vercel" width={64} height={56} class="sheet__studio" />
+      </div>
+
+      <div class="sheet__grid">
+        <div><p class="sheet__k">date</p><p class="sheet__v">sat 2 may 2026</p></div>
+        <div><p class="sheet__k">doors</p><p class="sheet__v">10:00 &ndash; late</p></div>
+        <div class="sheet__wide">
+          <p class="sheet__k">location</p><p class="sheet__v">
+            halkin · 1-2 paris garden, southwark
+          </p>
+        </div>
+      </div>
+
+      <table class="sheet__table">
+        <caption class="sr">production numbers</caption>
+        <tbody>
+          <tr><th scope="row">cast</th><td>~100 builders</td></tr>
+          <tr><th scope="row">tracks</th><td>3</td></tr>
+          <tr><th scope="row">prizes</th><td>£5.8k cash &nbsp;+&nbsp; $1m+ in credits</td></tr>
+          <tr>
+            <th scope="row">sponsors</th>
+            <td class="sheet__sponsors">
+              {
+                sponsors.map((s) => (
+                  <a href={s.href} target="_blank" rel="noopener noreferrer">
+                    <Image src={s.logo} alt="" width={22} height={22} />
+                    {s.name}
+                  </a>
+                ))
+              }
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="sheet__crew">
+        <p class="sheet__k">crew</p>
+        <ul>
+          {
+            crew.map(([role, who]) => (
+              <li>
+                <span>{role}</span>
+                <i aria-hidden="true" />
+                <span>{who}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <footer class="sheet__foot">
+        <a class="btn btn--ink" href={links.z2aRecap}>read the full recap →</a>
+        <a
+          class="btn btn--ink-ghost"
+          href={links.z2aVideo}
+          target="_blank"
+          rel="noopener noreferrer">▶ watch the recap video ↗</a
+        >
+      </footer>
+
+      <p class="stamp" aria-label="status: that's a wrap">that's<br />a wrap</p>
+    </article>
+
+    <div class="cs__side">
+      <article class="junket" data-cut>
+        <p class="junket__k">press junket</p>
+        <h3 class="junket__title">kcl tech summit 2026</h3>
+        <p class="junket__meta">sat 31 oct 2026 · king's college london</p>
+        <p class="junket__panel">
+          panel: <em>&ldquo;how to break into london's tech scene&rdquo;</em>
+        </p>
+        <p class="junket__copy">
+          on community building as a full-time software engineer who's never been to uni.
+        </p>
+        <a class="junket__link" href={links.kcl} target="_blank" rel="noopener noreferrer"
+          >techsummit.kcltech.co.uk ↗</a
+        >
+      </article>
+
+      <article class="advance" data-cut>
+        <p class="junket__k">advance schedule</p>
+        <p class="advance__copy">the next shoot is always on luma.</p>
+        <a class="btn btn--sub" href={links.lumaOscar} target="_blank" rel="noopener noreferrer"
+          >luma.com/oscarama ↗</a
+        >
+        <a class="advance__link" href="/v4/opus/events">or browse all four series →</a>
+      </article>
+
+      <aside class="dc">
+        <b>director's commentary</b>
+        call sheets get printed on coloured paper so everyone knows which revision they're holding. this
+        one's goldenrod.
+      </aside>
+    </div>
+  </div>
+
+  <div class="idents">
+    <p class="idents__k">in association with</p>
+    <ul class="idents__list">
+      {
+        studios.map((s) => (
+          <li>
+            <a
+              href={s.href}
+              {...(s.href.startsWith("http")
+                ? { target: "_blank", rel: "noopener noreferrer" }
+                : {})}
+            >
+              <Image src={s.logo} alt="" width={36} height={36} class="idents__logo" />
+              <span>{s.name}</span>
+            </a>
+          </li>
+        ))
+      }
+      <li class="idents__more">and more</li>
+    </ul>
+  </div>
+</section>

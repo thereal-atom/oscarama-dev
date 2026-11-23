@@ -1,0 +1,215 @@
+---
+import "./styles/base.css";
+import { scenes, socials } from "./content";
+
+interface Props {
+  title: string;
+  description: string;
+  path: string;
+  /** label shown centre-top before any scene is tracked */
+  label?: string;
+  /** home gets the chapter strip; other pages get a simple bar */
+  home?: boolean;
+}
+
+const { title, description, path, label = "", home = false } = Astro.props;
+const ogUrl = `https://oscarama.dev${path}`;
+const homeHref = "/v4/opus";
+---
+
+<!doctype html>
+<html lang="en" data-sound="off" data-commentary="off">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#000000" />
+    <script is:inline>
+      document.documentElement.classList.add("js");
+    </script>
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={ogUrl} />
+    <meta property="og:image" content="https://oscarama.dev/og.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content="https://oscarama.dev/og.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Permanent+Marker&family=Sofia+Sans+Extra+Condensed:ital,wght@0,300..900;1,300..900&family=Sofia+Sans:ital,wght@0,300..800;1,300..800&display=swap"
+    />
+  </head>
+  <body class:list={["v4o", home && "is-home"]}>
+    <a class="skip" href="#main">skip to content</a>
+
+    <!-- the mattes: two black plates that open into the letterbox on load -->
+    <div class="matte matte--top" aria-hidden="true"></div>
+    <div class="matte matte--bottom" aria-hidden="true"></div>
+
+    <header class="bar bar--top">
+      <a class="brand" href={homeHref} aria-label="oscarama pictures, home">
+        <span class="brand__word">oscarama</span>
+        <span class="brand__sub">pictures</span>
+      </a>
+      <p class="bar__scene" aria-live="polite">
+        <span data-scene-no>{home ? "sc.01" : ""}</span>
+        <span class="bar__dash" aria-hidden="true">—</span>
+        <span data-scene-title>{home ? "cold open" : label}</span>
+      </p>
+      <nav class="bar__nav" aria-label="site">
+        <a class="bar__link hide-sm" href="/v4/opus/events">now showing</a>
+        <button
+          class="bar__btn hide-sm"
+          type="button"
+          data-toggle="commentary"
+          aria-pressed="false"
+        >
+          <span class="dot" aria-hidden="true"></span>commentary
+        </button>
+        <button
+          class="bar__btn"
+          type="button"
+          data-toggle="sound"
+          aria-pressed="false"
+          aria-label="sound"
+        >
+          <span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+          <span class="bar__btn-label">sound</span>
+        </button>
+        <button
+          class="bar__btn bar__btn--scenes"
+          type="button"
+          data-open-scenes
+          aria-haspopup="dialog"
+        >
+          scenes
+        </button>
+      </nav>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="bar bar--bottom">
+      <p class="tc" aria-label="timecode">
+        <span class="tc__rec" aria-hidden="true"></span>
+        <span class="tc__label">tc</span>
+        <span data-timecode>00:00:00:00</span>
+      </p>
+      {
+        home ? (
+          <nav class="strip" aria-label="chapters">
+            <span class="strip__track" aria-hidden="true">
+              <span class="strip__fill" data-strip-fill />
+            </span>
+            {scenes.map((s) => (
+              <a
+                class="strip__mark"
+                href={`#${s.id}`}
+                data-mark={s.id}
+                title={`sc.${s.no} ${s.title}`}
+              >
+                <span class="sr">
+                  scene {s.no}: {s.title}
+                </span>
+              </a>
+            ))}
+          </nav>
+        ) : (
+          <p class="strip strip--text">
+            <a href={homeHref}>&larr; back to the feature</a>
+          </p>
+        )
+      }
+      <p class="bar__meta">
+        <span class="hide-sm">24 fps · 2.39:1 · </span><a href="/v4" class="hub">v4 / opus</a>
+      </p>
+    </footer>
+
+    <!-- scene selection: the dvd menu, minus the dvd -->
+    <dialog class="menu" data-scenes aria-labelledby="menu-title">
+      <div class="menu__inner">
+        <header class="menu__head">
+          <p class="menu__kicker">oscarama · main menu</p>
+          <h2 id="menu-title" class="menu__title">scene selection</h2>
+          <button
+            class="menu__close"
+            type="button"
+            data-close-scenes
+            aria-label="close scene selection"
+          >
+            close <kbd>esc</kbd>
+          </button>
+        </header>
+        <ol class="menu__grid">
+          {
+            scenes.map((s) => (
+              <li>
+                <a class="chap" href={`${home ? "" : homeHref}#${s.id}`} data-close-scenes-link>
+                  <span class={`chap__thumb th-${s.id}`} aria-hidden="true">
+                    <i />
+                    <i />
+                    <i />
+                  </span>
+                  <span class="chap__no">sc.{s.no}</span>
+                  <span class="chap__title">{s.title}</span>
+                  <span class="chap__gist">{s.gist}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ol>
+        <div class="menu__foot">
+          <div>
+            <p class="menu__h">special features</p>
+            <ul class="menu__list">
+              <li><a href="/v4/opus/events">now showing: the event series</a></li>
+              <li><a href="/events/zero-to-agent">zero to agent: the full recap</a></li>
+              <li><a href="/">the original cut (v1)</a></li>
+              <li><a href="/v4">all the redesigns (v4 hub)</a></li>
+            </ul>
+          </div>
+          <div>
+            <p class="menu__h">set up</p>
+            <div class="menu__setup">
+              <button type="button" class="opt" data-toggle="sound" aria-pressed="false">
+                <span>sound</span><b data-on>on</b><b data-off>off</b>
+              </button>
+              <button type="button" class="opt" data-toggle="commentary" aria-pressed="false">
+                <span>director's commentary</span><b data-on>on</b><b data-off>off</b>
+              </button>
+            </div>
+          </div>
+          <div>
+            <p class="menu__h">distributed by</p>
+            <ul class="menu__list menu__list--row">
+              {
+                socials.map((s) => (
+                  <li>
+                    <a href={s.href} target="_blank" rel="noopener noreferrer">
+                      {s.label} ↗
+                    </a>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+        </div>
+      </div>
+    </dialog>
+
+    <div class="grain" aria-hidden="true"></div>
+
+    <script>
+      import "./scripts/chrome";
+    </script>
+  </body>
+</html>

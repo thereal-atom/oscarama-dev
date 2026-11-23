@@ -1,0 +1,73 @@
+---
+import { Image } from "astro:assets";
+import Layout from "@/v4/fable/Layout.astro";
+import { eventSeriesList } from "@/data/eventSeries";
+
+const blobs = ["", "v", "t", "r", "k"];
+---
+
+<Layout
+  title="events | oscar falemara"
+  description="bouldering, dinners, coworking, hackathons, demo nights. the events oscar falemara runs in london. pick a door."
+  path="/v4/fable/events"
+  nav="events"
+>
+  <main>
+    <section class="lobby" id="lobby">
+      <canvas aria-hidden="true" class="js-only"></canvas>
+      <div class="wrap">
+        <span class="eyebrow" style="background:var(--paper)">the lobby</span>
+        <h1>pick a door.</h1>
+        <p class="lead">
+          bouldering, dinners, coworking, hackathons. i like to run events in london. point at one
+          and see who follows, then sign up :)
+        </p>
+      </div>
+    </section>
+
+    <section class="wrap lobby-doors" aria-label="event series">
+      <div class="series">
+        {
+          eventSeriesList.map((s, i) => (
+            <a href={`/v4/fable/events/${s.slug}`} data-lobby-door>
+              <Image src={s.logo} alt="" width={184} height={184} />
+              <h3>{s.name.toLowerCase()}</h3>
+              <p>{s.description}</p>
+              <span class="go">
+                <span class="q" aria-hidden="true">
+                  {[0, 1, 2, 3, 4].map((k) => (
+                    <span class={`blob ${blobs[(k + i) % 5]}`} />
+                  ))}
+                </span>
+                join the queue →
+              </span>
+            </a>
+          ))
+        }
+      </div>
+
+      <div class="also">
+        <a href="/events/zero-to-agent">
+          <div class="panel v">
+            <h3>just wrapped: zero to agent, london</h3>
+            <p>
+              the london stop of vercel's zero to agent. ~100 builders, 3 tracks, £5.8k cash and
+              $1m+ in credits. see the recap →
+            </p>
+          </div>
+        </a>
+        <a href="/events/subscribe">
+          <div class="panel s">
+            <h3>stay in the loop</h3>
+            <p>get notified about upcoming events. no spam, just good times →</p>
+          </div>
+        </a>
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<script>
+  import { lobby } from "@/v4/fable/lobby";
+  lobby();
+</script>

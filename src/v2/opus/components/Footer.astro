@@ -1,0 +1,48 @@
+---
+interface Props {
+  class?: string;
+}
+const { class: cls } = Astro.props;
+---
+
+<footer class:list={["foot", cls]}>
+  <div class="wrap foot__row label">
+    <span>© oscar falemara · built in london, 11 m above sea level</span>
+    <nav class="foot__nav" aria-label="footer">
+      <a href="/v2/opus">home</a>
+      <a href="/v2/opus/events">events</a>
+      <a href="/v2" class="foot__dim">v2 hub</a>
+      <a href="/" class="foot__dim">← back to v1</a>
+    </nav>
+  </div>
+</footer>
+
+<style>
+  .foot {
+    position: relative;
+    z-index: 2;
+    padding: 18px 0 22px;
+    color: rgb(236 232 223 / 0.7);
+  }
+  .foot__row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 10px 24px;
+  }
+  .foot__nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+  }
+  .foot a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .foot a:hover {
+    color: var(--orange);
+  }
+  .foot__dim {
+    opacity: 0.6;
+  }
+</style>

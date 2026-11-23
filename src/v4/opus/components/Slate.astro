@@ -1,0 +1,32 @@
+---
+// The clapperboard that opens every scene. The stick snaps shut when it scrolls into view.
+interface Props {
+  scene: string;
+  take?: string;
+  roll?: string;
+  note?: string;
+}
+const { scene, take = "1", roll = "a", note = "o. falemara" } = Astro.props;
+---
+
+<div class="slate" aria-hidden="true">
+  <div class="slate__stick"></div>
+  <div class="slate__top"></div>
+  <div class="slate__board">
+    <div class="slate__cell slate__cell--wide">
+      <span class="slate__k">production</span><span class="slate__v">oscarama</span>
+    </div>
+    <div class="slate__cell">
+      <span class="slate__k">roll</span><span class="slate__v slate__v--big">{roll}</span>
+    </div>
+    <div class="slate__cell">
+      <span class="slate__k">scene</span><span class="slate__v slate__v--big">{scene}</span>
+    </div>
+    <div class="slate__cell">
+      <span class="slate__k">take</span><span class="slate__v slate__v--big">{take}</span>
+    </div>
+    <div class="slate__cell slate__cell--wide">
+      <span class="slate__k">director · camera</span><span class="slate__v">{note}</span>
+    </div>
+  </div>
+</div>

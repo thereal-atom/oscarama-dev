@@ -1,0 +1,437 @@
+---
+import Layout from "../../../v4/astra/Layout.astro";
+import Icon from "../../../v4/astra/Icon.astro";
+import { Image } from "astro:assets";
+import avatar from "../../../assets/oscarama.png";
+import coloop from "../../../assets/logos/coloop-new.png";
+import outpost from "../../../assets/logos/outpost.png";
+const projects = [
+  {
+    name: "OmiSphere",
+    category: "hack",
+    label: "hackathon winner",
+    description: "turn every conversation into part of a collective consciousness.",
+    detail: "my first ever hackathon. we built OmiSphere, and somehow came home with the win.",
+    href: "https://github.com/omisphere/omisphere",
+    stack: "conversations / collective intelligence",
+    mark: "◎",
+    colour: "purple",
+  },
+  {
+    name: "archie",
+    category: "hack",
+    label: "built in lithuania",
+    description: "an idea, a hackathon, and a room of 100+ people.",
+    detail:
+      "flown out to lithuania for based hack. we built archie and were chosen as one of the teams to pitch to 100+ people in the room.",
+    href: "https://archie.to",
+    stack: "based hack / lithuania",
+    mark: "a",
+    colour: "teal",
+  },
+  {
+    name: "EXP",
+    category: "work",
+    label: "2k → 45k+ members",
+    description: "bots, bank systems, and a very real community.",
+    detail:
+      "built bot systems from the ground up, including bank systems handling $100,000s of in-game value. helped the community grow from 2k to 45k+ members.",
+    href: "https://discord.gg/exp",
+    stack: "discord / bots / community systems",
+    mark: "ex",
+    colour: "dark",
+  },
+  {
+    name: "helio",
+    category: "work",
+    label: "freelance",
+    description: "a few months building in crypto payments.",
+    detail:
+      "freelanced at helio, the crypto payments startup that was later acquired by MoonPay for $175m.",
+    href: "https://hel.io",
+    stack: "crypto / payments",
+    mark: "h",
+    colour: "purple",
+  },
+  {
+    name: "fanks",
+    category: "work",
+    label: "community × brands",
+    description: "helping communities find the right brands.",
+    detail:
+      "helped build better community-brand matching at fanks. another way software can bring the right people together.",
+    href: "https://fanks.co",
+    stack: "communities / brand matching",
+    mark: "f",
+    colour: "teal",
+  },
+  {
+    name: "sunstead hack",
+    category: "hack",
+    label: "built in finland",
+    description: "vibe coding, with a side of tobogganing.",
+    detail:
+      "flown to finland by based collective and unicorn mafia. we didn’t win, but we did vibe code while tobogganing. calling that a worthwhile trip.",
+    href: "https://sunsteadhack.com",
+    stack: "based collective / unicorn mafia",
+    mark: "✳",
+    colour: "dark",
+  },
+];
+---
+
+<Layout>
+  <div class="document-heading">
+    <span class="mono"><span class="purple-text">#</span> README.md</span><span
+      class="document-note"><span class="status-dot"></span> perpetually in development</span
+    >
+  </div>
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero-copy">
+      <div class="eyebrow">
+        <span class="little-wave">↳</span> oscar falemara · software & AI engineer
+      </div><h1 id="hero-title">
+        good software.<br />good people.<br /><span>preferably both.</span>
+      </h1><p class="hero-description">
+        i’m a self-taught engineer from london.<br class="desktop-break" /> i build at <a
+          href="https://coloop.ai"
+          target="_blank"
+          rel="noreferrer">coloop ai</a
+        >, bring people together at <a
+          href="https://outpostcrew.co"
+          target="_blank"
+          rel="noreferrer">outpost</a
+        >, and tend to say “what if” a lot.
+      </p><div class="hero-actions">
+        <a href="#work" class="button primary">explore my work <Icon name="arrow" size={17} /></a><a
+          href="/v4/astra/events"
+          class="text-link">come to an event <Icon name="external" size={17} /></a
+        >
+      </div><div class="hero-footnote mono">
+        <span>self-taught</span><span>london, uk</span><span>learning by building</span>
+      </div>
+    </div>
+    <aside class="inspector" aria-label="About Oscar">
+      <div class="panel-bar">
+        <span><Icon name="code" size={14} /> person.config</span><button
+          class="js-only"
+          data-source-toggle
+          aria-pressed="false"
+          aria-controls="person-source">view source</button
+        >
+      </div><div class="inspector-preview">
+        <div class="avatar-field">
+          <div class="avatar-coordinate mono">person / 001</div><div class="avatar-brackets">
+            <Image
+              src={avatar}
+              alt="Illustrated Oscar giving a thumbs up"
+              width={196}
+              height={196}
+              loading="eager"
+            />
+          </div><span class="avatar-caption mono">yep, that's me ↗</span><span class="avatar-cross"
+            >+</span
+          >
+        </div><div class="person-properties">
+          <div><span>name</span><strong>oscar falemara</strong></div><div>
+            <span>based in</span><strong>london, uk</strong>
+          </div><div><span>education</span><strong>the internet</strong></div><div>
+            <span>default mode</span><strong><span class="status-dot"></span> curious</strong>
+          </div>
+        </div>
+      </div><div class="inspector-source" id="person-source" hidden>
+        <p class="mono source-comment">
+          // human, loosely typed
+        </p><pre><code><span>const</span> oscar = &#123;
+  name: <em>"oscar falemara"</em>,
+  location: <em>"london"</em>,
+  learnsBy: <em>"doing"</em>,
+  university: <b>null</b>,
+  curiosity: <b>Infinity</b>,
+  interests: [
+    <em>"code"</em>,
+    <em>"people"</em>,
+    <em>"rockets"</em>
+  ]
+&#125;;
+
+<span>export default</span> oscar;</code></pre><p
+          class="source-disclaimer mono"
+        >
+          a playful config, not an API.
+        </p>
+      </div>
+    </aside>
+  </section>
+  <section class="current-section" aria-labelledby="current-title">
+    <div class="section-heading">
+      <h2 id="current-title"><span class="section-symbol">↳</span> currently running</h2><span
+        class="mono subtle">02 active threads</span
+      >
+    </div><div class="active-grid">
+      <a href="https://coloop.ai" target="_blank" rel="noreferrer" class="active-card coloop-card"
+        ><div class="active-card-top">
+          <span class="thread-tag"><span class="status-dot"></span> software & AI</span><Icon
+            name="external"
+          />
+        </div><div class="active-title">
+          <Image src={coloop} alt="" width={40} height={40} /><h3>coloop<span>ai</span></h3><span
+            class="yc-tag mono">YC S21</span
+          >
+        </div><p>
+          building software. doing growth engineering.<br />wearing a few other hats along the way.
+        </p><div class="active-bottom mono">
+          <span>full-time engineer</span><span>open company ↗</span>
+        </div><div class="loop-art" aria-hidden="true"><i></i><i></i><i></i></div></a
+      ><a href="/v4/astra/events" class="active-card outpost-card"
+        ><div class="active-card-top">
+          <span class="thread-tag"><span class="status-dot"></span> community & possibility</span
+          ><Icon name="arrow" />
+        </div><div class="active-title">
+          <Image src={outpost} alt="" width={40} height={40} /><h3>outpost</h3><span
+            class="yc-tag mono">5k+ people</span
+          >
+        </div><p>
+          a community for those building at the frontier.<br />good things happen when people meet.
+        </p><div class="active-bottom mono">
+          <span>hackathons, dinners & more</span><span>find your people →</span>
+        </div><div class="people-art" aria-hidden="true">
+          <i></i><i></i><i></i><i></i><i></i>
+        </div></a
+      >
+    </div>
+  </section>
+  <section id="work" class="document-section" aria-labelledby="work-title">
+    <div class="section-kicker mono">01 / SELECTED WORK</div><div class="big-section-heading">
+      <h2 id="work-title">less talking.<br /><span>more making things.</span></h2><p>
+        a few things i've worked on.<br />some paid. some won prizes. all taught me something.
+      </p>
+    </div><div class="work-database">
+      <div class="database-toolbar">
+        <span class="mono"><Icon name="grid" size={14} /> work.db</span><div
+          class="filter-group js-only"
+          aria-label="Filter work"
+        >
+          <button data-filter="all" aria-pressed="true">all</button><button
+            data-filter="work"
+            aria-pressed="false">work</button
+          ><button data-filter="hack" aria-pressed="false">hackathons</button>
+        </div>
+      </div><div class="table-header mono">
+        <span>PROJECT</span><span>WHAT HAPPENED</span><span>CONTEXT</span>
+      </div>{
+        projects.map((project) => (
+          <details class="project-row" data-kind={project.category}>
+            <>
+              <summary>
+                <>
+                  <span class="project-name">
+                    <>
+                      <span class={`project-mark ${project.colour}`}>{project.mark}</span>
+                      <strong>{project.name}</strong>
+                    </>
+                  </span>
+                  <span class="project-desc">{project.description}</span>
+                  <span class="project-context mono">
+                    {project.label}
+                    <span class="expand-sign">+</span>
+                  </span>
+                </>
+              </summary>
+              <div class="project-detail">
+                <>
+                  <div>
+                    <>
+                      <span class="mono subtle">THE SHORT STORY</span>
+                      <p>{project.detail}</p>
+                      <span class="mono project-stack">{project.stack}</span>
+                    </>
+                  </div>
+                  <a class="button" href={project.href} target="_blank" rel="noreferrer">
+                    open project <Icon name="external" size={16} />
+                  </a>
+                </>
+              </div>
+            </>
+          </details>
+        ))
+      }<div class="database-footer mono">
+        <span data-result-count aria-live="polite">6 entries</span><span
+          >select a row to inspect ↗</span
+        >
+      </div>
+    </div><div class="stack-line">
+      <span class="mono subtle">IN THE TOOLBOX</span><div>
+        {
+          [
+            "TypeScript",
+            "Bun",
+            "SvelteKit",
+            "Next.js",
+            "Rust",
+            "Python",
+            "Tailwind",
+            "AWS",
+            "GenAI",
+          ].map((tech) => <span>{tech}</span>)
+        }
+      </div><a href="https://github.com/thereal-atom" target="_blank" rel="noreferrer"
+        >more on github ↗</a
+      >
+    </div>
+  </section>
+  <section class="people-section" aria-labelledby="people-title">
+    <div class="people-copy">
+      <span class="mono section-kicker">02 / BETTER IN PERSON</span><h2 id="people-title">
+        the best connections<br />happen <span>offline.</span>
+      </h2><p>
+        hackathons, demo nights, dinners, coworking, run clubs, bouldering. mostly just excuses to
+        get interesting people into the same place.
+      </p><a href="/v4/astra/events" class="button primary"
+        >find your next excuse <Icon name="arrow" size={17} /></a
+      >
+    </div><div class="community-metrics">
+      <div>
+        <strong>30<span>+</span></strong><span>events hosted &<br />helped organise</span>
+      </div><div>
+        <strong>2,000<span>+</span></strong><span>people through<br />the door</span>
+      </div><p class="mono">with openai, vercel, spacexai,<br />daytona, corgi & more.</p>
+    </div><a class="event-highlight" href="/events/zero-to-agent"
+      ><span class="highlight-icon">↗</span><div>
+        <span class="mono subtle">RECENTLY SHIPPED / LONDON</span><h3>
+          zero to agent, with vercel
+        </h3><p>
+          ~100 builders. £5.8k in cash. $1m+ in credits.<br />one organiser (hi). a lot of tabs
+          open.
+        </p>
+      </div><span class="text-link">read the recap <Icon name="arrow" /></span></a
+    >
+  </section>
+  <section id="changelog" class="document-section" aria-labelledby="changelog-title">
+    <div class="section-kicker mono">03 / CHANGELOG</div><div class="big-section-heading">
+      <h2 id="changelog-title">no prescribed path.<br /><span>just the next commit.</span></h2><p>
+        less of a career ladder.<br />more of a “let's see what happens”.
+      </p>
+    </div><div class="changelog">
+      <article>
+        <span class="commit-node"></span><div class="commit-label mono">
+          age 14 <span>init</span>
+        </div><div>
+          <h3>started coding. then someone paid me to do it.</h3><p>
+            first freelance client less than five months in. still 14. a pretty convincing reason to
+            keep going.
+          </p>
+        </div>
+      </article><article>
+        <span class="commit-node"></span><div class="commit-label mono">
+          age 16 <span>side quest</span>
+        </div><div>
+          <h3>found an economic excuse to buy a drone.</h3><p>
+            started <a
+              href="https://capturedabove-website.vercel.app"
+              target="_blank"
+              rel="noreferrer">captured above ↗</a
+            > with a friend. turns out a videography business is a good excuse.
+          </p>
+        </div>
+      </article><article>
+        <span class="commit-node"></span><div class="commit-label mono">
+          age 18 <span>full-time</span>
+        </div><div>
+          <h3>joined a yc startup before finishing school.</h3><p>
+            became a full-time software engineer at coloop ai. skipped uni. kept learning.
+          </p>
+        </div>
+      </article><article>
+        <span class="commit-node"></span><div class="commit-label mono">
+          age 19 <span>new lens</span>
+        </div><div>
+          <h3>bought a camera. found more things to make.</h3><p>
+            first photography clients within two months. apparently i have a habit of doing this.
+          </p>
+        </div>
+      </article><article>
+        <span class="commit-node filled"></span><div class="commit-label mono">
+          2026 <span>in person</span>
+        </div><div>
+          <h3>from finding a community to building one.</h3><p>
+            ran vercel's zero to agent london hackathon. spoke at KCL Tech Summit about breaking
+            into london's tech scene as an engineer who never went to uni.
+          </p>
+        </div>
+      </article>
+    </div>
+  </section>
+  <section id="outside" class="document-section outside-section" aria-labelledby="outside-title">
+    <div class="section-kicker mono">04 / AWAY FROM KEYBOARD</div><div class="big-section-heading">
+      <h2 id="outside-title">there's a world<br /><span>outside this window.</span></h2><span
+        class="mono unsaved"><span></span> a few open tabs in my head</span
+      >
+    </div><div class="interests-grid">
+      <article>
+        <span class="interest-number mono">01 / EVENTUALLY</span><svg
+          class="interest-art"
+          viewBox="0 0 260 120"
+          aria-hidden="true"
+          ><path
+            d="M113 44h34v39h-34z M35 48h65v31H35z M160 48h65v31h-65z M100 63h13 M147 63h13 M56 48v31 M78 48v31 M181 48v31 M203 48v31 M130 44V31 M120 29q10 10 20 0 M117 83l-6 12m32-12 6 12"
+          ></path><circle cx="130" cy="63" r="6"></circle><path
+            d="M112 21q18-12 36 0 M106 13q24-16 48 0"></path></svg
+        ><h3>something aerospace.</h3><p>
+          i want to start an aerospace company. still an ambition, not a company announcement. watch
+          this space.
+        </p><span class="mono interest-state">status: a very open question</span>
+      </article><article>
+        <span class="interest-number mono">02 / REGULARLY</span><svg
+          class="interest-art"
+          viewBox="0 0 260 120"
+          aria-hidden="true"
+          ><path d="m30 100 65-80 43 52 27-35 65 63M73 47l22 9 14-18M151 55l14 12 12-14"
+          ></path><path class="dashed" d="m82 100 14-25 30 11 13-20"></path><circle
+            cx="202"
+            cy="25"
+            r="12"></circle></svg
+        ><h3>preferably outside.</h3><p>
+          running, hiking, camping, climbing, bouldering, skiing. a strong counterargument to
+          another hour at a desk.
+        </p><span class="mono interest-state">status: should probably stretch</span>
+      </article><article>
+        <span class="interest-number mono">03 / ALWAYS</span><svg
+          class="interest-art"
+          viewBox="0 0 260 120"
+          aria-hidden="true"
+          ><rect x="49" y="34" width="162" height="70" rx="8"></rect><path
+            d="m79 34 9-17h51l9 17M177 49h17"></path><circle cx="123" cy="69" r="24"
+          ></circle><circle cx="123" cy="69" r="16"></circle><path
+            class="dashed"
+            d="M25 69h42m112 0h55M123 5v25m0 78v10"></path></svg
+        ><h3>one more photo.</h3><p>
+          photography, videography, and finding a reason to take the camera along. the drone
+          business was only the beginning.
+        </p><a
+          href="https://capturedabove-website.vercel.app"
+          class="mono interest-state"
+          target="_blank"
+          rel="noreferrer">open captured above ↗</a
+        >
+      </article>
+    </div>
+  </section>
+  <section class="contact-section">
+    <span class="mono">END OF FILE / START OF A CONVERSATION</span><h2>
+      something on your mind?
+    </h2><p>
+      building something, bringing people together, or just want to talk rockets?<br />i'd rather
+      you just dm me.
+    </p><div>
+      <a class="button primary" href="https://x.com/oscarfalll" target="_blank" rel="noreferrer"
+        >say hello on x <Icon name="external" size={17} /></a
+      ><a
+        class="text-link"
+        href="https://linkedin.com/in/oscarfalemara"
+        target="_blank"
+        rel="noreferrer">or linkedin <Icon name="external" size={17} /></a
+      >
+    </div><span class="contact-cursor" aria-hidden="true">_</span>
+  </section>
+</Layout>

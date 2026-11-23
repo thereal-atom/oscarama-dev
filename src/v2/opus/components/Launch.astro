@@ -1,0 +1,548 @@
+---
+// Hold-to-launch. Press and hold (mouse, touch, or space/enter) to count down
+// from T-3; let go early and it aborts. Liftoff fires a canvas exhaust plume.
+---
+
+<div class="launch" data-launch>
+  <canvas class="launch__fx" data-launch-fx aria-hidden="true"></canvas>
+
+  <div class="launch__pad" aria-hidden="true">
+    <svg class="launch__tower" viewBox="0 0 40 260" preserveAspectRatio="xMidYMax meet">
+      <path d="M6 260 V20 M34 260 V20 M6 20 H34"></path>
+      {
+        Array.from({ length: 12 }, (_, i) => (
+          <path d={`M6 ${30 + i * 19} L34 ${49 + i * 19} M34 ${30 + i * 19} L6 ${49 + i * 19}`} />
+        ))
+      }
+      <path class="launch__arm" d="M34 70 H62"></path>
+    </svg>
+
+    <div class="launch__rocket" data-launch-rocket>
+      <svg viewBox="0 0 60 200" class="launch__rocket-svg">
+        <defs>
+          <linearGradient id="hull" x1="0" x2="1">
+            <stop offset="0" stop-color="#c9c4b8"></stop>
+            <stop offset="0.45" stop-color="#f4f0e7"></stop>
+            <stop offset="1" stop-color="#b3ad9f"></stop>
+          </linearGradient>
+        </defs>
+        <path d="M30 0 C44 18 48 40 48 62 L12 62 C12 40 16 18 30 0 Z" fill="url(#hull)"></path>
+        <rect x="12" y="62" width="36" height="112" fill="url(#hull)"></rect>
+        <rect x="12" y="62" width="36" height="6" fill="#ff4f00"></rect>
+        <rect x="12" y="160" width="36" height="4" fill="#16130f"></rect>
+        <path d="M12 136 L0 172 L0 182 L12 174 Z" fill="#ff4f00"></path>
+        <path d="M48 136 L60 172 L60 182 L48 174 Z" fill="#ff4f00"></path>
+        <path d="M18 174 L42 174 L46 190 L14 190 Z" fill="#2a2721"></path>
+        <circle cx="30" cy="84" r="5.5" fill="#16130f" stroke="#ff4f00" stroke-width="1.5"></circle>
+        <text
+          x="0"
+          y="0"
+          transform="translate(25.8 97) rotate(90)"
+          font-family="Big Shoulders Stencil, Big Shoulders, sans-serif"
+          font-weight="900"
+          font-size="11.5"
+          letter-spacing="1.2"
+          fill="#16130f">OSCARAMA</text
+        >
+      </svg>
+      <span class="launch__flame"></span>
+    </div>
+
+    <div class="launch__ground"></div>
+  </div>
+
+  <div class="launch__ctrl">
+    <button class="launch__btn" type="button" data-launch-btn aria-describedby="launch-hint">
+      <svg class="launch__ring" viewBox="0 0 120 120" aria-hidden="true">
+        <circle cx="60" cy="60" r="54" class="launch__track"></circle>
+        <circle cx="60" cy="60" r="54" class="launch__prog" data-launch-prog pathLength="1"
+        ></circle>
+      </svg>
+      <span class="launch__label" data-launch-label>hold to<br />launch</span>
+    </button>
+    <p id="launch-hint" class="launch__hint label" data-launch-hint aria-live="polite">
+      press &amp; hold · or hold space
+    </p>
+    <button class="launch__reset label" type="button" data-launch-reset hidden
+      >↺ reset the pad</button
+    >
+  </div>
+</div>
+
+<style>
+  .launch {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: end;
+    gap: clamp(24px, 4vw, 56px);
+    min-height: 340px;
+  }
+  .launch__fx {
+    position: absolute;
+    left: -60%;
+    bottom: -90px;
+    width: 220%;
+    max-width: none;
+    height: 280%;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .launch__pad {
+    position: relative;
+    width: 150px;
+    height: 300px;
+  }
+  .launch__tower {
+    position: absolute;
+    left: 0;
+    bottom: 10px;
+    width: 64px;
+    height: 260px;
+    overflow: visible;
+  }
+  .launch__tower path {
+    fill: none;
+    stroke: rgb(236 232 223 / 0.45);
+    stroke-width: 1.2;
+  }
+  .launch__tower .launch__arm {
+    stroke: var(--orange);
+    stroke-width: 2.5;
+    transition: transform 0.6s var(--ease-out);
+    transform-origin: 34px 70px;
+  }
+  :global(.is-holding) .launch__arm,
+  :global(.is-launched) .launch__arm {
+    transform: rotate(-60deg);
+  }
+
+  .launch__rocket {
+    position: absolute;
+    left: 58px;
+    bottom: 10px;
+    width: 60px;
+    height: 200px;
+    z-index: 2;
+    will-change: transform;
+  }
+  .launch__rocket-svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .launch__flame {
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    width: 22px;
+    height: 70px;
+    margin-left: -11px;
+    margin-top: -12px;
+    border-radius: 50% 50% 50% 50% / 30% 30% 70% 70%;
+    background: radial-gradient(
+      ellipse at 50% 20%,
+      #fff7d6 0%,
+      #ffd27a 25%,
+      #ff7a1a 55%,
+      rgb(255 79 0 / 0) 75%
+    );
+    transform-origin: 50% 0;
+    transform: scaleY(0);
+    opacity: 0;
+    filter: blur(0.6px);
+  }
+  :global(.is-holding) .launch__flame {
+    opacity: 0.8;
+    transform: scaleY(0.35);
+    animation: flicker 0.08s steps(2) infinite;
+  }
+  :global(.is-launched) .launch__flame {
+    opacity: 1;
+    transform: scaleY(1.4);
+    animation: flicker 0.06s steps(2) infinite;
+  }
+  @keyframes flicker {
+    50% {
+      transform: scaleY(1.2) scaleX(0.9);
+    }
+  }
+  :global(.is-holding) .launch__rocket {
+    animation: rumble 0.09s linear infinite;
+  }
+  @keyframes rumble {
+    25% {
+      translate: 0.8px 0;
+    }
+    75% {
+      translate: -0.8px 0;
+    }
+  }
+  .launch__ground {
+    position: absolute;
+    left: -24px;
+    right: -24px;
+    bottom: 0;
+    height: 10px;
+    border-top: 2px solid rgb(236 232 223 / 0.6);
+    background: repeating-linear-gradient(
+      -45deg,
+      rgb(236 232 223 / 0.25) 0 2px,
+      transparent 2px 7px
+    );
+  }
+
+  .launch__ctrl {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    padding-bottom: 6px;
+  }
+  .launch__btn {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 132px;
+    height: 132px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgb(255 79 0 / 0.08);
+    color: var(--star);
+    cursor: pointer;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    transition:
+      background 0.3s,
+      transform 0.3s var(--ease-out);
+  }
+  .launch__btn:hover {
+    background: rgb(255 79 0 / 0.16);
+  }
+  .launch__btn:active,
+  :global(.is-holding) .launch__btn {
+    transform: scale(0.96);
+  }
+  .launch__btn:focus-visible {
+    outline-offset: 6px;
+    border-radius: 50%;
+  }
+  .launch__ring {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+  }
+  .launch__track {
+    fill: none;
+    stroke: rgb(236 232 223 / 0.25);
+    stroke-width: 2;
+    stroke-dasharray: 2 4.5;
+  }
+  .launch__prog {
+    fill: none;
+    stroke: var(--orange);
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+  .launch__label {
+    position: relative;
+    font-family: var(--f-display);
+    font-weight: 800;
+    font-size: 21px;
+    line-height: 0.95;
+    text-transform: uppercase;
+    text-align: center;
+    letter-spacing: 0.02em;
+  }
+  .launch__hint {
+    color: var(--star-2);
+    min-height: 1.4em;
+  }
+  .launch__reset {
+    padding: 8px 12px 7px;
+    border: 1px solid rgb(236 232 223 / 0.3);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--star);
+    cursor: pointer;
+  }
+  .launch__reset:hover {
+    border-color: var(--orange);
+    color: var(--orange);
+  }
+  .launch__reset[hidden] {
+    display: none;
+  }
+
+  @media (max-width: 480px) {
+    .launch {
+      grid-template-columns: 1fr;
+      justify-items: start;
+    }
+    .launch__pad {
+      height: 260px;
+    }
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>("[data-launch]");
+  if (root) {
+    const btn = root.querySelector<HTMLButtonElement>("[data-launch-btn]")!;
+    const prog = root.querySelector<SVGCircleElement>("[data-launch-prog]")!;
+    const label = root.querySelector<HTMLElement>("[data-launch-label]")!;
+    const hint = root.querySelector<HTMLElement>("[data-launch-hint]")!;
+    const reset = root.querySelector<HTMLButtonElement>("[data-launch-reset]")!;
+    const rocket = root.querySelector<HTMLElement>("[data-launch-rocket]")!;
+    const canvas = root.querySelector<HTMLCanvasElement>("[data-launch-fx]")!;
+    const ctx = canvas.getContext("2d");
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const HOLD = 2400; // ms for a full T-3 countdown
+    let p = 0; // 0..1 hold progress
+    let holding = false;
+    let launched = false;
+    let last = 0;
+    let raf = 0;
+    let launchT0 = 0;
+
+    type P = {
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      life: number;
+      max: number;
+      r: number;
+      hot: boolean;
+    };
+    let parts: P[] = [];
+    let dpr = 1;
+
+    // one soft puff sprite, scaled per particle: much softer than flat circles
+    const puff = document.createElement("canvas");
+    puff.width = puff.height = 64;
+    const pctx = puff.getContext("2d");
+    if (pctx) {
+      const g = pctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+      g.addColorStop(0, "rgba(232,228,220,1)");
+      g.addColorStop(0.45, "rgba(214,210,202,0.55)");
+      g.addColorStop(1, "rgba(200,196,188,0)");
+      pctx.fillStyle = g;
+      pctx.fillRect(0, 0, 64, 64);
+    }
+    const ember = document.createElement("canvas");
+    ember.width = ember.height = 32;
+    const ectx = ember.getContext("2d");
+    if (ectx) {
+      const g = ectx.createRadialGradient(16, 16, 0, 16, 16, 16);
+      g.addColorStop(0, "rgba(255,244,214,1)");
+      g.addColorStop(0.35, "rgba(255,170,60,0.9)");
+      g.addColorStop(1, "rgba(255,79,0,0)");
+      ectx.fillStyle = g;
+      ectx.fillRect(0, 0, 32, 32);
+    }
+    let groundY = 0;
+
+    const groundEl = root.querySelector<HTMLElement>(".launch__ground");
+    const sizeCanvas = () => {
+      dpr = Math.min(2, window.devicePixelRatio || 1);
+      const r = canvas.getBoundingClientRect();
+      canvas.width = Math.max(1, Math.round(r.width * dpr));
+      canvas.height = Math.max(1, Math.round(r.height * dpr));
+      if (groundEl) groundY = groundEl.getBoundingClientRect().top - r.top;
+    };
+
+    const setLabel = (html: string) => {
+      if (label.innerHTML !== html) label.innerHTML = html;
+    };
+
+    const nozzle = () => {
+      const c = canvas.getBoundingClientRect();
+      const r = rocket.getBoundingClientRect();
+      return { x: r.left + r.width / 2 - c.left, y: r.bottom - c.top };
+    };
+
+    const emit = (n: number, power: number) => {
+      const o = nozzle();
+      for (let i = 0; i < n; i++) {
+        const spread = (Math.random() - 0.5) * 2;
+        parts.push({
+          x: o.x + spread * 6,
+          y: o.y,
+          vx: spread * (0.6 + Math.random() * 2.2) * power,
+          vy: 1.5 + Math.random() * 2.5 * power,
+          life: 0,
+          max: 50 + Math.random() * 70,
+          r: 4 + Math.random() * 8,
+          hot: Math.random() < 0.35,
+        });
+      }
+    };
+
+    const draw = () => {
+      if (!ctx) return;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const cr = canvas.getBoundingClientRect();
+      ctx.clearRect(0, 0, cr.width, cr.height);
+      const ground = groundY || cr.height - 100;
+      for (const q of parts) {
+        q.life++;
+        q.x += q.vx;
+        q.y += q.vy;
+        q.vy *= 0.96;
+        q.vx *= 0.985;
+        if (q.y > ground) {
+          // smoke hits the pad and billows sideways
+          q.y = ground;
+          q.vx += (q.vx >= 0 ? 1 : -1) * 0.9;
+          q.vy = -Math.random() * 0.6;
+        }
+        q.r += 0.55;
+        const t = q.life / q.max;
+        // fade near the canvas edges so the plume never shows a hard border
+        const edge = Math.max(
+          0,
+          Math.min(1, q.x / 90, (cr.width - q.x) / 90, (cr.height - q.y) / 70, q.y / 140)
+        );
+        const a = Math.max(0, 1 - t) * edge;
+        const s = q.r * 2.6;
+        if (q.hot && t < 0.3) {
+          ctx.globalAlpha = a * 0.9;
+          ctx.drawImage(ember, q.x - s / 3, q.y - s / 3, (s * 2) / 3, (s * 2) / 3);
+        } else {
+          ctx.globalAlpha = a * 0.42;
+          ctx.drawImage(puff, q.x - s / 2, q.y - s / 2, s, s);
+        }
+      }
+      ctx.globalAlpha = 1;
+      parts = parts.filter((q) => q.life < q.max);
+    };
+
+    const loop = (now: number) => {
+      const dt = Math.min(64, now - last);
+      last = now;
+
+      if (!launched) {
+        p = holding ? Math.min(1, p + dt / HOLD) : Math.max(0, p - dt / 500);
+        prog.style.strokeDashoffset = String(1 - p);
+        if (holding) {
+          const t = Math.ceil(3 - p * 3);
+          setLabel(t > 0 ? `t-${t}` : "ignition");
+          emit(p > 0.5 ? 2 : 1, 0.6 + p);
+        } else if (p === 0) {
+          setLabel("hold to<br />launch");
+        }
+        if (p >= 1) liftoff();
+      } else {
+        const t = (now - launchT0) / 1000;
+        // quadratic ascent with a slight gravity turn
+        const y = -Math.pow(t, 2.2) * 260;
+        const x = Math.pow(Math.max(0, t - 0.8), 2) * 40;
+        rocket.style.transform = `translate3d(${x}px, ${y}px, 0) rotate(${Math.min(12, Math.max(0, t - 0.8) * 6)}deg)`;
+        if (t < 3.2) emit(t < 0.6 ? 6 : 3, t < 0.6 ? 2.2 : 1);
+      }
+
+      draw();
+      if (holding || p > 0 || launched || parts.length) raf = requestAnimationFrame(loop);
+      else raf = 0;
+    };
+
+    const kick = () => {
+      if (!raf) {
+        last = performance.now();
+        raf = requestAnimationFrame(loop);
+      }
+    };
+
+    const start = () => {
+      if (launched) return;
+      if (reduce) {
+        p = 1;
+        prog.style.strokeDashoffset = "0";
+        liftoff();
+        return;
+      }
+      holding = true;
+      root.classList.add("is-holding");
+      hint.textContent = "keep holding…";
+      sizeCanvas();
+      kick();
+    };
+    const stop = () => {
+      if (!holding) return;
+      holding = false;
+      root.classList.remove("is-holding");
+      if (!launched)
+        hint.textContent = p > 0.05 ? "launch aborted. try again?" : "press & hold · or hold space";
+    };
+
+    function liftoff() {
+      launched = true;
+      holding = false;
+      root!.classList.remove("is-holding");
+      root!.classList.add("is-launched");
+      setLabel("liftoff");
+      hint.textContent = "liftoff confirmed. see you up there.";
+      reset.hidden = false;
+      launchT0 = performance.now();
+      const ph = (window as unknown as { posthog?: { capture: (n: string) => void } }).posthog;
+      ph?.capture("v2opus_rocket_launched");
+      if (reduce) {
+        rocket.style.opacity = "0";
+      }
+    }
+
+    reset.addEventListener("click", () => {
+      launched = false;
+      p = 0;
+      parts = [];
+      rocket.style.transform = "";
+      rocket.style.opacity = "";
+      root.classList.remove("is-launched");
+      prog.style.strokeDashoffset = "1";
+      setLabel("hold to<br />launch");
+      hint.textContent = "press & hold · or hold space";
+      reset.hidden = true;
+      btn.focus();
+      if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+    });
+
+    btn.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      try {
+        btn.setPointerCapture(e.pointerId);
+      } catch {
+        /* synthetic or already-released pointer */
+      }
+      start();
+    });
+    btn.addEventListener("pointerup", stop);
+    btn.addEventListener("pointercancel", stop);
+    btn.addEventListener("lostpointercapture", stop);
+    btn.addEventListener("contextmenu", (e) => e.preventDefault());
+    btn.addEventListener("keydown", (e) => {
+      if ((e.key === " " || e.key === "Enter") && !e.repeat) {
+        e.preventDefault();
+        start();
+      }
+    });
+    btn.addEventListener("keyup", (e) => {
+      if (e.key === " " || e.key === "Enter") stop();
+    });
+    btn.addEventListener("blur", stop);
+    window.addEventListener("resize", () => {
+      if (raf) sizeCanvas();
+    });
+  }
+</script>

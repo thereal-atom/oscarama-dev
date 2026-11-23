@@ -1,0 +1,221 @@
+---
+import { Image } from "astro:assets";
+import avatar from "@/assets/oscarama.png";
+import { links, socials, stack } from "../content";
+
+type Row = { role: string; names: string[]; href?: string };
+const crew: Row[] = [
+  { role: "written & directed by", names: ["oscar falemara"] },
+  { role: "self-taught by", names: ["oscar falemara"] },
+  { role: "day job", names: ["coloop ai (yc s21)"], href: links.coloop },
+  { role: "events & growth engineering", names: ["also coloop ai"] },
+  { role: "community", names: ["outpost · 5k+ members"], href: links.luma },
+  { role: "hackathon producer", names: ["zero to agent: london"], href: links.z2aRecap },
+  { role: "past productions", names: ["helio", "EXP", "fanks"] },
+  { role: "aerial unit", names: ["captured above"], href: links.capturedAbove },
+  { role: "camera department", names: ["one camera, bought at 19"] },
+];
+const offDuty: Row[] = [
+  { role: "stunts", names: ["bouldering", "rock climbing", "mountaineering"] },
+  { role: "location scouting", names: ["mountains", "trails", "campsites", "ski slopes"] },
+  { role: "cardio unit", names: ["running", "hiking"] },
+  { role: "filmed on location in", names: ["london", "lithuania", "finland"] },
+  { role: "special thanks", names: ["everyone who's ever come to an event"] },
+];
+---
+
+<section
+  id="credits"
+  class="scene credits"
+  data-scene
+  data-no="09"
+  data-title="end credits"
+  aria-labelledby="credits-title"
+>
+  <div class="credits__roll">
+    <h2 class="credits__title" id="credits-title">oscarama</h2>
+
+    <figure class="credits__star">
+      <Image
+        src={avatar}
+        alt="illustrated portrait of oscar"
+        width={200}
+        height={200}
+        class="credits__img"
+      />
+      <figcaption>
+        <span class="credits__k">starring</span>
+        <span class="credits__name">oscar falemara</span>
+        <span class="credits__k">as himself</span>
+      </figcaption>
+    </figure>
+
+    <dl class="credits__list">
+      {
+        crew.map((r) => (
+          <div class="cr">
+            <dt>{r.role}</dt>
+            <dd>
+              {r.href ? (
+                <a
+                  href={r.href}
+                  {...(r.href.startsWith("http")
+                    ? { target: "_blank", rel: "noopener noreferrer" }
+                    : {})}
+                >
+                  {r.names[0]}
+                </a>
+              ) : (
+                r.names.map((n) => <span>{n}</span>)
+              )}
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
+
+    <p class="credits__h">original stack</p>
+    <ul class="credits__stack">
+      {
+        stack.map((t) => (
+          <li>
+            <Image src={t.icon} alt="" width={28} height={28} />
+            <span>{t.name}</span>
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="credits__h">off duty</p>
+    <dl class="credits__list">
+      {
+        offDuty.map((r) => (
+          <div class="cr">
+            <dt>{r.role}</dt>
+            <dd>
+              {r.names.map((n) => (
+                <span>{n}</span>
+              ))}
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
+    <p class="credits__aside">all stunts performed by the cast. please do try this at home.</p>
+
+    <p class="credits__h">distributed by</p>
+    <ul class="credits__distrib">
+      {
+        socials.map((s) => (
+          <li>
+            <a href={s.href} target="_blank" rel="noopener noreferrer">
+              {s.label}
+              <span aria-hidden="true">↗</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="credits__dm">dms are open. say hi.</p>
+
+    <div class="credits__legal">
+      <p>no drones were harmed in the making of this website.</p>
+      <p>no universities were attended in the making of this website.</p>
+      <p>
+        the dawn footage is a fragment shader. any resemblance to real footage is purely
+        coincidental.
+      </p>
+      <p>© 2026 oscarama pictures · london</p>
+    </div>
+  </div>
+
+  <button class="credits__roll-btn" type="button" data-roll-credits>
+    <span class="credits__roll-on">▶ roll credits</span><span class="credits__roll-off"
+      >❚❚ stop</span
+    >
+  </button>
+  <aside class="dc credits__dc">
+    <b>director's commentary</b>
+    stay till the end. there's a post-credits scene.
+  </aside>
+</section>
+
+<section
+  id="post-credits"
+  class="scene post"
+  data-scene
+  data-no="10"
+  data-title="post-credits"
+  aria-labelledby="post-title"
+>
+  <p class="post__label" data-cut>post-credits scene</p>
+  <div class="post__script" data-cut>
+    <h3 class="sp-head" id="post-title">int. a hangar &mdash; someday</h3>
+    <p class="sp-action">
+      A clean whiteboard. Someone has written <span class="sp-cast">aerospace company</span> on it and
+      underlined it twice.
+    </p>
+    <div class="sp-dia">
+      <p class="sp-char">oscar (v.o.)</p>
+      <p class="sp-line">my passion is aerospace, and i wanna start an aerospace company. soon.</p>
+    </div>
+    <p class="sp-trans">cut to black.</p>
+  </div>
+  <p class="post__return" data-cut>
+    <span>oscarama</span>
+    <span>will return</span>
+  </p>
+  <nav class="post__foot" aria-label="footer">
+    <a href="/v4/opus/events">now showing: events</a>
+    <a href="/events/zero-to-agent">zero to agent recap</a>
+    <a href="/">the original cut (v1)</a>
+    <a href="/v4">v4 hub</a>
+    <a href="#cold-open">↑ back to the top</a>
+  </nav>
+</section>
+
+<script>
+  const btn = document.querySelector<HTMLButtonElement>("[data-roll-credits]");
+  const section = document.getElementById("credits");
+  if (btn && section) {
+    let rolling = false;
+    let last = 0;
+    let carry = 0;
+    const end = () => {
+      const post = document.getElementById("post-credits");
+      return (
+        (post ? post.getBoundingClientRect().top + scrollY : document.body.scrollHeight) -
+        innerHeight * 0.1
+      );
+    };
+    const tick = (now: number) => {
+      if (!rolling) return;
+      const dt = Math.min(64, now - (last || now));
+      last = now;
+      carry += dt * 0.07; // ~70px a second, end-credits pace
+      const px = Math.floor(carry);
+      carry -= px;
+      if (scrollY >= end()) return stop();
+      scrollBy(0, px);
+      requestAnimationFrame(tick);
+    };
+    const stop = () => {
+      rolling = false;
+      document.documentElement.classList.remove("credits-rolling");
+    };
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (rolling) return stop();
+      const top = section.getBoundingClientRect().top + scrollY;
+      if (scrollY < top - innerHeight * 0.5 || scrollY > end())
+        scrollTo({ top, behavior: "instant" as ScrollBehavior });
+      rolling = true;
+      last = 0;
+      document.documentElement.classList.add("credits-rolling");
+      requestAnimationFrame(tick);
+    });
+    addEventListener("wheel", stop, { passive: true });
+    addEventListener("touchstart", stop, { passive: true });
+    addEventListener("keydown", stop);
+  }
+</script>

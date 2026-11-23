@@ -1,0 +1,104 @@
+---
+import { getImage } from "astro:assets";
+import type { ImageMetadata } from "astro";
+
+// An embroidered-style mission patch, drawn in SVG with text on circular paths.
+interface Props {
+  id: string;
+  top: string;
+  bottom: string;
+  logo: ImageMetadata;
+  rim?: string;
+  class?: string;
+}
+const { id, top, bottom, logo, rim = "var(--orange)", class: cls } = Astro.props;
+const img = await getImage({ src: logo, width: 160, height: 160, format: "webp" });
+---
+
+<svg
+  class:list={["patch", cls]}
+  viewBox="0 0 200 200"
+  role="img"
+  aria-label={`mission patch: ${top}, ${bottom}`}
+>
+  <defs>
+    <path id={`${id}-t`} d="M 34 100 A 66 66 0 0 1 166 100"></path>
+    <path id={`${id}-b`} d="M 23 100 A 77 77 0 0 0 177 100"></path>
+    <clipPath id={`${id}-c`}><circle cx="100" cy="100" r="44"></circle></clipPath>
+  </defs>
+  <circle cx="100" cy="100" r="99" fill={rim}></circle>
+  <circle
+    cx="100"
+    cy="100"
+    r="99"
+    fill="none"
+    stroke="#000"
+    stroke-opacity="0.25"
+    stroke-width="1"
+    stroke-dasharray="2 2.5"></circle>
+  <circle cx="100" cy="100" r="91" fill="#0a0f24"></circle>
+  <circle
+    cx="100"
+    cy="100"
+    r="87"
+    fill="none"
+    stroke="#ece8df"
+    stroke-opacity="0.35"
+    stroke-width="0.8"></circle>
+  <circle
+    cx="100"
+    cy="100"
+    r="53"
+    fill="none"
+    stroke="#ece8df"
+    stroke-opacity="0.35"
+    stroke-width="0.8"></circle>
+  <g class="patch__ring">
+    <text class="patch__txt"
+      ><textPath href={`#${id}-t`} startOffset="50%" text-anchor="middle">{top}</textPath></text
+    >
+    <text class="patch__txt patch__txt--b"
+      ><textPath href={`#${id}-b`} startOffset="50%" text-anchor="middle">{bottom}</textPath></text
+    >
+    <text class="patch__star" x="20" y="104" text-anchor="middle">★</text>
+    <text class="patch__star" x="180" y="104" text-anchor="middle">★</text>
+  </g>
+  <circle cx="100" cy="100" r="47" fill="#0e0d0b"></circle>
+  <image
+    href={img.src}
+    x="56"
+    y="56"
+    width="88"
+    height="88"
+    clip-path={`url(#${id}-c)`}
+    preserveAspectRatio="xMidYMid slice"
+  />
+</svg>
+
+<style>
+  .patch {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    filter: drop-shadow(0 14px 22px rgb(0 0 0 / 0.45));
+  }
+  .patch__txt {
+    fill: #ece8df;
+    font-family: var(--f-display);
+    font-weight: 800;
+    font-size: 17px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .patch__txt--b {
+    font-family: var(--f-mono);
+    font-weight: 600;
+    font-size: 9.5px;
+    letter-spacing: 0.2em;
+    font-stretch: 75%;
+  }
+  .patch__star {
+    fill: var(--orange);
+    font-size: 11px;
+  }
+</style>

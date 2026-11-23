@@ -1,0 +1,459 @@
+---
+import { Image } from "astro:assets";
+import OpusLayout from "@/v2/opus/layouts/OpusLayout.astro";
+import Flap from "@/v2/opus/components/Flap.astro";
+import Footer from "@/v2/opus/components/Footer.astro";
+import { gates } from "@/v2/opus/data/events";
+import { links } from "@/v2/opus/data/content";
+---
+
+<OpusLayout
+  title="departures · events · oscarama"
+  description="bouldering, dinners, coworking, hackathons. oscar runs events in london: pick a gate and come say hi."
+  ogUrl="https://oscarama.dev/v2/opus/events"
+  hud="dark"
+  bodyClass="is-night"
+>
+  <main id="main" class="ev on-dark">
+    <div class="ev__glow" aria-hidden="true"></div>
+
+    <section class="wrap ev__hero">
+      <header class="sec-head label">
+        <span class="no">§ev</span><span>london terminal</span><span class="rule"></span><span
+          >local time <span class="tnum" data-clock>--:--:--</span></span
+        >
+      </header>
+      <h1 class="ev__h stencil">departures</h1>
+      <div class="ev__intro">
+        <p class="ev__lede serif">
+          bouldering, dinners, coworking, hackathons. i like to run events in london.
+        </p>
+        <p class="ev__sub">
+          four series, one city. pick a gate, find something on the calendar, and come say hi. no
+          spam, just good times.
+        </p>
+      </div>
+    </section>
+
+    <section class="wrap" aria-labelledby="board-title">
+      <h2 id="board-title" class="sr-only">event series</h2>
+      <div class="board" data-board>
+        <div class="board__top label">
+          <span class="board__brand"
+            ><span class="board__plane" aria-hidden="true">✈</span> departures · london</span
+          >
+          <span class="board__count">{gates.length} gates open</span>
+        </div>
+        <div class="board__cols label" aria-hidden="true">
+          <span class="c-gate">gate</span>
+          <span class="c-name">series</span>
+          <span class="c-what">what</span>
+          <span class="c-status">status</span>
+        </div>
+        <ul class="board__rows">
+          {
+            gates.map((g) => (
+              <li>
+                <a
+                  class="board__row"
+                  href={`/v2/opus/events/${g.slug}`}
+                  data-ph="gate"
+                  data-ph-label={g.slug}
+                >
+                  <span class="sr-only">
+                    gate {g.gate}: {g.name}, {g.what}. view the calendar
+                  </span>
+                  <Flap class="c-gate" text={g.gate} len={2} />
+                  <Flap class="c-name" text={g.name} len={16} />
+                  <Flap class="c-what" text={g.what} len={24} />
+                  <Flap class="c-status" text="gate open" len={9} hot />
+                  <span class="board__go" aria-hidden="true">
+                    →
+                  </span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="board__foot label">
+          <span>all times local</span><span>please have your laptop ready for inspection</span>
+        </p>
+      </div>
+    </section>
+
+    <section class="wrap gates" aria-label="gate information">
+      {
+        gates.map((g, i) => (
+          <article class="gate" data-reveal style={`--d:${i * 80}`}>
+            <div class="gate__top">
+              <span class="gate__no stencil">{g.gate}</span>
+              <span class="gate__logo">
+                <Image src={g.logo} alt="" width={96} height={96} />
+              </span>
+            </div>
+            <p class="label gate__tag">{g.tag}</p>
+            <h3 class="gate__name display">{g.name}</h3>
+            <p class="gate__desc">{g.blurb}</p>
+            <div class="gate__links">
+              <a class="btn" href={`/v2/opus/events/${g.slug}`}>
+                go to gate <span class="arr">→</span>
+              </a>
+              <a
+                class="gate__luma label lnk"
+                href={g.lumaUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                luma ↗
+              </a>
+            </div>
+          </article>
+        ))
+      }
+    </section>
+
+    <section class="wrap extras">
+      <a
+        class="arrival"
+        href={links.zeroToAgent}
+        data-reveal
+        data-ph="cta"
+        data-ph-label="z2a-events"
+      >
+        <span class="label arrival__k">recent arrival · sat 2 may 2026</span>
+        <span class="arrival__t stencil"
+          >zero <span class="arrival__arr">→</span> <span class="o">agent</span></span
+        >
+        <span class="arrival__d"
+          >the london stop of vercel's zero to agent. ~100 builders shipped agents in a day. £5.8k
+          cash and $1m+ in credits awarded.</span
+        >
+        <span class="label arrival__cta">read the recap →</span>
+      </a>
+      <a class="loop" href="/events/subscribe" data-reveal style="--d:120">
+        <span class="label loop__k">notifications</span>
+        <span class="loop__t display">stay in the loop</span>
+        <span class="loop__d">get pinged about upcoming events. no spam, just good times.</span>
+        <span class="label loop__cta">subscribe →</span>
+      </a>
+    </section>
+
+    <Footer />
+  </main>
+</OpusLayout>
+
+<style>
+  .ev {
+    position: relative;
+    min-height: 100vh;
+    padding-top: 96px;
+    background:
+      linear-gradient(to bottom, transparent, var(--void) 70%),
+      repeating-linear-gradient(to right, rgb(236 232 223 / 0.035) 0 1px, transparent 1px 120px),
+      #070912;
+    overflow-x: clip;
+  }
+  .ev__glow {
+    position: absolute;
+    left: 50%;
+    top: 160px;
+    width: min(1200px, 120vw);
+    height: 700px;
+    transform: translateX(-50%);
+    background: radial-gradient(ellipse 50% 50% at 50% 50%, rgb(255 79 0 / 0.14), transparent 70%);
+    pointer-events: none;
+  }
+  .ev > :not(.ev__glow) {
+    position: relative;
+  }
+
+  .ev__h {
+    margin: 26px 0 0 -0.03em;
+    font-size: min(calc((100vw - var(--gutter) * 2) / 4.6), 236px);
+    line-height: 0.82;
+  }
+  .ev__intro {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: 32px;
+    align-items: end;
+    margin: 28px 0 clamp(36px, 5vw, 64px);
+  }
+  .ev__lede {
+    font-size: clamp(28px, 3vw, 44px);
+    line-height: 1.04;
+    max-width: 22ch;
+    text-wrap: balance;
+  }
+  .ev__sub {
+    max-width: 44ch;
+    color: var(--star-2);
+    padding-bottom: 6px;
+  }
+
+  /* the board */
+  .board {
+    --fs: clamp(12px, 1.25vw, 19px);
+    padding: clamp(14px, 2vw, 26px);
+    border-radius: 8px;
+    background: linear-gradient(to bottom, #111318, #0b0c10);
+    box-shadow:
+      0 0 0 1px rgb(255 255 255 / 0.06),
+      0 40px 80px -30px rgb(0 0 0 / 0.9),
+      inset 0 1px 0 rgb(255 255 255 / 0.05);
+  }
+  .board__top {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 4px 14px;
+    color: var(--star-2);
+  }
+  .board__brand {
+    color: #f6d36b;
+  }
+  .board__plane {
+    display: inline-block;
+    margin-right: 6px;
+  }
+  .board__count {
+    color: #8fe3a5;
+  }
+  .board__cols,
+  .board__row {
+    display: grid;
+    grid-template-columns: auto auto 1fr auto 20px;
+    align-items: center;
+    column-gap: clamp(12px, 1.8vw, 28px);
+  }
+  .board__cols {
+    padding: 8px 10px;
+    border-top: 1px solid rgb(255 255 255 / 0.08);
+    border-bottom: 1px solid rgb(255 255 255 / 0.08);
+    color: #f6d36b;
+    font-size: 9.5px;
+  }
+  .board__cols .c-gate {
+    width: calc(var(--fs) * 2 + 2px);
+  }
+  .board__cols .c-name {
+    width: calc((var(--fs) + 2px) * 16 - 2px);
+  }
+  .board__cols .c-status {
+    width: calc((var(--fs) + 2px) * 9 - 2px);
+  }
+  .board__row {
+    padding: 10px;
+    font-size: var(--fs);
+    border-bottom: 1px solid rgb(255 255 255 / 0.05);
+    border-radius: 4px;
+    color: inherit;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+  .board__row:hover,
+  .board__row:focus-visible {
+    background: rgb(255 79 0 / 0.1);
+  }
+  .board__go {
+    color: var(--orange);
+    font-size: 16px;
+    transition: transform 0.3s var(--ease-out);
+  }
+  .board__row:hover .board__go {
+    transform: translateX(4px);
+  }
+  .board__foot {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 4px 0;
+    color: rgb(236 232 223 / 0.4);
+    font-size: 9px;
+  }
+
+  @media (max-width: 1240px) {
+    .board :global(.c-what) {
+      display: none !important;
+    }
+    .board__cols,
+    .board__row {
+      grid-template-columns: auto 1fr auto 20px;
+    }
+    .board {
+      --fs: clamp(12px, 1.9vw, 20px);
+    }
+  }
+  @media (max-width: 640px) {
+    .board {
+      --fs: calc((100vw - var(--gutter) * 2 - 90px) / 19);
+      padding: 12px 8px;
+    }
+    .board :global(.c-status) {
+      display: none !important;
+    }
+    .board__cols,
+    .board__row {
+      grid-template-columns: auto 1fr 16px;
+      column-gap: 10px;
+      padding-inline: 6px;
+    }
+    .board__foot span:last-child {
+      display: none;
+    }
+  }
+
+  /* gate cards */
+  .gates {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: clamp(12px, 1.6vw, 20px);
+    margin-top: clamp(48px, 6vw, 88px);
+  }
+  .gate {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 20px;
+    border: 1px solid rgb(236 232 223 / 0.14);
+    border-radius: 6px;
+    background: rgb(15 18 30 / 0.7);
+  }
+  .gate__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .gate__no {
+    font-size: 54px;
+    line-height: 0.8;
+    color: var(--orange);
+  }
+  .gate__logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.14);
+  }
+  .gate__logo :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .gate__tag {
+    margin-top: 10px;
+    color: var(--star-2);
+  }
+  .gate__name {
+    font-size: clamp(28px, 2.4vw, 36px);
+  }
+  .gate__desc {
+    font-size: 12px;
+    color: #c5cad8;
+  }
+  .gate__links {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: auto;
+    padding-top: 8px;
+  }
+
+  .extras {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    gap: clamp(12px, 1.6vw, 20px);
+    margin: clamp(16px, 2vw, 24px) auto clamp(80px, 10vw, 140px);
+  }
+  .arrival,
+  .loop {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: clamp(20px, 2.6vw, 34px);
+    border-radius: 6px;
+    color: inherit;
+    text-decoration: none;
+    transition:
+      transform 0.4s var(--ease-out),
+      border-color 0.3s;
+  }
+  .arrival {
+    border: 1px solid rgb(255 79 0 / 0.5);
+    background:
+      radial-gradient(ellipse 60% 120% at 100% 0%, rgb(255 79 0 / 0.22), transparent 60%),
+      rgb(15 18 30 / 0.7);
+  }
+  .loop {
+    border: 1px dashed rgb(236 232 223 / 0.28);
+  }
+  .arrival:hover,
+  .loop:hover {
+    transform: translateY(-3px);
+  }
+  .loop:hover {
+    border-color: var(--orange);
+  }
+  .arrival__k,
+  .loop__k {
+    color: var(--orange);
+  }
+  .arrival__t {
+    font-size: clamp(54px, 6vw, 96px);
+    line-height: 0.82;
+  }
+  .arrival__arr {
+    font-family: var(--f-mono);
+    font-weight: 300;
+    font-size: 0.5em;
+    vertical-align: 0.38em;
+    color: var(--star-2);
+  }
+  .arrival__t .o {
+    color: var(--orange);
+  }
+  .arrival__d,
+  .loop__d {
+    max-width: 52ch;
+    color: #c5cad8;
+  }
+  .loop__t {
+    font-size: clamp(36px, 3.6vw, 56px);
+  }
+  .arrival__cta,
+  .loop__cta {
+    margin-top: auto;
+    padding-top: 6px;
+  }
+
+  @media (max-width: 1100px) {
+    .gates {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 760px) {
+    .ev {
+      padding-top: 80px;
+    }
+    .ev__intro,
+    .extras {
+      grid-template-columns: 1fr;
+    }
+    .ev__intro {
+      gap: 14px;
+    }
+  }
+  @media (max-width: 560px) {
+    .gates {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  import { settle } from "@/v2/opus/scripts/flaps";
+  import { startClock } from "@/v2/opus/scripts/clock";
+  settle();
+  startClock();
+</script>

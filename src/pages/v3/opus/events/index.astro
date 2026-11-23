@@ -1,0 +1,92 @@
+---
+import { Image } from "astro:assets";
+import Layout from "@/v3/opus/Layout.astro";
+import Colophon from "@/v3/opus/Colophon.astro";
+import { eventSeriesList } from "@/data/eventSeries";
+import { blurb } from "@/v3/opus/series";
+---
+
+<Layout
+  title="appendix a: events · the concise oscarama"
+  description="bouldering, dinners, coworking, hackathons. the event series oscar runs in london, and where to rsvp."
+  path="/v3/opus/events"
+  guide="appendix a — events"
+>
+  <section class="ev-hero" id="top">
+    <div class="hero-meta m">
+      <a href="/v3/opus">← the concise oscarama</a>
+      <span class="hide-sm">appendix a</span>
+      <span>p. 301</span>
+    </div>
+    <div class="ev-word-wrap">
+      <h1 class="ev-word d" data-fit>events</h1>
+    </div>
+    <div class="ev-def">
+      <div class="hero-side">
+        <p class="pr-big m">\ ih·<b>VENTS</b> \</p>
+        <p class="pos-big"><i>n. pl.</i></p>
+        <p class="origin">
+          <span class="sc m">usage</span>
+          <i>“come to an <span class="swung">~</span>!”</i>
+        </p>
+      </div>
+      <ol class="senses-big">
+        <li>
+          <b class="sn d">1</b>
+          <span
+            >bouldering, dinners, coworking, hackathons: <mark class="hl"
+              >things oscar runs in london</mark
+            >. 30+ so far, 2,000+ people through the door.</span
+          >
+        </li>
+        <li>
+          <b class="sn d">2</b>
+          <span>a reason to leave the house. pick a series below and come along.</span>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="ev-list" aria-label="event series">
+    <ol class="series">
+      {
+        eventSeriesList.map((s, i) => (
+          <li class="series-row">
+            <span class="series-n m">a.{i + 1}</span>
+            <Image src={s.logo} width={112} height={112} alt="" class="series-logo" />
+            <div class="series-main">
+              <h2 class="series-name d">
+                <a href={`/v3/opus/events/${s.slug}`}>{s.name}</a>
+              </h2>
+              <p class="series-desc">{blurb(s.slug, s.description)}</p>
+            </div>
+            <a class="series-luma m" href={s.lumaUrl} target="_blank" rel="noopener noreferrer">
+              luma ↗
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+
+    <div class="ev-feature">
+      <div>
+        <p class="m">recently · sat 2 may 2026</p>
+        <h2 class="d">zero → agent: london</h2>
+        <p>
+          ~100 builders, 3 tracks, £5.8k in cash and $1m+ in credits, organised single-handedly. the
+          full recap lives here.
+        </p>
+      </div>
+      <a class="btn" href="/events/zero-to-agent">read the recap →</a>
+    </div>
+
+    <p class="appx-more m">
+      <a href="/events/subscribe">stay in the loop: get emailed about new events →</a>
+      <a href="https://luma.com/oscarama" target="_blank" rel="noopener noreferrer"
+        >all of it on luma ↗</a
+      >
+    </p>
+  </section>
+
+  <Colophon />
+</Layout>

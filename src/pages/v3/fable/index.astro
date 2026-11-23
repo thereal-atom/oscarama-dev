@@ -1,0 +1,955 @@
+---
+import { Image } from "astro:assets";
+import Layout from "@/v3/fable/Layout.astro";
+import Logo from "@/v3/fable/Logo.astro";
+import Lanyard from "@/v3/fable/Lanyard.astro";
+import { eventSeriesList } from "@/data/eventSeries";
+
+import avatar from "@/assets/oscarama.png";
+import coloopLogo from "@/assets/logos/coloop.png";
+import outpostLogo from "@/assets/logos/outpost.png";
+import fanksLogo from "@/assets/logos/fanks.png";
+import expLogo from "@/assets/logos/exp.png";
+import helioLogo from "@/assets/logos/helio.png";
+import omisphereLogo from "@/assets/logos/omisphere.png";
+import archieLogo from "@/assets/logos/archie.png";
+import basedHackLogo from "@/assets/logos/basedhack.png";
+import basedLogo from "@/assets/logos/based.png";
+import umLogo from "@/assets/logos/um.png";
+import ycLogo from "@/assets/logos/yc.png";
+import capturedAboveLogo from "@/assets/logos/capturedabove.png";
+import vercelLogo from "@/assets/logos/vercel.png";
+import openaiLogo from "@/assets/logos/openai.png";
+import corgiLogo from "@/assets/logos/corgi.png";
+import coderabbitLogo from "@/assets/logos/coderabbit.png";
+import brightdataLogo from "@/assets/logos/brightdata.png";
+import mubitLogo from "@/assets/logos/mubit.png";
+import spacexaiLogo from "@/assets/logos/spacexai.svg?url";
+import daytonaLogo from "@/assets/logos/daytona.svg?url";
+
+import typescriptIcon from "@/assets/techs/typescript.svg?url";
+import bunIcon from "@/assets/techs/bun.svg?url";
+import nextjsIcon from "@/assets/techs/nextjs.svg?url";
+import svelteIcon from "@/assets/techs/svelte.svg?url";
+import rustIcon from "@/assets/techs/rust.svg?url";
+import tailwindIcon from "@/assets/techs/tailwindcss.svg?url";
+import pythonIcon from "@/assets/techs/python.svg?url";
+import awsIcon from "@/assets/techs/aws.svg?url";
+
+const ext = { target: "_blank", rel: "noopener noreferrer" };
+
+/** desktop position on the wall: x, y, width, resting tilt */
+const at = (x: number, y: number, w?: number, rest = 0) =>
+  `--x:${x}px;--y:${y}px;${w ? `--w:${w}px;` : ""}--rest:${rest}deg`;
+
+const zones = [
+  { id: "home", label: "start", box: "1090,770,1420,860" },
+  { id: "events", label: "events", box: "110,90,1800,650" },
+  { id: "hacks", label: "hacks", box: "1990,90,1500,650" },
+  { id: "past", label: "past", box: "2610,770,880,880" },
+  { id: "aerial", label: "aerial", box: "110,790,900,830" },
+  { id: "someday", label: "someday", box: "150,1690,820,640" },
+  { id: "stack", label: "stack", box: "1040,1690,840,640" },
+  { id: "offduty", label: "off-duty", box: "1940,1690,740,640" },
+  { id: "hi", label: "say hi", box: "2740,1690,750,640" },
+];
+
+const straps = ["pink", "lime", "blue", "white"];
+
+const partners = [
+  { name: "OpenAI", href: "https://luma.com/codex-ldn-1", logo: openaiLogo },
+  { name: "Vercel", href: "/events/zero-to-agent", logo: vercelLogo, internal: true },
+  { name: "SpaceXAI", href: "https://x.ai", logo: spacexaiLogo },
+  { name: "Daytona", href: "https://www.daytona.io", logo: daytonaLogo },
+  { name: "Corgi", href: "https://corgi.insure", logo: corgiLogo },
+];
+
+const stickers = [
+  { name: "TypeScript", icon: typescriptIcon, r: -6 },
+  { name: "Bun", icon: bunIcon, r: 4 },
+  { name: "SvelteKit", icon: svelteIcon, r: -3 },
+  { name: "Next.js", icon: nextjsIcon, r: 7 },
+  { name: "Rust", icon: rustIcon, r: -8, dark: true },
+  { name: "Python", icon: pythonIcon, r: 3 },
+  { name: "Tailwind", icon: tailwindIcon, r: -4 },
+  { name: "AWS", icon: awsIcon, r: 6, dark: true },
+];
+
+const repos = [
+  "docdepot",
+  "alertbots",
+  "openai.js",
+  "papr",
+  "notes ai (obsidian + llm)",
+  "a solana arb bot",
+  "project liquid",
+  "saasalytics",
+];
+
+const kit = [
+  { item: "running shoes", note: "run club counts" },
+  { item: "hiking boots", note: "" },
+  { item: "tent + sleeping bag", note: "camping" },
+  { item: "ice axe energy", note: "mountaineering" },
+  { item: "chalk bag", note: "bouldering" },
+  { item: "harness + rope", note: "climbing" },
+  { item: "skis", note: "" },
+  { item: "a camera, obviously", note: "" },
+];
+---
+
+<Layout
+  mode="pan"
+  current="home"
+  title="oscar falemara: the wall"
+  description="oscar falemara's pegboard: a self-taught software engineer from london who writes code at coloop ai (yc s21), runs the outpost community and wants to build rockets. grab things and look around."
+>
+  <main id="wall" class="viewport" tabindex="-1">
+    <div class="world" data-world>
+      <div class="holes" aria-hidden="true"></div>
+
+      <!-- ───────────────────────── START ───────────────────────── -->
+      <section class="zone" id="home" data-zone data-box={zones[0].box} aria-labelledby="h-home">
+        <h1 class="paint name" id="h-home" style={at(1130, 826)}>
+          <span>oscar</span>
+          <span>falemara</span>
+        </h1>
+        <p class="paint tagline" style={at(1136, 1118)}>
+          self-taught software engineer <i>/</i> community builder <i>/</i> london
+        </p>
+
+        <article class="hang lanyard strap-lime idpass" data-hang style={at(2180, 800, 264, 1.2)}>
+          <i class="hook" aria-hidden="true"></i>
+          <i class="strap" aria-hidden="true"></i>
+          <div class="body badge">
+            <i class="slot" aria-hidden="true"></i>
+            <div class="id-photo">
+              <Image src={avatar} alt="oscar, drawn" width={220} height={220} loading="eager" />
+              <span class="id-stripe">all areas</span>
+            </div>
+            <h2>oscar falemara</h2>
+            <dl>
+              <div><dt>day job</dt><dd>software eng, coloop ai</dd></div>
+              <div><dt>also</dt><dd>runs outpost</dd></div>
+              <div><dt>base</dt><dd>london</dd></div>
+              <div><dt>uni</dt><dd>skipped it</dd></div>
+            </dl>
+            <div class="barcode" aria-hidden="true"></div>
+          </div>
+        </article>
+
+        <article class="hang" data-hang style={at(1140, 1182, 480, -0.8)}>
+          <i class="pin" aria-hidden="true"></i>
+          <div class="body note-paper">
+            <p class="hand big">hi, i'm oscar.</p>
+            <p>
+              i'm a self-taught software engineer from london. i write code at
+              <a href="https://coloop.ai" {...ext}
+                ><Logo src={coloopLogo} tile="light" />coloop ai</a
+              >
+              (yc s21), where i also do events, growth engineering and lots of other fun stuff.
+            </p>
+            <p>
+              i run
+              <a href="https://luma.com/londonmaxxing-ai" {...ext}
+                ><Logo src={outpostLogo} tile="dark" />outpost</a
+              >, a community for those building at the frontier. hackathons, meetups, dinners,
+              coworking, run clubs, cafes, demo nights, bouldering and much more.
+            </p>
+            <p class="note-cta">
+              <a class="btn" href="https://luma.com/londonmaxxing-ai" {...ext}
+                >come to an event <span aria-hidden="true">↗</span></a
+              >
+              <a href="#events" data-goto="events">or see the lanyards</a>
+            </p>
+          </div>
+        </article>
+
+        <div class="hang" data-hang style={at(1670, 1196, 196, 2.5)}>
+          <i class="pin pin-pink" aria-hidden="true"></i>
+          <div class="body sticky">
+            <p class="hand">in a hurry?</p>
+            <button type="button" class="sticky-btn" data-tldr>read the tl;dr</button>
+            <p class="hand small">10 seconds. promise.</p>
+          </div>
+        </div>
+
+        <ul class="tags" aria-label="numbers">
+          <li class="hang tag" data-hang style={at(1910, 1190, 168, -2)}>
+            <i class="pin" aria-hidden="true"></i>
+            <div class="body"><b>30+</b><span>events hosted or helped organise</span></div>
+          </li>
+          <li class="hang tag tag-pink" data-hang style={at(2096, 1384, 168, 1.5)}>
+            <i class="pin" aria-hidden="true"></i>
+            <div class="body"><b>2,000+</b><span>people through the door</span></div>
+          </li>
+          <li class="hang tag tag-lime" data-hang style={at(1910, 1420, 168, 1)}>
+            <i class="pin" aria-hidden="true"></i>
+            <div class="body"><b>5k+</b><span>outpost members</span></div>
+          </li>
+          <li class="hang tag tag-blue" data-hang style={at(2290, 1400, 168, -1.5)}>
+            <i class="pin" aria-hidden="true"></i>
+            <div class="body"><b>0</b><span>university degrees</span></div>
+          </li>
+        </ul>
+
+        <p class="paint scribble" style={at(2090, 1588)} aria-hidden="true">
+          everything here unhooks. go on, grab something.
+        </p>
+      </section>
+
+      <!-- ───────────────────────── EVENTS ───────────────────────── -->
+      <section
+        class="zone"
+        id="events"
+        data-zone
+        data-box={zones[1].box}
+        aria-labelledby="h-events"
+      >
+        <h2 class="paint label" id="h-events" style={at(140, 104)}>
+          <small>a /</small> events
+        </h2>
+        <p class="paint sub" style={at(144, 184)}>
+          i host things. the lanyards pile up. <a href="/v3/fable/events">the whole rack →</a>
+        </p>
+
+        <div class="hang strip" data-hang data-fixed style={at(760, 112, 720)}>
+          <div class="body partners">
+            <span class="partners-label">worked with</span>
+            <ul>
+              {
+                partners.map((p) => (
+                  <li>
+                    <a href={p.href} {...(p.internal ? {} : ext)}>
+                      <Logo src={p.logo} size={22} tile="dark" />
+                      {p.name}
+                    </a>
+                  </li>
+                ))
+              }
+              <li class="more">&amp; more</li>
+            </ul>
+          </div>
+        </div>
+
+        {
+          eventSeriesList.map((s, i) => (
+            <Lanyard
+              name={s.name}
+              description={s.description}
+              logo={s.logo}
+              href={`/v3/fable/events/${s.slug}`}
+              lumaUrl={s.lumaUrl}
+              strap={straps[i % straps.length]}
+              style={at(140 + i * 268, 250 + (i % 2) * 22, 236, [-1.2, 0.8, -0.5, 1.4][i])}
+            />
+          ))
+        }
+
+        <article class="hang lanyard strap-black speaker" data-hang style={at(1222, 262, 236, -1)}>
+          <i class="hook" aria-hidden="true"></i>
+          <i class="strap" aria-hidden="true"></i>
+          <div class="body badge">
+            <i class="slot" aria-hidden="true"></i>
+            <span class="speaker-band">speaker</span>
+            <h3>KCL Tech Summit 2026</h3>
+            <p class="mono">sat 31 oct 2026 · king's college london</p>
+            <p>
+              on the panel <em>“how to break into london's tech scene”</em>, talking community
+              building as a full-time software engineer who's never been to uni.
+            </p>
+            <div class="badge-links">
+              <a href="https://techsummit.kcltech.co.uk/" {...ext}
+                >the summit <span aria-hidden="true">↗</span></a
+              >
+            </div>
+          </div>
+        </article>
+
+        <article class="hang" data-hang style={at(1500, 130, 380, 0.6)}>
+          <i class="pin pin-lime" aria-hidden="true"></i>
+          <div class="body poster">
+            <p class="poster-top">
+              <Logo src={vercelLogo} size={18} tile="none" class="invert" /> vercel presents
+              <span>london stop</span>
+            </p>
+            <h3>zero<br />to agent</h3>
+            <p class="poster-date">sat 2 may 2026</p>
+            <ul class="poster-stats">
+              <li><b>~100</b> builders</li>
+              <li><b>3</b> tracks</li>
+              <li><b>£5.8k</b> cash</li>
+              <li><b>$1m+</b> credits</li>
+            </ul>
+            <p class="poster-body">
+              my first ever hackathon as the organiser. ran the whole thing by myself, for 100 of
+              london's most talented builders.
+            </p>
+            <p class="poster-sponsors">
+              <span>sponsored by</span>
+              <a href="https://coderabbit.ai" {...ext}
+                ><Logo src={coderabbitLogo} size={18} tile="light" />CodeRabbit</a
+              >
+              <a href="https://brightdata.com" {...ext}
+                ><Logo src={brightdataLogo} size={18} tile="light" />Bright Data</a
+              >
+              <a href="https://mubit.ai" {...ext}
+                ><Logo src={mubitLogo} size={18} tile="light" />Mubit</a
+              >
+            </p>
+            <a class="btn btn-lime" href="/events/zero-to-agent"
+              >read the recap <span aria-hidden="true">→</span></a
+            >
+          </div>
+        </article>
+      </section>
+
+      <!-- ───────────────────────── HACKS ───────────────────────── -->
+      <section class="zone" id="hacks" data-zone data-box={zones[2].box} aria-labelledby="h-hacks">
+        <h2 class="paint label" id="h-hacks" style={at(2020, 104)}>
+          <small>b /</small> hacks
+        </h2>
+        <p class="paint sub" style={at(2024, 184)}>
+          postcards from hackathons. people keep flying us places.
+        </p>
+
+        <article class="hang" data-hang style={at(2020, 262, 450, -1.6)}>
+          <i class="pin pin-pink" aria-hidden="true"></i>
+          <div class="body postcard">
+            <div class="pc-msg">
+              <p class="pc-place">london <span aria-hidden="true">🇬🇧</span></p>
+              <p class="hand">
+                won my first ever hackathon with
+                <a href="https://github.com/omisphere/omisphere" {...ext}
+                  ><Logo src={omisphereLogo} tile="light" />OmiSphere</a
+                >: a project that aims to turn every conversation into part of a collective
+                consciousness.
+              </p>
+            </div>
+            <div class="pc-side">
+              <div class="stamp stamp-lime"><span>1st</span><small>first try</small></div>
+              <div class="postmark" aria-hidden="true"><span>hackathon no.1</span></div>
+              <div class="pc-lines" aria-hidden="true"><i></i><i></i><i></i></div>
+            </div>
+          </div>
+        </article>
+
+        <article class="hang" data-hang style={at(2510, 300, 450, 1.2)}>
+          <i class="pin" aria-hidden="true"></i>
+          <div class="body postcard">
+            <div class="pc-msg">
+              <p class="pc-place">lithuania <span aria-hidden="true">🇱🇹</span></p>
+              <p class="hand">
+                got flown out for
+                <a href="https://www.basedhack.com/" {...ext}
+                  ><Logo src={basedHackLogo} tile="light" />based hack</a
+                >, where we built
+                <a href="https://archie.to" {...ext}
+                  ><Logo src={archieLogo} tile="light" />archie.</a
+                >
+                and were one of the teams chosen to pitch to 100+ people in the room.
+              </p>
+            </div>
+            <div class="pc-side">
+              <div class="stamp stamp-pink"><span>LT</span><small>par avion</small></div>
+              <div class="postmark" aria-hidden="true"><span>pitched to 100+</span></div>
+              <div class="pc-lines" aria-hidden="true"><i></i><i></i><i></i></div>
+            </div>
+          </div>
+        </article>
+
+        <article class="hang" data-hang style={at(3000, 250, 450, -0.7)}>
+          <i class="pin pin-lime" aria-hidden="true"></i>
+          <div class="body postcard">
+            <div class="pc-msg">
+              <p class="pc-place">finland <span aria-hidden="true">🇫🇮</span></p>
+              <p class="hand">
+                flown out by
+                <a href="https://www.basedcollective.ai/" {...ext}
+                  ><Logo src={basedLogo} tile="dark" />based collective</a
+                >
+                and
+                <a href="https://www.unicornmafia.ai/" {...ext}
+                  ><Logo src={umLogo} tile="dark" />unicorn mafia</a
+                >
+                for <a href="https://sunsteadhack.com/" {...ext}>sunstead hack</a>. we didn't win,
+                but we vibe coded while tobogganing..
+              </p>
+            </div>
+            <div class="pc-side">
+              <div class="stamp stamp-blue"><span>FI</span><small>par avion</small></div>
+              <div class="postmark" aria-hidden="true"><span>did not win</span></div>
+              <div class="pc-lines" aria-hidden="true"><i></i><i></i><i></i></div>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <!-- ───────────────────────── AERIAL ───────────────────────── -->
+      <section
+        class="zone"
+        id="aerial"
+        data-zone
+        data-box={zones[4].box}
+        aria-labelledby="h-aerial"
+      >
+        <h2 class="paint label" id="h-aerial" style={at(140, 806)}>
+          <small>c /</small> aerial
+        </h2>
+        <p class="paint sub" style={at(144, 886)}>
+          i love photography and videography. it got out of hand.
+        </p>
+
+        <figure class="hang" data-hang style={at(150, 968, 262, -2.2)}>
+          <i class="pin pin-lime" aria-hidden="true"></i>
+          <div class="body polaroid">
+            <svg
+              viewBox="0 0 220 190"
+              role="img"
+              aria-label="abstract drawing of fields from above"
+            >
+              <rect width="220" height="190" fill="#7fae5b"></rect>
+              <g transform="rotate(-14 110 95)">
+                <rect x="-30" y="-30" width="90" height="80" fill="#d9c35a"></rect>
+                <rect x="60" y="-30" width="70" height="80" fill="#5f9a4e"></rect>
+                <rect x="130" y="-30" width="130" height="80" fill="#a5c96a"></rect>
+                <rect x="-30" y="50" width="120" height="70" fill="#4d8a4a"></rect>
+                <rect x="90" y="50" width="60" height="70" fill="#e3d67a"></rect>
+                <rect x="150" y="50" width="110" height="70" fill="#6ea653"></rect>
+                <rect x="-30" y="120" width="70" height="110" fill="#b9d072"></rect>
+                <rect x="40" y="120" width="110" height="110" fill="#c9b04e"></rect>
+                <rect x="150" y="120" width="110" height="110" fill="#3f7d46"></rect>
+                <g stroke="#2e5d37" stroke-width="3" opacity=".55">
+                  <path
+                    d="M60-30v80M130-30v80M90 50v70M150 50v180M40 120v110M-30 50h290M-30 120h290"
+                  ></path>
+                </g>
+              </g>
+              <path
+                d="M-10 150C50 120 90 140 130 100S200 40 240 30"
+                fill="none"
+                stroke="#efe9d2"
+                stroke-width="5"></path>
+            </svg>
+            <figcaption class="hand">
+              16: started
+              <a href="https://capturedabove-website.vercel.app" {...ext}
+                ><Logo src={capturedAboveLogo} tile="dark" />captured above</a
+              >, a drone business, with a friend
+            </figcaption>
+          </div>
+        </figure>
+
+        <figure class="hang" data-hang style={at(436, 1010, 262, 1.6)}>
+          <i class="pin" aria-hidden="true"></i>
+          <div class="body polaroid">
+            <svg
+              viewBox="0 0 220 190"
+              role="img"
+              aria-label="abstract drawing of a coastline from above"
+            >
+              <rect width="220" height="190" fill="#1d7f8c"></rect>
+              <path d="M0 0h220v60C170 80 150 40 100 70S30 110 0 90Z" fill="#2aa3a8"></path>
+              <path d="M0 190V120c40 20 70-20 120-10s70-30 100-20v100Z" fill="#ead9a8"></path>
+              <path
+                d="M0 112c40 20 70-20 120-10s70-30 100-20"
+                fill="none"
+                stroke="#fff"
+                stroke-width="6"
+                opacity=".9"></path>
+              <path
+                d="M0 98c40 20 70-20 120-10s70-30 100-20"
+                fill="none"
+                stroke="#fff"
+                stroke-width="2"
+                opacity=".5"></path>
+              <circle cx="170" cy="150" r="5" fill="#ff6fb5"></circle>
+              <circle cx="60" cy="160" r="4" fill="#3d5bff"></circle>
+            </svg>
+            <figcaption class="hand">
+              ...as an economic excuse to buy a drone. it worked.
+            </figcaption>
+          </div>
+        </figure>
+
+        <figure class="hang" data-hang style={at(722, 962, 262, -1)}>
+          <i class="pin pin-pink" aria-hidden="true"></i>
+          <div class="body polaroid">
+            <svg
+              viewBox="0 0 220 190"
+              role="img"
+              aria-label="abstract drawing of a river through forest from above"
+            >
+              <rect width="220" height="190" fill="#1f5a3f"></rect>
+              <g fill="#2c7350">
+                <circle cx="30" cy="30" r="16"></circle><circle cx="70" cy="20" r="12"></circle>
+                <circle cx="180" cy="40" r="18"></circle><circle cx="200" cy="90" r="14"></circle>
+                <circle cx="40" cy="150" r="18"></circle><circle cx="20" cy="100" r="12"></circle>
+                <circle cx="170" cy="160" r="16"></circle><circle cx="140" cy="20" r="10"></circle>
+                <circle cx="80" cy="170" r="12"></circle><circle cx="190" cy="130" r="10"></circle>
+              </g>
+              <path
+                d="M90-10C70 40 150 60 120 100S60 150 110 200"
+                fill="none"
+                stroke="#8fd3e8"
+                stroke-width="16"
+                stroke-linecap="round"></path>
+              <path
+                d="M90-10C70 40 150 60 120 100S60 150 110 200"
+                fill="none"
+                stroke="#c9eef7"
+                stroke-width="4"
+                stroke-linecap="round"></path>
+            </svg>
+            <figcaption class="hand">
+              19: bought a camera. first clients within 2 months of starting.
+            </figcaption>
+          </div>
+        </figure>
+
+        <div class="pad" style={at(178, 1352)}>
+          <button type="button" class="pad-btn" data-drone-toggle aria-pressed="false">
+            <span class="pad-h" aria-hidden="true">H</span>
+            <span class="sr">send the drone out, or call it home</span>
+          </button>
+          <div class="drone" data-drone aria-hidden="true">
+            <svg viewBox="0 0 120 64" width="96" height="51">
+              <g class="props">
+                <ellipse cx="22" cy="10" rx="20" ry="3"></ellipse>
+                <ellipse cx="98" cy="10" rx="20" ry="3"></ellipse>
+              </g>
+              <path d="M22 10v10M98 10v10" stroke="#0b1512" stroke-width="4" stroke-linecap="round"
+              ></path>
+              <path d="M14 22h92" stroke="#f4f6f0" stroke-width="7" stroke-linecap="round"></path>
+              <rect x="40" y="14" width="40" height="24" rx="9" fill="#f4f6f0"></rect>
+              <rect x="46" y="19" width="28" height="6" rx="3" fill="#0b1512"></rect>
+              <circle class="led" cx="70" cy="22" r="2"></circle>
+              <path
+                d="M46 38l-8 16M74 38l8 16M32 55h14M74 55h14"
+                stroke="#0b1512"
+                stroke-width="3"
+                stroke-linecap="round"
+                fill="none"></path>
+              <rect x="52" y="38" width="16" height="13" rx="4" fill="#0b1512"></rect>
+              <circle cx="60" cy="45" r="4.2" fill="#d7ff3e"></circle>
+              <circle cx="60" cy="45" r="1.8" fill="#0b1512"></circle>
+            </svg>
+          </div>
+        </div>
+        <p class="paint scribble" style={at(350, 1392)}>
+          drone parking. tap the pad<br />to send it out or call it home.
+        </p>
+        <div class="hang tag tag-lime" data-hang style={at(700, 1352, 190, 2)}>
+          <i class="pin" aria-hidden="true"></i>
+          <div class="body">
+            <b class="tag-word">captured above</b>
+            <a href="https://capturedabove-website.vercel.app" {...ext}
+              >see the site <span aria-hidden="true">↗</span></a
+            >
+          </div>
+        </div>
+      </section>
+
+      <!-- ───────────────────────── PAST ───────────────────────── -->
+      <section class="zone" id="past" data-zone data-box={zones[3].box} aria-labelledby="h-past">
+        <h2 class="paint label" id="h-past" style={at(2640, 806)}>
+          <small>d /</small> past
+        </h2>
+        <p class="paint sub" style={at(2644, 886)}>the paper trail. kept the receipt.</p>
+
+        <article class="hang" data-hang style={at(2660, 962, 344, 0.9)}>
+          <i class="pin" aria-hidden="true"></i>
+          <div class="body receipt">
+            <p class="r-head">OSCARAMA &amp; CO*</p>
+            <p class="r-fine">*not a real company. yet.</p>
+            <p class="r-rule" aria-hidden="true"></p>
+            <ul class="r-items">
+              <li>
+                <span class="r-age">age 14</span>
+                <span
+                  >started coding. first freelance client less than 5 months later, still 14.</span
+                >
+              </li>
+              <li>
+                <span class="r-age">age 16</span>
+                <span>drone business. see section c.</span>
+              </li>
+              <li>
+                <span class="r-age">1 ×</span>
+                <span>
+                  <a href="https://hel.io" {...ext}><Logo src={helioLogo} tile="light" />helio</a>:
+                  a few months freelancing at a crypto payments startup
+                </span>
+              </li>
+              <li>
+                <span class="r-age">1 ×</span>
+                <span>
+                  <a href="https://discord.gg/exp" {...ext}
+                    ><Logo src={expLogo} tile="light" />EXP</a
+                  >: built the bot systems from the ground up, with bank systems handling $100,000s
+                  of in-game value
+                </span>
+              </li>
+              <li>
+                <span class="r-age">1 ×</span>
+                <span>
+                  <a href="https://fanks.co" {...ext}><Logo src={fanksLogo} tile="light" />fanks</a
+                  >: helping build better community-brand matching
+                </span>
+              </li>
+              <li>
+                <span class="r-age">age 18</span>
+                <span>
+                  joined a
+                  <a href="https://www.ycombinator.com/companies/coloop" {...ext}
+                    ><Logo src={ycLogo} tile="light" />YC startup</a
+                  >
+                  as a full-time software engineer, before finishing high school
+                </span>
+              </li>
+            </ul>
+            <p class="r-rule" aria-hidden="true"></p>
+            <dl class="r-totals">
+              <div><dt>uni tuition</dt><dd>£0.00</dd></div>
+              <div><dt>lectures attended</dt><dd>0</dd></div>
+              <div class="r-total"><dt>total</dt><dd>still building</dd></div>
+            </dl>
+            <p class="r-foot">thank you for scrolling sideways</p>
+            <div class="barcode" aria-hidden="true"></div>
+          </div>
+        </article>
+
+        <article class="hang" data-hang style={at(3080, 950, 330, -1.4)}>
+          <i class="pin pin-pink" aria-hidden="true"></i>
+          <div class="body clipping">
+            <p class="clip-kicker">later, in the news</p>
+            <h3>helio sold to MoonPay for <mark>$175m</mark></h3>
+            <p>
+              the crypto payments startup i spent a few months freelancing at.
+              <a href="https://www.moonpay.com/en-gb/newsroom/helio-acquisition" {...ext}
+                >the announcement <span aria-hidden="true">↗</span></a
+              >
+            </p>
+            <p class="hand">(i did not get $175m)</p>
+          </div>
+        </article>
+
+        <article class="hang" data-hang style={at(3110, 1300, 290, 1.8)}>
+          <i class="pin pin-lime" aria-hidden="true"></i>
+          <div class="body growth">
+            <p class="mono">EXP discord, members</p>
+            <p class="growth-nums"><span>2k</span><i aria-hidden="true"></i><b>45k+</b></p>
+            <p>helped it grow while running the bots and the bank.</p>
+          </div>
+        </article>
+      </section>
+
+      <!-- ───────────────────────── SOMEDAY ───────────────────────── -->
+      <section
+        class="zone"
+        id="someday"
+        data-zone
+        data-box={zones[5].box}
+        aria-labelledby="h-someday"
+      >
+        <h2 class="paint label" id="h-someday" style={at(180, 1706)}>
+          <small>e /</small> someday
+        </h2>
+        <p class="paint sub" style={at(184, 1786)}>my passion is aerospace. this is the plan.</p>
+
+        <article class="hang" data-hang data-fixed style={at(200, 1862, 700, -0.6)}>
+          <i class="tape tape-l" aria-hidden="true"></i>
+          <i class="tape tape-r" aria-hidden="true"></i>
+          <div class="body blueprint">
+            <svg
+              viewBox="0 0 640 300"
+              role="img"
+              aria-label="a not very technical drawing of a rocket"
+            >
+              <g fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round">
+                <path d="M170 120h270c50 4 90 14 118 30-28 16-68 26-118 30H170Z"></path>
+                <path d="M440 120v60M330 120v60M250 120v60" opacity=".6"></path>
+                <path d="M170 120l-52-44h62l40 44M170 180l-52 44h62l40-44"></path>
+                <path d="M170 132l-34-10v56l34-10"></path>
+                <circle cx="478" cy="150" r="11"></circle>
+                <path
+                  d="M136 136c-30 4-52 8-76 14 24 6 46 10 76 14"
+                  stroke-dasharray="5 6"
+                  opacity=".8"></path>
+                <path d="M40 150h560" stroke-dasharray="14 6 2 6" stroke-width="1" opacity=".5"
+                ></path>
+                <path d="M118 262h440M118 252v20M558 252v20" stroke-width="1"></path>
+                <path d="M520 96l22 32M100 104l28 26" stroke-width="1.2"></path>
+              </g>
+              <g fill="#fff" font-family="'DM Mono', monospace" font-size="12">
+                <text x="300" y="256" text-anchor="middle">length: tbd</text>
+                <text x="470" y="88">pointy end</text>
+                <text x="40" y="96">flamey end</text>
+                <text x="258" y="141" opacity=".8">fuel: tbd</text>
+                <text x="340" y="141" opacity=".8">payload: tbd</text>
+              </g>
+            </svg>
+            <dl class="bp-block">
+              <div><dt>project</dt><dd>an aerospace company</dd></div>
+              <div><dt>name</dt><dd>tbd</dd></div>
+              <div><dt>status</dt><dd>soon</dd></div>
+              <div><dt>drawn by</dt><dd>o.f.</dd></div>
+              <div><dt>scale</dt><dd>not to</dd></div>
+            </dl>
+            <p class="hand bp-note">
+              i wanna start an aerospace company soon. rockets, space, the lot.
+            </p>
+          </div>
+        </article>
+      </section>
+
+      <!-- ───────────────────────── STACK ───────────────────────── -->
+      <section class="zone" id="stack" data-zone data-box={zones[6].box} aria-labelledby="h-stack">
+        <h2 class="paint label" id="h-stack" style={at(1070, 1706)}>
+          <small>f /</small> stack
+        </h2>
+        <p class="paint sub" style={at(1074, 1786)}>
+          tools i reach for. peel a sticker, put it anywhere.
+        </p>
+
+        <div class="hang" data-hang data-fixed style={at(1080, 1862, 430, 0.8)}>
+          <i class="tape tape-c" aria-hidden="true"></i>
+          <div class="body sheet">
+            <p class="mono sheet-head">
+              <span>sticker sheet no. 1</span><span>peel here ↘</span>
+            </p>
+            <ul class="stickers">
+              {
+                stickers.map((s) => (
+                  <li
+                    class:list={["sticker", { dark: s.dark }]}
+                    data-sticker
+                    style={`--r:${s.r}deg`}
+                  >
+                    <img src={s.icon} alt="" width="40" height="40" draggable="false" />
+                    <span>{s.name}</span>
+                  </li>
+                ))
+              }
+            </ul>
+            <p class="mono sheet-foot">+ svelte, genai, and whatever shipped last week</p>
+          </div>
+        </div>
+
+        <article class="hang" data-hang style={at(1550, 1850, 300, -1.5)}>
+          <i class="pin pin-pink" aria-hidden="true"></i>
+          <div class="body index-card">
+            <h3>on github</h3>
+            <ul>
+              {repos.map((r) => <li>{r}</li>)}
+            </ul>
+            <a class="btn" href="https://github.com/thereal-atom" {...ext}
+              >@thereal-atom <span aria-hidden="true">↗</span></a
+            >
+          </div>
+        </article>
+      </section>
+
+      <!-- ───────────────────────── OFF-DUTY ───────────────────────── -->
+      <section
+        class="zone"
+        id="offduty"
+        data-zone
+        data-box={zones[7].box}
+        aria-labelledby="h-offduty"
+      >
+        <h2 class="paint label" id="h-offduty" style={at(1970, 1706)}>
+          <small>g /</small> off-duty
+        </h2>
+        <p class="paint sub" style={at(1974, 1786)}>
+          in my time off i climb mountains, hike, boulder and rock climb.
+        </p>
+
+        <article class="hang" data-hang style={at(1980, 1856, 330, -1)}>
+          <i class="clip" aria-hidden="true"></i>
+          <div class="body packing">
+            <h3>packing list</h3>
+            <p class="mono">tick what you'd bring</p>
+            <ul>
+              {
+                kit.map((k, i) => (
+                  <li>
+                    <label>
+                      <input type="checkbox" checked={i < 2} />
+                      <span class="box" aria-hidden="true" />
+                      <span class="hand">{k.item}</span>
+                      {k.note && <small>{k.note}</small>}
+                    </label>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+        </article>
+
+        <div class="hang carabiner" data-hang style={at(2400, 1850, 130, 4)}>
+          <i class="pin" aria-hidden="true"></i>
+          <div class="body">
+            <svg viewBox="0 0 130 230" aria-hidden="true">
+              <path
+                d="M65 8c30 0 50 18 50 46v104c0 38-20 62-50 62s-44-20-44-52V52C21 24 38 8 65 8Z"
+                fill="none"
+                stroke="#ff6fb5"
+                stroke-width="15"
+                stroke-linejoin="round"></path>
+              <path d="M21 62v100" stroke="#0f3b2e" stroke-width="19"></path>
+              <path d="M24 60l8 104" stroke="#d9dedb" stroke-width="9" stroke-linecap="round"
+              ></path>
+              <path
+                d="M65 8c30 0 50 18 50 46v60"
+                fill="none"
+                stroke="#fff"
+                stroke-opacity=".35"
+                stroke-width="4"
+                stroke-linecap="round"></path>
+            </svg>
+          </div>
+        </div>
+
+        <div class="hang" data-hang style={at(2370, 2136, 220, -3)}>
+          <i class="pin pin-lime" aria-hidden="true"></i>
+          <div class="body sticky sticky-pink">
+            <p class="hand">
+              also: running, camping, mountaineering, skiing. basically anything where the wifi is
+              bad.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ───────────────────────── SAY HI ───────────────────────── -->
+      <section class="zone" id="hi" data-zone data-box={zones[8].box} aria-labelledby="h-hi">
+        <h2 class="paint label" id="h-hi" style={at(2770, 1706)}>
+          <small>h /</small> say hi
+        </h2>
+        <p class="paint sub" style={at(2774, 1786)}>dms are open. take a card.</p>
+
+        <ul class="cards">
+          <li class="hang" data-hang style={at(2770, 1862, 210, -2)}>
+            <i class="pin" aria-hidden="true"></i>
+            <a class="body card" href="https://github.com/thereal-atom" {...ext}>
+              <small>code</small><b>github</b><span>@thereal-atom ↗</span>
+            </a>
+          </li>
+          <li class="hang" data-hang style={at(3005, 1890, 210, 1.5)}>
+            <i class="pin pin-pink" aria-hidden="true"></i>
+            <a class="body card card-blue" href="https://linkedin.com/in/oscarfalemara" {...ext}>
+              <small>work</small><b>linkedin</b><span>/in/oscarfalemara ↗</span>
+            </a>
+          </li>
+          <li class="hang" data-hang style={at(3240, 1856, 210, -1)}>
+            <i class="pin pin-lime" aria-hidden="true"></i>
+            <a class="body card card-dark" href="https://x.com/oscarfalll" {...ext}>
+              <small>posts</small><b>x</b><span>@oscarfalll ↗</span>
+            </a>
+          </li>
+          <li class="hang" data-hang style={at(2860, 2090, 250, 1)}>
+            <i class="pin" aria-hidden="true"></i>
+            <a class="body card card-lime" href="https://luma.com/oscarama" {...ext}>
+              <small>in person</small><b>luma</b><span>come to a thing ↗</span>
+            </a>
+          </li>
+          <li class="hang" data-hang style={at(3170, 2110, 230, -2.5)}>
+            <i class="pin pin-pink" aria-hidden="true"></i>
+            <a class="body card card-pink" href="https://outpostcrew.co" {...ext}>
+              <small>community</small><b>outpost</b><span>outpostcrew.co ↗</span>
+            </a>
+          </li>
+        </ul>
+        <p class="paint scribble" style={at(2776, 2270)}>
+          this wall is one of four redesigns. <a href="/v3">back to the hub</a>
+        </p>
+      </section>
+    </div>
+  </main>
+
+  <!-- ───────────────────────── CHROME ───────────────────────── -->
+  <nav class="dock" aria-label="places on the wall">
+    <ul>
+      {
+        zones.map((z, i) => (
+          <li>
+            <a href={`#${z.id}`} data-goto={z.id}>
+              <kbd aria-hidden="true">{i + 1}</kbd>
+              {z.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <div class="dock-tools">
+      <button type="button" data-overview aria-pressed="false" title="see the whole wall (0)"
+        >whole wall</button
+      >
+      <button type="button" data-reset title="put everything back where it was">tidy</button>
+      <button
+        type="button"
+        data-drone-toggle
+        aria-pressed="false"
+        title="send the drone out or park it (d)">drone</button
+      >
+      <button type="button" class="dock-tldr" data-tldr>tl;dr</button>
+    </div>
+  </nav>
+
+  <div class="minimap" data-minimap aria-hidden="true">
+    <div class="mm-view" data-mm-view></div>
+  </div>
+
+  <p class="hint" data-hint>
+    drag the wall to look around <i>·</i> grab anything <i>·</i> arrow keys work too
+  </p>
+
+  <dialog class="tldr" data-tldr-dialog aria-labelledby="tldr-title">
+    <form method="dialog"><button class="tldr-close" aria-label="close">close ✕</button></form>
+    <p class="mono">quick-read mode</p>
+    <h2 id="tldr-title">oscar falemara, in 10 seconds</h2>
+    <ul>
+      <li>self-taught software engineer from london. started at 14, never went to uni.</li>
+      <li>
+        full-time software engineer at <a href="https://coloop.ai" {...ext}>coloop ai</a> (yc s21) since
+        18, joined before finishing high school. also does events and growth engineering there.
+      </li>
+      <li>
+        runs <a href="https://outpostcrew.co" {...ext}>outpost</a>, a 5k+ member community for those
+        building at the frontier.
+      </li>
+      <li>
+        hosted or helped organise 30+ events for 2,000+ people, with openai, vercel, spacexai,
+        daytona, corgi and more.
+      </li>
+      <li>
+        ran the london stop of vercel's <a href="/events/zero-to-agent">zero to agent</a> hackathon solo:
+        ~100 builders, £5.8k cash, $1m+ in credits.
+      </li>
+      <li>
+        spoke at <a href="https://techsummit.kcltech.co.uk/" {...ext}>kcl tech summit 2026</a>.
+      </li>
+      <li>
+        hackathons: won his first ever (omisphere), then got flown to lithuania and finland for
+        more.
+      </li>
+      <li>
+        before: fanks, EXP (2k → 45k+ members), helio (later acquired by moonpay for $175m), and a
+        drone business at 16.
+      </li>
+      <li>next: an aerospace company. meanwhile: mountains, climbing walls, cameras.</li>
+    </ul>
+    <p class="tldr-links">
+      <a href="https://github.com/thereal-atom" {...ext}>github ↗</a>
+      <a href="https://linkedin.com/in/oscarfalemara" {...ext}>linkedin ↗</a>
+      <a href="https://x.com/oscarfalll" {...ext}>x ↗</a>
+      <a href="https://luma.com/londonmaxxing-ai" {...ext}>events ↗</a>
+    </p>
+  </dialog>
+</Layout>
+
+<script>
+  import { initWall } from "@/v3/fable/wall";
+  initWall();
+</script>

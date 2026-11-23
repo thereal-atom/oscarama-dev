@@ -1,0 +1,306 @@
+---
+import { Image } from "astro:assets";
+import OpusLayout from "@/v2/opus/layouts/OpusLayout.astro";
+import Flap from "@/v2/opus/components/Flap.astro";
+import Footer from "@/v2/opus/components/Footer.astro";
+import { gates, type Gate } from "@/v2/opus/data/events";
+
+export function getStaticPaths() {
+  return gates.map((g, i) => ({
+    params: { slug: g.slug },
+    props: {
+      g,
+      prev: gates[(i - 1 + gates.length) % gates.length],
+      next: gates[(i + 1) % gates.length],
+    },
+  }));
+}
+
+interface Props {
+  g: Gate;
+  prev: Gate;
+  next: Gate;
+}
+const { g, prev, next } = Astro.props;
+const lumaDisplay = g.lumaUrl.replace("https://", "");
+---
+
+<OpusLayout
+  title={`${g.name.toLowerCase()} · events · oscarama`}
+  description={g.blurb}
+  ogUrl={`https://oscarama.dev/v2/opus/events/${g.slug}`}
+  hud="dark"
+  bodyClass="is-night"
+>
+  <main id="main" class="gp on-dark">
+    <div class="gp__glow" aria-hidden="true"></div>
+    <div class="wrap">
+      <a class="gp__back label" href="/v2/opus/events">← all departures</a>
+
+      <div class="gp__strip" aria-hidden="true">
+        <Flap text={g.gate} len={2} />
+        <Flap text={g.name} len={16} />
+        <Flap class="gp__strip-status" text="gate open" len={9} hot />
+      </div>
+
+      <header class="gp__head">
+        <span class="gp__logo">
+          <Image src={g.logo} alt="" width={160} height={160} loading="eager" />
+        </span>
+        <div>
+          <p class="label gp__k">gate {g.gate} · {g.tag}</p>
+          <h1 class="gp__h stencil">{g.name}</h1>
+        </div>
+      </header>
+
+      <div class="gp__intro">
+        <p class="gp__desc">{g.blurb}</p>
+        <div class="gp__ctas">
+          <a
+            class="btn btn--hot"
+            href={g.lumaUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-ph="luma"
+            data-ph-label={g.slug}>rsvp on luma <span class="arr">↗</span></a
+          >
+          <span class="label gp__url">{lumaDisplay}</span>
+        </div>
+      </div>
+
+      <section class="manifest" aria-labelledby="manifest-title">
+        <div class="manifest__bar label">
+          <span class="manifest__live"><span class="dot"></span> live manifest</span>
+          <h2 id="manifest-title" class="manifest__t">upcoming departures</h2>
+          <span class="dim">via luma</span>
+        </div>
+        <iframe
+          src={`https://luma.com/embed/calendar/${g.lumaCalendarId}/events`}
+          title={`${g.name} upcoming events on luma`}
+          width="100%"
+          height="640"
+          loading="lazy"
+          allowfullscreen></iframe>
+      </section>
+
+      <nav class="gp__nav" aria-label="other gates">
+        <a class="gp__nav-a" href={`/v2/opus/events/${prev.slug}`}>
+          <span class="label dim">← gate {prev.gate}</span>
+          <span class="display">{prev.name}</span>
+        </a>
+        <a class="gp__nav-a gp__nav-a--next" href={`/v2/opus/events/${next.slug}`}>
+          <span class="label dim">gate {next.gate} →</span>
+          <span class="display">{next.name}</span>
+        </a>
+      </nav>
+    </div>
+
+    <Footer />
+  </main>
+</OpusLayout>
+
+<style>
+  .gp {
+    position: relative;
+    min-height: 100vh;
+    padding-top: 92px;
+    background:
+      repeating-linear-gradient(to right, rgb(236 232 223 / 0.035) 0 1px, transparent 1px 120px),
+      #070912;
+    overflow-x: clip;
+  }
+  .gp__glow {
+    position: absolute;
+    right: -10%;
+    top: 0;
+    width: 70vw;
+    height: 600px;
+    background: radial-gradient(ellipse 50% 50% at 50% 40%, rgb(255 79 0 / 0.13), transparent 70%);
+    pointer-events: none;
+  }
+  .gp > :not(.gp__glow) {
+    position: relative;
+  }
+  .gp__back {
+    display: inline-block;
+    color: var(--star-2);
+    text-decoration: none;
+    margin-bottom: 22px;
+  }
+  .gp__back:hover {
+    color: var(--orange);
+  }
+
+  .gp__strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 18px;
+    padding: 12px 14px;
+    border-radius: 6px;
+    background: #0d0f14;
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.06);
+    font-size: clamp(12px, 1.6vw, 20px);
+    width: fit-content;
+    max-width: 100%;
+  }
+
+  .gp__head {
+    display: flex;
+    align-items: flex-end;
+    gap: clamp(16px, 2.4vw, 32px);
+    margin-top: clamp(28px, 4vw, 48px);
+  }
+  .gp__logo {
+    flex: none;
+    width: clamp(72px, 9vw, 128px);
+    aspect-ratio: 1;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.15);
+  }
+  .gp__logo :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .gp__k {
+    color: var(--orange);
+    margin-bottom: 10px;
+  }
+  .gp__h {
+    font-size: clamp(56px, 9.4vw, 152px);
+    line-height: 0.84;
+  }
+
+  .gp__intro {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: 32px;
+    align-items: end;
+    margin: clamp(24px, 3vw, 40px) 0 clamp(32px, 4vw, 56px);
+  }
+  .gp__desc {
+    max-width: 60ch;
+    font-size: 15px;
+    color: #d5d8e2;
+  }
+  .gp__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+    justify-self: end;
+  }
+  .gp__url {
+    color: var(--star-2);
+  }
+
+  .manifest {
+    border-radius: 8px;
+    overflow: hidden;
+    background: #0d0f14;
+    box-shadow:
+      0 0 0 1px rgb(255 255 255 / 0.08),
+      0 40px 80px -30px rgb(0 0 0 / 0.9);
+  }
+  .manifest__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px 11px;
+    border-bottom: 1px solid rgb(255 255 255 / 0.08);
+  }
+  .manifest__t {
+    font: inherit;
+    color: #f6d36b;
+  }
+  .manifest__live {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #8fe3a5;
+  }
+  .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #8fe3a5;
+    box-shadow: 0 0 10px #8fe3a5;
+  }
+  .manifest iframe {
+    display: block;
+    width: 100%;
+    border: 0;
+    background: transparent;
+    color-scheme: dark;
+  }
+
+  .gp__nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: clamp(40px, 5vw, 72px) 0 clamp(64px, 8vw, 110px);
+  }
+  .gp__nav-a {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 18px 20px;
+    border: 1px solid rgb(236 232 223 / 0.14);
+    border-radius: 6px;
+    color: inherit;
+    text-decoration: none;
+    transition:
+      border-color 0.25s,
+      transform 0.4s var(--ease-out);
+  }
+  .gp__nav-a:hover {
+    border-color: var(--orange);
+    transform: translateY(-2px);
+  }
+  .gp__nav-a .display {
+    font-size: clamp(22px, 2.4vw, 34px);
+  }
+  .gp__nav-a--next {
+    text-align: right;
+  }
+
+  @media (max-width: 760px) {
+    .gp {
+      padding-top: 78px;
+    }
+    .gp__intro {
+      grid-template-columns: 1fr;
+    }
+    .gp__ctas {
+      justify-self: start;
+    }
+    .gp__head {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .gp__strip :global(.gp__strip-status) {
+      display: none;
+    }
+    .gp__strip {
+      font-size: calc((100vw - var(--gutter) * 2 - 70px) / 21);
+    }
+  }
+  @media (max-width: 480px) {
+    .manifest__bar > .dim {
+      display: none;
+    }
+    .gp__nav {
+      grid-template-columns: 1fr;
+    }
+    .gp__nav-a--next {
+      text-align: left;
+    }
+  }
+</style>
+
+<script>
+  import { settle } from "@/v2/opus/scripts/flaps";
+  settle();
+</script>

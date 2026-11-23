@@ -1,0 +1,30 @@
+---
+import Layout from "@/v4/opus/Layout.astro";
+import ColdOpen from "@/v4/opus/components/ColdOpen.astro";
+import Trailer from "@/v4/opus/components/Trailer.astro";
+import Screenplay from "@/v4/opus/components/Screenplay.astro";
+import Ensemble from "@/v4/opus/components/Ensemble.astro";
+import CallSheet from "@/v4/opus/components/CallSheet.astro";
+import Festival from "@/v4/opus/components/Festival.astro";
+import RackFocus from "@/v4/opus/components/RackFocus.astro";
+import ContactSheet from "@/v4/opus/components/ContactSheet.astro";
+import Credits from "@/v4/opus/components/Credits.astro";
+import "@/v4/opus/styles/home.css";
+---
+
+<Layout
+  title="oscarama · a feature in ten scenes"
+  description="oscar falemara: self-taught software engineer at coloop ai (yc s21), runs outpost (5k+ builders), 30+ events in london. presented as a film."
+  path="/v4/opus"
+  home
+>
+  <ColdOpen />
+  <Trailer />
+  <Screenplay />
+  <Ensemble />
+  <CallSheet />
+  <Festival />
+  <RackFocus />
+  <ContactSheet />
+  <Credits />
+</Layout>

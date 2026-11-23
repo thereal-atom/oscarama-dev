@@ -1,0 +1,305 @@
+---
+import Chip from "../Chip.astro";
+import { logos, links } from "../../data/content";
+
+const stats = [
+  { to: 100, pre: "~", suf: "", dec: 0, l: "builders" },
+  { to: 3, pre: "", suf: "", dec: 0, l: "tracks" },
+  { to: 5.8, pre: "£", suf: "k", dec: 1, l: "cash prizes" },
+  { to: 1, pre: "$", suf: "m+", dec: 0, l: "in credits" },
+];
+---
+
+<section class="hi on-dark" id="highlights" data-alt="20000" data-theme="dark" data-zone="launches">
+  <div class="wrap">
+    <header class="sec-head label" data-reveal>
+      <span class="no">§05</span><span>stratosphere</span><span class="rule"></span><span
+        >proudest launches</span
+      >
+    </header>
+
+    <h2 class="hi__h display" data-reveal>
+      proudest<br /><span class="hi__h-o">launches</span>
+    </h2>
+
+    <div class="hi__grid">
+      <article class="z2a" data-reveal>
+        <div class="z2a__glow" aria-hidden="true"></div>
+        <div class="z2a__top label">
+          <span>launch 01 · sat 2 may 2026 · london</span>
+          <span class="z2a__with"
+            >with <Chip href="https://vercel.com" logo={logos.vercel} text="vercel" pad /></span
+          >
+        </div>
+        <h3 class="z2a__title stencil">
+          zero <span class="z2a__arr">→</span>
+          <span class="z2a__o">agent</span>
+        </h3>
+        <p class="z2a__copy">
+          my first ever hackathon as an organiser: the london stop of vercel's zero to agent. 100 of
+          london's most talented builders, a day of shipping agents, and i organised the whole thing
+          by myself.
+        </p>
+        <dl class="z2a__stats">
+          {
+            stats.map((s) => (
+              <div>
+                <dd class="stencil tnum">
+                  {s.pre}
+                  <span data-count={s.to} data-dec={s.dec}>
+                    {s.dec ? s.to.toFixed(s.dec) : s.to}
+                  </span>
+                  {s.suf}
+                </dd>
+                <dt class="label">{s.l}</dt>
+              </div>
+            ))
+          }
+        </dl>
+        <div class="z2a__foot">
+          <p class="z2a__spons label">
+            <span class="dim">sponsored by</span>
+            <Chip href="https://coderabbit.ai" logo={logos.coderabbit} text="coderabbit" />
+            <Chip href="https://brightdata.com" logo={logos.brightdata} text="bright data" />
+            <Chip href="https://mubit.ai" logo={logos.mubit} text="mubit" />
+          </p>
+          <a class="btn btn--hot" href={links.zeroToAgent} data-ph="cta" data-ph-label="z2a-recap"
+            >read the recap <span class="arr">→</span></a
+          >
+        </div>
+      </article>
+
+      <article class="kcl" data-reveal style="--d:140">
+        <div class="kcl__top label">
+          <span>launch 02 · sat 31 oct 2026</span>
+          <span class="dim">king's college london</span>
+        </div>
+        <h3 class="kcl__title display">kcl tech<br />summit '26</h3>
+        <figure class="kcl__panel">
+          <span class="label dim">the panel</span>
+          <blockquote class="serif">"how to break into london's tech scene"</blockquote>
+        </figure>
+        <p>
+          i spoke on a panel about community building as a full-time software engineer who's never
+          been to uni.
+        </p>
+        <dl class="kcl__bill">
+          <dt class="label dim">billed as</dt>
+          <dd>software engineer &amp; community organiser at coloop ai and outpost</dd>
+        </dl>
+        <a
+          class="btn"
+          href={links.kcl}
+          target="_blank"
+          rel="noopener noreferrer"
+          data-ph="cta"
+          data-ph-label="kcl">kcl tech summit <span class="arr">↗</span></a
+        >
+      </article>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hi {
+    position: relative;
+    padding: clamp(64px, 8vw, 120px) 0 clamp(72px, 9vw, 140px);
+  }
+  .hi__h {
+    margin: 28px 0 clamp(36px, 5vw, 64px);
+    font-size: clamp(54px, 8.4vw, 132px);
+  }
+  .hi__h-o {
+    color: var(--orange);
+  }
+
+  .hi__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+    gap: clamp(16px, 2vw, 28px);
+    align-items: stretch;
+  }
+
+  .z2a,
+  .kcl {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    padding: clamp(22px, 2.8vw, 40px);
+    border: 1px solid rgb(236 232 223 / 0.16);
+    border-radius: 4px;
+    background: rgb(10 16 40 / 0.55);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .z2a__glow {
+    position: absolute;
+    right: -20%;
+    top: -40%;
+    width: 70%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgb(255 79 0 / 0.28), transparent 65%);
+    z-index: -1;
+  }
+  .z2a__top,
+  .kcl__top {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 10px;
+    color: var(--star-2);
+  }
+  .z2a__with {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .z2a__title {
+    font-size: clamp(64px, 8.6vw, 148px);
+    line-height: 0.8;
+    white-space: nowrap;
+  }
+  .z2a__arr {
+    font-family: var(--f-mono);
+    font-weight: 300;
+    font-size: 0.5em;
+    vertical-align: 0.38em;
+    color: var(--star-2);
+  }
+  .z2a__o {
+    color: var(--orange);
+  }
+  .z2a__copy {
+    max-width: 58ch;
+  }
+  .z2a__stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin: 0;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+  .z2a__stats div {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 8px;
+    padding: 18px 0 16px;
+  }
+  .z2a__stats div + div {
+    padding-left: 18px;
+    border-left: 1px solid var(--rule);
+  }
+  .z2a__stats dd {
+    margin: 0;
+    font-size: clamp(40px, 4.2vw, 64px);
+    line-height: 0.8;
+    white-space: nowrap;
+  }
+  .z2a__stats dt {
+    color: var(--star-2);
+  }
+  .z2a__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: auto;
+  }
+  .z2a__spons {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 14px;
+    text-transform: none;
+    letter-spacing: 0.04em;
+    font-size: 11px;
+  }
+
+  .kcl__title {
+    font-size: clamp(48px, 5.4vw, 84px);
+  }
+  .kcl__panel {
+    margin: 0;
+    padding: 16px 0 16px 18px;
+    border-left: 3px solid var(--orange);
+  }
+  .kcl__panel blockquote {
+    margin: 8px 0 0;
+    font-size: clamp(26px, 2.4vw, 36px);
+    line-height: 1.05;
+  }
+  .kcl__bill {
+    margin: 0;
+    padding-top: 14px;
+    border-top: 1px solid var(--rule);
+  }
+  .kcl__bill dd {
+    margin: 4px 0 0;
+    font-size: 12px;
+  }
+  .kcl .btn {
+    align-self: flex-start;
+    margin-top: auto;
+  }
+
+  @media (max-width: 960px) {
+    .hi__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 560px) {
+    .z2a__stats {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .z2a__stats div:nth-child(3) {
+      padding-left: 0;
+      border-left: 0;
+    }
+    .z2a__stats div:nth-child(n + 3) {
+      border-top: 1px solid var(--rule);
+    }
+    .z2a__title {
+      white-space: normal;
+      font-size: clamp(60px, 21vw, 96px);
+      line-height: 0.84;
+    }
+  }
+</style>
+
+<script>
+  // count the launch stats up when they scroll into view
+  const nums = Array.from(document.querySelectorAll<HTMLElement>("[data-count]"));
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (nums.length && !reduce && "IntersectionObserver" in window) {
+    const run = (el: HTMLElement) => {
+      const to = Number(el.dataset.count);
+      const dec = Number(el.dataset.dec || 0);
+      const t0 = performance.now();
+      const dur = 1400;
+      const step = (now: number) => {
+        const t = Math.min(1, (now - t0) / dur);
+        const e = 1 - Math.pow(1 - t, 4);
+        el.textContent = (to * e).toFixed(dec);
+        if (t < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    };
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            run(e.target as HTMLElement);
+            io.unobserve(e.target);
+          }
+        }
+      },
+      { threshold: 0.6 }
+    );
+    nums.filter((n) => Number(n.dataset.count) >= 3).forEach((n) => io.observe(n));
+  }
+</script>

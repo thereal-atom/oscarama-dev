@@ -1,0 +1,112 @@
+---
+import { ridge } from "../lib/terrain";
+
+// Layered mountain silhouettes. The nearest layer is painted in the colour of
+// whatever section comes next, so the ridge *becomes* the next section.
+interface Props {
+  class?: string;
+  flag?: boolean;
+}
+const { class: cls, flag = true } = Astro.props;
+
+const W = 1440;
+const H = 360;
+const layers = [
+  { seed: 21, base: 0.36, amp: 0.62, rough: 0.62, fill: "#d6cfbe", cls: "far" },
+  { seed: 8, base: 0.5, amp: 0.6, rough: 0.6, fill: "#a7aab0", cls: "mid" },
+  { seed: 33, base: 0.62, amp: 0.56, rough: 0.6, fill: "#5d6f94", cls: "near" },
+  { seed: 5, base: 0.84, amp: 0.26, rough: 0.52, fill: "var(--sky-1)", cls: "front" },
+].map((l) => ({
+  ...l,
+  ...ridge({ seed: l.seed, width: W, height: H, base: l.base, amp: l.amp, rough: l.rough }),
+}));
+
+const flagAt = layers[2].peak;
+---
+
+<div class:list={["ridges", cls]} aria-hidden="true">
+  {
+    layers.map((l) => (
+      <svg
+        class:list={["ridges__l", `ridges__l--${l.cls}`]}
+        viewBox={`0 0 ${W} ${H}`}
+        preserveAspectRatio="none"
+      >
+        <path d={l.d} fill={l.fill} />
+        {flag && l.cls === "near" && (
+          <g class="ridges__flag" transform={`translate(${flagAt[0]} ${flagAt[1]})`}>
+            <line x1="0" y1="0" x2="0" y2="-30" />
+            <path d="M0 -30 L18 -25 L0 -20 Z" />
+          </g>
+        )}
+      </svg>
+    ))
+  }
+</div>
+
+<style>
+  .ridges {
+    position: relative;
+    height: clamp(170px, 24vw, 360px);
+    margin-bottom: -1px;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .ridges__l {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .ridges__flag line {
+    stroke: var(--ink);
+    stroke-width: 2;
+    vector-effect: non-scaling-stroke;
+  }
+  .ridges__flag path {
+    fill: var(--orange);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .ridges__flag path {
+      transform-origin: 0 -25px;
+      animation: flutter 1.4s var(--ease-io) infinite;
+    }
+  }
+  @keyframes flutter {
+    50% {
+      transform: scaleX(0.82) skewY(4deg);
+    }
+  }
+
+  /* gentle parallax using scroll-driven animations where supported */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .ridges__l--far,
+      .ridges__l--mid,
+      .ridges__l--near {
+        animation: px linear both;
+        animation-timeline: view();
+        animation-range: entry 0% exit 60%;
+      }
+      .ridges__l--far {
+        --px: 70px;
+      }
+      .ridges__l--mid {
+        --px: 40px;
+      }
+      .ridges__l--near {
+        --px: 16px;
+      }
+    }
+  }
+  @keyframes px {
+    from {
+      transform: translate3d(0, var(--px), 0);
+    }
+    to {
+      transform: translate3d(0, 0, 0);
+    }
+  }
+</style>

@@ -1,0 +1,104 @@
+---
+import { Image } from "astro:assets";
+import SceneHead from "./SceneHead.astro";
+import { rolls } from "../content";
+
+// hand-drawn grease-pencil loop
+const loop =
+  "M14 52 C 8 22, 52 4, 104 8 C 160 12, 196 34, 190 62 C 184 92, 132 104, 84 100 C 36 96, 4 80, 10 50 C 14 34, 40 20, 70 16";
+let frameCount = 0;
+---
+
+<section
+  id="contact-sheet"
+  class="scene contact"
+  data-scene
+  data-no="08"
+  data-title="the contact sheet"
+>
+  <SceneHead
+    scene="08"
+    title="the contact sheet"
+    dek="past productions and side projects, printed straight off the negatives. the red circles are the selects."
+  />
+
+  <div class="lighttable">
+    {
+      rolls.map((roll) => (
+        <div class="roll">
+          <p class="roll__label">
+            <span>{roll.name}</span> {roll.label}
+          </p>
+          <ol class="roll__frames">
+            {roll.frames.map((f) => {
+              frameCount++;
+              const n = frameCount;
+              return (
+                <li
+                  class={`fr ${f.select ? "fr--select" : ""} ${f.logo ? "" : "fr--type"}`}
+                  data-cut
+                  style={`--d:${n % 6}`}
+                >
+                  <a
+                    class="fr__film"
+                    href={f.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`${f.title} ↗`}
+                  >
+                    <span class="fr__edge" aria-hidden="true">
+                      <span>oscarama 400</span>
+                      <span>▸ {n}</span>
+                    </span>
+                    <span class="fr__img">
+                      {f.logo ? (
+                        <Image src={f.logo} alt="" width={160} height={160} class="fr__logo" />
+                      ) : (
+                        <span class="fr__type" aria-hidden="true">
+                          {f.title}
+                        </span>
+                      )}
+                    </span>
+                    <span class="fr__edge fr__edge--b" aria-hidden="true">
+                      <span>{n}A</span>
+                      <span>safety film</span>
+                    </span>
+                    {f.select && (
+                      <svg
+                        class="fr__loop"
+                        viewBox="0 0 200 110"
+                        preserveAspectRatio="none"
+                        aria-hidden="true"
+                      >
+                        <path d={loop} pathLength="1" />
+                      </svg>
+                    )}
+                  </a>
+                  {f.select && (
+                    <p class="fr__note" aria-hidden="true">
+                      {f.select}
+                    </p>
+                  )}
+                  <p class="fr__cap">
+                    <b>{f.title}</b>
+                    {f.logline}
+                    {f.extra && (
+                      <a href={f.extra.href} target="_blank" rel="noopener noreferrer">
+                        {f.extra.label} ↗
+                      </a>
+                    )}
+                  </p>
+                </li>
+              );
+            })}
+          </ol>
+        </div>
+      ))
+    }
+    <aside class="dc contact__dc">
+      <b>director's commentary</b>
+      grease pencil on a contact sheet: how photographers picked the keepers before "favourite" was a
+      button.
+    </aside>
+  </div>
+</section>

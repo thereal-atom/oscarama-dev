@@ -1,0 +1,66 @@
+---
+import { Image } from "astro:assets";
+import Layout from "@/v4/fable/Layout.astro";
+import { eventSeriesList } from "@/data/eventSeries";
+
+export function getStaticPaths() {
+  return eventSeriesList.map((s) => ({ params: { slug: s.slug } }));
+}
+
+const { slug } = Astro.params;
+const s = eventSeriesList.find((x) => x.slug === slug)!;
+const others = eventSeriesList.filter((x) => x.slug !== slug);
+const name = s.name.toLowerCase();
+---
+
+<Layout
+  title={`${name} | events | oscar falemara`}
+  description={s.description}
+  path={`/v4/fable/events/${s.slug}`}
+  nav="events"
+>
+  <main>
+    <section class="series-head">
+      <div class="wrap">
+        <p class="crumbs"><a href="/v4/fable/events">← back to the lobby</a></p>
+        <div class="row">
+          <Image src={s.logo} alt="" width={300} height={300} />
+          <h1>{name}</h1>
+        </div>
+        <p>{s.description}</p>
+        <div class="cta">
+          <a class="btn" href={s.lumaUrl} target="_blank" rel="noopener noreferrer"
+            >open on luma ↗</a
+          >
+          <a class="btn alt" href="/events/subscribe">get notified</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap" aria-label="upcoming events">
+      <div class="luma">
+        <iframe
+          src={`https://luma.com/embed/calendar/${s.lumaCalendarId}/events?lt=light`}
+          title={`${name}: upcoming events on luma`}
+          loading="lazy"
+          allowfullscreen></iframe>
+      </div>
+
+      <div class="others">
+        <h2 class="h2" style="font-size:clamp(28px,4vw,40px)">other doors</h2>
+        <ul class="chips">
+          {
+            others.map((o) => (
+              <li>
+                <a href={`/v4/fable/events/${o.slug}`}>
+                  <Image src={o.logo} alt="" width={52} height={52} />
+                  {o.name.toLowerCase()}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+  </main>
+</Layout>

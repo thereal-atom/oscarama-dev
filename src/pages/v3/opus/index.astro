@@ -1,0 +1,535 @@
+---
+import { Image } from "astro:assets";
+import Layout from "@/v3/opus/Layout.astro";
+import Entry from "@/v3/opus/Entry.astro";
+import Colophon from "@/v3/opus/Colophon.astro";
+import { pages, guideWords } from "@/v3/opus/entries";
+import { eventSeriesList } from "@/data/eventSeries";
+import { blurb } from "@/v3/opus/series";
+import avatar from "@/assets/oscarama.png";
+
+// two segments so the word can break cleanly on phones: "os·car·" / "a·ma"
+const headword = [
+  ["o", "s", "·", "c", "a", "r", "·"],
+  ["a", "·", "m", "a"],
+];
+
+const roman = ["i", "ii", "iii", "iv"];
+
+const ages = [
+  {
+    n: "14",
+    text: "starts writing code. <mark class='hl'>lands a first freelance client less than five months later</mark>, still fourteen.",
+  },
+  {
+    n: "15",
+    text: "ships openai.js, a tiny node wrapper for the openai api, back when the api first came out.",
+  },
+  {
+    n: "16",
+    text: "starts captured above, a drone videography business, with a friend. mostly <mark class='hl'>an economic excuse to buy a drone</mark>.",
+  },
+  {
+    n: "18",
+    text: "joins coloop ai (yc s21) as a full-time software engineer, <mark class='hl'>before finishing high school</mark>.",
+  },
+  {
+    n: "19",
+    text: "buys a camera. first photo & video clients within two months.",
+  },
+  {
+    n: "now",
+    text: "engineer at coloop, runs outpost (5k+ members), wants to start an aerospace company. degrees held: still zero.",
+  },
+];
+
+const ways = [
+  {
+    word: "won.",
+    w: 150,
+    cap: "<b>omisphere</b>, his first ever hackathon. a project to turn every conversation into part of a collective consciousness.",
+    href: "https://github.com/omisphere/omisphere",
+  },
+  {
+    word: "pitched.",
+    w: 104,
+    cap: "<b>based hack</b>, lithuania 🇱🇹. flown out, built archie, and got picked to pitch to 100+ people in the room.",
+    href: "https://www.basedhack.com/",
+  },
+  {
+    word: "tobogganed.",
+    w: 58,
+    cap: "<b>sunstead hack</b>, finland 🇫🇮. flown out by based collective & unicorn mafia. didn't win. vibe coded while tobogganing.",
+    href: "https://sunsteadhack.com/",
+  },
+];
+
+const synonyms = [
+  "hackathons",
+  "meetups",
+  "dinners",
+  "coworking",
+  "run clubs",
+  "cafés",
+  "demo nights",
+  "bouldering",
+  "and much more",
+];
+
+const zStats = [
+  { v: "~100", k: "builders" },
+  { v: "3", k: "tracks" },
+  { v: "£5.8k", k: "cash prizes" },
+  { v: "$1m+", k: "in credits" },
+  { v: "1", k: "organiser" },
+];
+
+const measures = [
+  { a: "1 outpost", op: "=", b: "5,000+ members" },
+  { a: "30+ events", op: "=", b: "2,000+ people through the door" },
+  { a: "1 zero to agent", op: "=", b: "~100 builders + 3 tracks + £5.8k + $1m+ in credits" },
+  { a: "1 exp discord", op: "=", b: "2k → 45k+ members" },
+  { a: "1 helio exit", op: "=", b: "$175m (to moonpay, not to oscar)" },
+  { a: "time to first client", op: "<", b: "5 months of writing code" },
+  { a: "university degrees", op: "=", b: "0" },
+  { a: "university stages spoken on", op: "≥", b: "1 (kcl tech summit, 2026)" },
+];
+---
+
+<Layout
+  title="the concise oscarama · oscar falemara"
+  description="oscarama, n. a self-taught software engineer from london, at coloop ai (yc s21), running outpost. an incomplete dictionary of one person."
+  path="/v3/opus"
+  guide="oscarama — oscarama"
+  home
+>
+  <!-- ─────────────────────────── HEADWORD ─────────────────────────── -->
+  <section class="hero" id="top" data-guide="oscarama — oscarama">
+    <div class="hero-meta m">
+      <span>the concise oscarama</span>
+      <span class="hide-sm">an incomplete dictionary of one person</span>
+      <span class="hide-sm">1st edition · london · 2026</span>
+      <span>p. i</span>
+    </div>
+
+    <h1 class="hw-giant d" data-headword>
+      <span class="sr-only">oscarama: oscar falemara</span>
+      <span class="hw-row" aria-hidden="true" data-hw-row>
+        {
+          headword.map((seg, si) => (
+            <span class="hw-seg">
+              {seg.map((c, i) =>
+                c === "·" ? (
+                  <span class="dot" />
+                ) : (
+                  <span class="l" style={`--i:${si * 7 + i}`}>
+                    {c}
+                  </span>
+                )
+              )}
+            </span>
+          ))
+        }
+      </span>
+    </h1>
+
+    <div class="hero-def">
+      <div class="hero-side">
+        <p class="pr-big m">\ oss·kuh·<b>RAH</b>·muh \</p>
+        <p class="pos-big">
+          <i>noun</i> · <i>pl.</i> oscaramas <span class="aside">(rare. there is only one.)</span>
+        </p>
+        <p class="origin">
+          <span class="sc m">origin</span>
+          <i>oscar</i> + <i>-rama</i>, a suffix meaning a spectacle, or a big show of something (cf. <i
+            >panorama</i
+          >). first recorded in london, on the internet.
+        </p>
+      </div>
+
+      <ol class="senses-big">
+        <li>
+          <b class="sn d">1</b>
+          <span
+            >oscar falemara. a <mark class="hl">self-taught software engineer</mark> from london, writing
+            code at <a href="https://coloop.ai" target="_blank" rel="noopener noreferrer"
+              >coloop ai</a
+            > (yc s21).</span
+          >
+        </li>
+        <li>
+          <b class="sn d">2</b>
+          <span
+            >the person running <a class="xr" href="#plate-iii">outpost</a>, a community for those
+            building at the frontier. 5k+ members.</span
+          >
+        </li>
+        <li>
+          <b class="sn d">3</b>
+          <span
+            ><i>informal.</i> someone who turns every hobby into an event.
+            <i class="ex">“another run club? that's very <span class="swung">~</span>.”</i></span
+          >
+        </li>
+      </ol>
+
+      <figure class="fig1" data-fig>
+        <div class="fig1-frame">
+          <canvas class="fig1-dots" aria-hidden="true"></canvas>
+          <Image
+            src={avatar}
+            width={560}
+            height={560}
+            alt="an illustration of oscar at his desk, grinning and giving two thumbs up"
+            class="fig1-img"
+            loading="eager"
+          />
+          <span class="fig1-ring" aria-hidden="true"></span>
+          <span class="fig1-hint m" aria-hidden="true">hover to develop</span>
+        </div>
+        <figcaption class="m">fig. 1 — oscarama, at a desk, thumbs up, as is customary.</figcaption>
+      </figure>
+    </div>
+
+    <div class="hero-foot m">
+      <span
+        >see also: <a class="xr" href="#e-outpost">outpost</a>, <a class="xr" href="#e-hackathon"
+          >hackathon</a
+        >, <a class="xr" href="#e-university">university</a></span
+      >
+      <a class="hero-begin" href="#guide">begin at the front matter ↓</a>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── FRONT MATTER ─────────────────────────── -->
+  <section class="guide" id="guide" data-guide="front matter — how to read an entry">
+    <header class="sec-head">
+      <span class="m">front matter · p. ii</span>
+      <h2 class="d">how to read an entry</h2>
+    </header>
+
+    <div class="anat">
+      <p class="anat-entry">
+        <span class="anat-line anat-l1">
+          <span class="tok tok-1" data-n="1"
+            ><span class="d anat-hw">self-taught</span><span class="co up">headword</span></span
+          >
+          <span class="tok tok-2" data-n="2"
+            ><span class="m anat-pr">\ self·TAWT \</span><span class="co up"
+              >how to say it. stress in caps</span
+            ></span
+          >
+          <span class="tok tok-3" data-n="3"
+            ><i>adj.</i><span class="co up">part of speech</span></span
+          >
+        </span>
+        <span class="anat-line anat-l2">
+          <span class="tok tok-4" data-n="4"
+            ><b class="sn d">1</b><span class="co down">sense</span></span
+          >
+          started coding at about 14. no degree.
+          <span class="tok tok-5" data-n="5"
+            ><i class="ex">“<span class="swung">~</span> and proud.”</i><span class="co down"
+              >usage. ~ stands in for the headword</span
+            ></span
+          >
+          <span class="tok tok-6" data-n="6"
+            ><span class="see">→&nbsp;see <a class="xr" href="#e-university">university</a></span
+            ><span class="co down">cross-reference. go on, click it</span></span
+          >
+        </span>
+      </p>
+      <ol class="anat-legend m">
+        <li>headword</li>
+        <li>how to say it. stress in caps</li>
+        <li>part of speech</li>
+        <li>sense</li>
+        <li>usage. ~ stands in for the headword</li>
+        <li>cross-reference</li>
+      </ol>
+    </div>
+
+    <dl class="abbr">
+      <div><dt><i>adj.</i></dt><dd>adjective</dd></div>
+      <div><dt><i>adv.</i></dt><dd>adverb</dd></div>
+      <div><dt><i>n.</i></dt><dd>noun</dd></div>
+      <div><dt><i>n. pl.</i></dt><dd>plural noun</dd></div>
+      <div><dt><i>v.</i></dt><dd>verb</dd></div>
+      <div><dt class="star">✦</dt><dd>a big deal</dd></div>
+      <div><dt>~</dt><dd>the headword</dd></div>
+      <div><dt>↗</dt><dd>leaves this dictionary</dd></div>
+      <div><dt><i>cf.</i></dt><dd>compare</dd></div>
+      <div><dt><i>informal.</i></dt><dd>how he talks</dd></div>
+    </dl>
+  </section>
+
+  {
+    pages.map((page, pi) => {
+      const gw = guideWords(page);
+      const first = page.letters[0].letter;
+      const last = page.letters[page.letters.length - 1].letter;
+      return (
+        <Fragment>
+          <section
+            class="page"
+            id={`page-${page.folio}`}
+            aria-label={`entries ${first} to ${last}`}
+          >
+            <header class="page-head">
+              <span class="gw d">{gw.first}</span>
+              <span class="folio m">
+                p. {page.folio} · {first}–{last}
+              </span>
+              <span class="gw gw-r d">{gw.last}</span>
+            </header>
+            <div class="cols">
+              {page.letters.map((L) => (
+                <Fragment>
+                  <div class="lgroup">
+                    <h2 class="letter" id={`letter-${L.letter}`} data-letter={L.letter}>
+                      <span class="letter-glyph d" data-breathe aria-hidden="true">
+                        {L.letter.toUpperCase() + L.letter}
+                      </span>
+                      <span class="sr-only">{L.letter}</span>
+                      <span class="letter-meta m" aria-hidden="true">
+                        {L.entries.length} {L.entries.length === 1 ? "entry" : "entries"}
+                      </span>
+                    </h2>
+                    <Entry e={L.entries[0]} />
+                  </div>
+                  {L.entries.slice(1).map((e) => (
+                    <Entry e={e} />
+                  ))}
+                </Fragment>
+              ))}
+            </div>
+          </section>
+
+          {pi === 0 && (
+            <section class="plate plate-blue" id="plate-i" data-guide="plate i — a chronology">
+              <header class="plate-head">
+                <span class="m">plate {roman[0]}</span>
+                <h2 class="plate-title">
+                  a short chronology, <i>in ages</i>
+                </h2>
+                <span class="m">fig. 2</span>
+              </header>
+              <ol class="ages">
+                {ages.map((a, i) => (
+                  <li class:list={["age", { "age-r": i % 2 === 1 }]}>
+                    <span class="age-n d" data-breathe data-min="52" data-max="150">
+                      {a.n}
+                    </span>
+                    <p class="age-t" set:html={a.text} />
+                  </li>
+                ))}
+              </ol>
+            </section>
+          )}
+
+          {pi === 1 && (
+            <section class="plate plate-lime" id="plate-ii" data-guide="plate ii — hackathon, n.">
+              <header class="plate-head">
+                <span class="m">plate {roman[1]}</span>
+                <h2 class="plate-title">
+                  hackathon, <i>n.</i>: three ways to finish one
+                </h2>
+                <span class="m">fig. 3</span>
+              </header>
+              <ol class="ways">
+                {ways.map((w, i) => (
+                  <li class={`way way-${i + 1}`} data-reveal>
+                    <span
+                      class="way-word d"
+                      style={`--w:${w.w};--len:${w.word.length}`}
+                      data-fit={i === 2 ? "0.93" : ""}
+                    >
+                      {w.word}
+                    </span>
+                    <p class="way-cap">
+                      <span set:html={w.cap} />{" "}
+                      <a class="ext m" href={w.href} target="_blank" rel="noopener noreferrer">
+                        more ↗
+                      </a>
+                    </p>
+                  </li>
+                ))}
+              </ol>
+              <p class="ways-foot m">
+                a fourth way: run one yourself → <a href="#plate-iv">plate iv</a>
+              </p>
+            </section>
+          )}
+
+          {pi === 2 && (
+            <section class="plate plate-pink" id="plate-iii" data-guide="plate iii — outpost, n.">
+              <header class="plate-head">
+                <span class="m">plate {roman[2]}</span>
+                <h2 class="plate-title">
+                  outpost, <i>n.</i>
+                </h2>
+                <span class="m">fig. 4</span>
+              </header>
+              <p class="op-word d" data-fit aria-hidden="true">
+                outpost
+              </p>
+              <div class="op-grid">
+                <p class="op-def">
+                  <b class="sn d">1</b> a community for those{" "}
+                  <mark class="hl">building at the frontier</mark>. oscar runs it.
+                </p>
+                <p class="op-num">
+                  <span class="d">5,000+</span>
+                  <span class="m">members and counting</span>
+                </p>
+                <p class="op-with">
+                  <b class="sn d">2</b> 30+ events and 2,000+ people so far, made with openai,
+                  vercel, spacexai, daytona, corgi and many more.
+                </p>
+              </div>
+              <div class="syn" aria-label="synonyms">
+                <span class="syn-label m">syn.</span>
+                <div class="syn-track">
+                  {[0, 1].map((k) => (
+                    <ul class="syn-list" aria-hidden={k === 1 ? "true" : undefined}>
+                      {synonyms.map((s, i) => (
+                        <li class={i % 2 ? "t" : "d"}>{s}</li>
+                      ))}
+                    </ul>
+                  ))}
+                </div>
+              </div>
+              <div class="op-cta">
+                <a
+                  class="btn"
+                  href="https://luma.com/londonmaxxing-ai"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  come to an event ↗
+                </a>
+                <a
+                  class="ext m"
+                  href="https://outpostcrew.co"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  outpostcrew.co ↗
+                </a>
+              </div>
+            </section>
+          )}
+
+          {pi === 3 && (
+            <section
+              class="plate plate-blue plate-z"
+              id="plate-iv"
+              data-guide="plate iv — zero to agent"
+            >
+              <header class="plate-head">
+                <span class="m">plate {roman[3]}</span>
+                <h2 class="plate-title">
+                  zero to agent: london, <i>sat 2 may 2026</i>
+                </h2>
+                <span class="m">fig. 5</span>
+              </header>
+              <p class="z-title d" data-z aria-label="zero to agent">
+                <span class="z-a" aria-hidden="true">
+                  zero
+                </span>
+                <span class="z-arrow" aria-hidden="true">
+                  <span />
+                </span>
+                <span class="z-b" aria-hidden="true">
+                  agent
+                </span>
+              </p>
+              <dl class="z-stats">
+                {zStats.map((s) => (
+                  <div>
+                    <dd class="d">{s.v}</dd>
+                    <dt class="m">{s.k}</dt>
+                  </div>
+                ))}
+              </dl>
+              <div class="z-body">
+                <p>
+                  the london stop of vercel's zero to agent hackathon. a hundred of london's
+                  sharpest builders shipping agents in a day, sponsored by coderabbit, bright data &
+                  mubit. <mark class="hl">organised single-handedly</mark>, which he'd like you to
+                  know was his first time running one.
+                </p>
+                <a class="btn btn-lime" href="/events/zero-to-agent">
+                  read the recap →
+                </a>
+              </div>
+            </section>
+          )}
+        </Fragment>
+      );
+    })
+  }
+
+  <!-- ─────────────────────────── APPENDIX A ─────────────────────────── -->
+  <section class="appx" id="appendix-a" data-guide="appendix a — events">
+    <header class="sec-head">
+      <span class="m">appendix a</span>
+      <h2 class="d">events</h2>
+      <p class="sec-sub">
+        bouldering, dinners, coworking, hackathons. things he runs in london. pick a calendar and
+        come along.
+      </p>
+    </header>
+    <ol class="series">
+      {
+        eventSeriesList.map((s, i) => (
+          <li class="series-row">
+            <span class="series-n m">a.{i + 1}</span>
+            <Image src={s.logo} width={112} height={112} alt="" class="series-logo" />
+            <div class="series-main">
+              <h3 class="series-name d">
+                <a href={`/v3/opus/events/${s.slug}`}>{s.name}</a>
+              </h3>
+              <p class="series-desc">{blurb(s.slug, s.description)}</p>
+            </div>
+            <a class="series-luma m" href={s.lumaUrl} target="_blank" rel="noopener noreferrer">
+              luma ↗
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+    <p class="appx-more m">
+      <a href="/v3/opus/events">the full appendix →</a>
+      <a href="/events/zero-to-agent">zero to agent recap →</a>
+      <a href="/events/subscribe">stay in the loop →</a>
+    </p>
+  </section>
+
+  <!-- ─────────────────────────── APPENDIX B ─────────────────────────── -->
+  <section class="appx appx-b" id="appendix-b" data-guide="appendix b — weights & measures">
+    <header class="sec-head">
+      <span class="m">appendix b</span>
+      <h2 class="d">weights &amp; measures</h2>
+      <p class="sec-sub">a conversion table, for reference.</p>
+    </header>
+    <table class="wm">
+      <caption class="sr-only">weights and measures</caption>
+      <tbody>
+        {
+          measures.map((m) => (
+            <tr>
+              <th scope="row" class="d">
+                {m.a}
+              </th>
+              <td class="wm-op d">{m.op}</td>
+              <td class="wm-b">{m.b}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </section>
+
+  <Colophon />
+</Layout>

@@ -1,0 +1,689 @@
+/* OSCARAMA (v4 / opus): now showing (events) + the screening room. */
+
+/* ================================================================ the foyer + marquee */
+.foyer {
+  padding: calc(var(--bar) + clamp(36px, 7vh, 72px)) var(--gut) 0;
+  max-width: 1240px;
+  margin: 0 auto;
+}
+.marquee {
+  position: relative;
+  padding: clamp(26px, 3.4vw, 40px);
+  background: #0d0b08;
+  border-radius: 14px;
+  box-shadow:
+    0 0 0 1px #2b2418,
+    0 0 80px -10px rgb(246 196 69 / 0.25),
+    0 40px 80px -40px #000;
+}
+.marquee__bulbs {
+  --bulb: radial-gradient(
+    circle,
+    #fff6d4 0 2.5px,
+    #f6c445 3.5px,
+    rgb(246 196 69 / 0.25) 5.5px,
+    transparent 7px
+  );
+  --dim: radial-gradient(circle, #6b5523 0 2.5px, transparent 3.5px);
+  position: absolute;
+  animation: chase 0.9s steps(2, jump-none) infinite;
+}
+.marquee__bulbs--0,
+.marquee__bulbs--1 {
+  left: 14px;
+  right: 14px;
+  height: 14px;
+  background:
+    var(--bulb) 0 50% / 28px 14px repeat-x,
+    var(--dim) 14px 50% / 28px 14px repeat-x;
+}
+.marquee__bulbs--0 {
+  top: 6px;
+}
+.marquee__bulbs--1 {
+  bottom: 6px;
+  animation-delay: -0.45s;
+}
+.marquee__bulbs--2,
+.marquee__bulbs--3 {
+  top: 20px;
+  bottom: 20px;
+  width: 14px;
+  background:
+    var(--bulb) 50% 0 / 14px 28px repeat-y,
+    var(--dim) 50% 14px / 14px 28px repeat-y;
+  animation-name: chase-y;
+}
+.marquee__bulbs--2 {
+  left: 6px;
+}
+.marquee__bulbs--3 {
+  right: 6px;
+  animation-delay: -0.45s;
+}
+@keyframes chase {
+  to {
+    background-position:
+      14px 50%,
+      28px 50%;
+  }
+}
+@keyframes chase-y {
+  to {
+    background-position:
+      50% 14px,
+      50% 28px;
+  }
+}
+.marquee__panel {
+  position: relative;
+  padding: clamp(18px, 2.6vw, 30px) clamp(16px, 3vw, 40px) clamp(20px, 2.6vw, 30px);
+  text-align: center;
+  color: #121212;
+  background: radial-gradient(120% 140% at 50% 0%, #ffffff 0%, #f1f0ea 45%, #d9d8d0 100%);
+  border-radius: 4px;
+  box-shadow:
+    inset 0 0 40px rgb(255 240 200 / 0.6),
+    0 0 40px rgb(255 240 200 / 0.18);
+}
+.marquee__panel p {
+  margin: 0;
+}
+.marquee__kicker {
+  font-family: var(--f-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 12px;
+  color: #6c6a63;
+}
+.marquee__title {
+  margin: 4px 0 6px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0 0.28em;
+  font-family: var(--f-cond);
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: clamp(60px, 11vw, 168px);
+  line-height: 0.92;
+  letter-spacing: 0.04em;
+}
+.lb {
+  display: inline-block;
+  padding: 0 0.04em;
+  border-top: 2px solid rgb(0 0 0 / 0.1);
+  border-bottom: 2px solid rgb(0 0 0 / 0.1);
+}
+.lb--sm {
+  border-width: 1.5px;
+}
+.lb--dot {
+  border-color: transparent;
+}
+.marquee__sub {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0 0.4em;
+  font-family: var(--f-cond);
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: clamp(22px, 2.8vw, 40px);
+  letter-spacing: 0.06em;
+  line-height: 1.05;
+  color: #b4271d;
+}
+.foyer__copy {
+  margin: clamp(26px, 4vh, 40px) auto 0;
+  max-width: 54ch;
+  text-align: center;
+  font-size: clamp(17px, 1.5vw, 21px);
+  color: #cfcdc7;
+}
+
+/* ================================================================ the program */
+.program {
+  max-width: 1300px;
+  margin: clamp(48px, 8vh, 80px) auto 0;
+  padding: 0 var(--gut);
+}
+.program__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 28px 22px;
+}
+.program__meta {
+  margin: 12px 0 0;
+  font-family: var(--f-mono);
+  font-size: 13px;
+  text-align: center;
+}
+.program__meta a {
+  color: var(--dim);
+  text-decoration: none;
+}
+.program__meta a:hover {
+  color: var(--sub);
+}
+
+/* ================================================================ posters */
+.poster {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  aspect-ratio: 27 / 40;
+  padding: 16px 16px 14px;
+  overflow: hidden;
+  text-decoration: none;
+  box-shadow:
+    0 30px 60px -30px #000,
+    inset 0 0 60px rgb(0 0 0 / 0.25);
+  transition:
+    transform 0.3s var(--ease-out),
+    box-shadow 0.3s;
+}
+a.poster:hover,
+a.poster:focus-visible {
+  transform: translateY(-8px) rotate(-0.4deg);
+  box-shadow:
+    0 40px 70px -30px #000,
+    inset 0 0 60px rgb(0 0 0 / 0.25);
+}
+.poster__art {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+}
+.pa {
+  position: absolute;
+  display: block;
+}
+.poster__top {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-family: var(--f-cond);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 10.5px;
+  opacity: 0.85;
+}
+.poster__mid {
+  margin-top: auto;
+  display: grid;
+  gap: 8px;
+}
+.poster__logo {
+  width: 46px;
+  height: 46px;
+  border-radius: 9px;
+  object-fit: cover;
+  box-shadow: 0 6px 18px rgb(0 0 0 / 0.35);
+}
+.poster__title {
+  font-family: var(--f-title);
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(28px, 2.6vw, 40px);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+}
+.poster__tag {
+  font-size: 13.5px;
+  line-height: 1.35;
+  opacity: 0.9;
+}
+.poster__bottom {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid color-mix(in oklab, currentColor 35%, transparent);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 10px;
+}
+.poster__billing {
+  font-family: var(--f-cond);
+  text-transform: uppercase;
+  line-height: 1.05;
+}
+.pb-b {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+.pb-s {
+  font-size: 8.5px;
+  letter-spacing: 0.06em;
+  margin: 0 0.3em;
+  opacity: 0.75;
+}
+.poster__cta {
+  flex: none;
+  font-family: var(--f-cond);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 14px;
+  border-bottom: 1.5px solid currentColor;
+}
+
+/* screen 1: oscarama's stuff. a saul-bass sunrise in subtitle yellow */
+.poster--oscaramas-stuff {
+  background: var(--sub);
+  color: #121212;
+}
+.poster--oscaramas-stuff .pa--1 {
+  left: 12%;
+  right: 12%;
+  top: 9%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #121212;
+}
+.poster--oscaramas-stuff .pa--2 {
+  left: 0;
+  right: 0;
+  top: 33%;
+  height: 22%;
+  background: repeating-linear-gradient(var(--sub) 0 6px, transparent 6px 15px);
+}
+.poster--oscaramas-stuff .pa--3 {
+  left: 0;
+  right: 0;
+  top: 52%;
+  height: 48%;
+  background: var(--sub);
+}
+
+/* screen 2: coloop. the logo, cropped like a close-up */
+.poster--coloop {
+  background: #e9e8e3;
+  color: #111;
+}
+.poster--coloop .pa--1 {
+  width: 125%;
+  aspect-ratio: 1;
+  right: -52%;
+  top: -18%;
+  border-radius: 50%;
+  background: #111;
+}
+.poster--coloop .pa--2,
+.poster--coloop .pa--3,
+.poster--coloop .pa--4 {
+  border-radius: 50%;
+  background: #e9e8e3;
+}
+.poster--coloop .pa--2 {
+  width: 16%;
+  aspect-ratio: 1;
+  left: 46%;
+  top: 8%;
+}
+.poster--coloop .pa--3 {
+  width: 20%;
+  aspect-ratio: 1;
+  left: 64%;
+  top: 24%;
+}
+.poster--coloop .pa--4 {
+  width: 13%;
+  aspect-ratio: 1;
+  left: 52%;
+  top: 38%;
+}
+.poster--coloop .poster__top {
+  color: #e9e8e3;
+  mix-blend-mode: difference;
+}
+
+/* screen 3: demo nights. a projector beam in a red room */
+.poster--demo-nights {
+  background: linear-gradient(#9b1f18, #3a0907 70%, #1c0403);
+  color: #fff;
+}
+.poster--demo-nights .pa--1 {
+  left: 14%;
+  right: 14%;
+  top: 9%;
+  height: 22%;
+  background: #f5f2ea;
+  box-shadow: 0 0 50px rgb(255 240 220 / 0.5);
+}
+.poster--demo-nights .pa--2 {
+  left: 0;
+  right: 0;
+  top: 18%;
+  bottom: 0;
+  background: linear-gradient(rgb(255 240 220 / 0.32), rgb(255 240 220 / 0.04));
+  clip-path: polygon(14% 0, 86% 0, 54% 100%, 46% 100%);
+}
+.poster--demo-nights .pa--3 {
+  left: 18%;
+  right: 18%;
+  top: 13%;
+  height: 3.5%;
+  background: repeating-linear-gradient(90deg, #9b1f18 0 30%, transparent 30% 36%);
+  opacity: 0.7;
+}
+.poster--demo-nights .pa--4 {
+  left: -6%;
+  right: -6%;
+  top: 52%;
+  height: 12%;
+  background: radial-gradient(circle at 50% 100%, #120202 0 60%, transparent 62%) 0 0 / 16% 100%
+    repeat-x;
+}
+
+/* screen 4: out venturing. ridgelines under a moon */
+.poster--outventuring {
+  background: linear-gradient(#0a1a20, #15363d 55%, #0b1c21);
+  color: var(--screen);
+}
+.poster--outventuring .pa--1 {
+  width: 22%;
+  aspect-ratio: 1;
+  right: 16%;
+  top: 11%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, #fbf3dc, #e9d7a8);
+  box-shadow: 0 0 40px rgb(246 230 190 / 0.4);
+}
+.poster--outventuring .pa--2 {
+  left: 0;
+  right: 0;
+  top: 30%;
+  height: 32%;
+  background: #1f4c53;
+  clip-path: polygon(
+    0 55%,
+    12% 30%,
+    22% 44%,
+    36% 6%,
+    50% 36%,
+    60% 22%,
+    74% 46%,
+    88% 18%,
+    100% 40%,
+    100% 100%,
+    0 100%
+  );
+}
+.poster--outventuring .pa--3 {
+  left: 0;
+  right: 0;
+  top: 42%;
+  height: 22%;
+  background: #0d2429;
+  clip-path: polygon(
+    0 40%,
+    18% 12%,
+    30% 34%,
+    44% 18%,
+    58% 52%,
+    72% 26%,
+    86% 46%,
+    100% 20%,
+    100% 100%,
+    0 100%
+  );
+}
+.poster--outventuring .pa--4 {
+  inset: 0 0 60% 0;
+  background:
+    radial-gradient(circle, #fff 0 1px, transparent 1.5px) 0 0 / 37px 29px,
+    radial-gradient(circle, #fff9 0 1px, transparent 1.5px) 13px 17px / 53px 41px;
+  opacity: 0.6;
+}
+
+.poster--large .poster__title {
+  font-size: clamp(34px, 3.6vw, 54px);
+}
+.poster--large .poster__tag {
+  font-size: 15px;
+}
+
+/* ================================================================ extras */
+.extras {
+  max-width: 1300px;
+  margin: clamp(56px, 10vh, 96px) auto 0;
+  padding: 0 var(--gut) calc(var(--bar) + clamp(56px, 10vh, 96px));
+  display: grid;
+  grid-template-columns: 1.3fr 1fr 1fr;
+  gap: 18px;
+}
+.extra {
+  display: grid;
+  gap: 6px;
+  align-content: start;
+  padding: 24px;
+  border: 1px dashed #3a3a40;
+  text-decoration: none;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
+}
+.extra:hover {
+  border-color: var(--sub);
+  background: #0e0e10;
+}
+.extra--recap {
+  border-style: solid;
+  border-color: color-mix(in oklab, var(--sub) 45%, transparent);
+  background: linear-gradient(135deg, rgb(246 196 69 / 0.1), transparent 60%);
+}
+.extra__k {
+  font-family: var(--f-cond);
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  font-size: 12px;
+  color: var(--sub);
+}
+.extra__t {
+  font-family: var(--f-title);
+  font-style: italic;
+  font-size: clamp(26px, 2.4vw, 36px);
+  line-height: 1.05;
+}
+.extra__d {
+  color: #bdbbb5;
+  font-size: 15px;
+}
+.extra__cta {
+  margin-top: 6px;
+  font-family: var(--f-cond);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* ================================================================ the screening room */
+.room {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: calc(var(--bar) + clamp(28px, 5vh, 56px)) var(--gut)
+    calc(var(--bar) + clamp(48px, 8vh, 80px));
+}
+.room__back {
+  display: inline-block;
+  font-family: var(--f-cond);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 14px;
+  color: var(--dim);
+  text-decoration: none;
+}
+.room__back:hover {
+  color: var(--screen);
+}
+.room__grid {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: minmax(0, 360px) minmax(0, 1fr);
+  gap: clamp(28px, 4vw, 64px);
+  align-items: start;
+}
+.room__poster {
+  position: sticky;
+  top: calc(var(--bar) + 24px);
+}
+.room__k {
+  margin: 0;
+  font-family: var(--f-cond);
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  font-size: 13px;
+  color: var(--sub);
+}
+.room__title {
+  margin: 6px 0 0;
+  font-family: var(--f-title);
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(44px, 6vw, 96px);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+}
+.room__desc {
+  margin: 16px 0 0;
+  max-width: 58ch;
+  font-size: clamp(17px, 1.4vw, 20px);
+  color: #cfcdc7;
+}
+.room__luma {
+  margin: 22px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+}
+.room__luma span {
+  font-family: var(--f-mono);
+  font-size: 13px;
+  color: var(--dim);
+}
+.screen {
+  margin-top: clamp(28px, 5vh, 48px);
+}
+.screen__label {
+  margin: 0 0 10px;
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--f-cond);
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  font-size: 12px;
+  color: var(--dim);
+}
+.screen__frame {
+  position: relative;
+  padding: 10px;
+  background: #f1f1ee;
+  box-shadow:
+    0 0 0 1px #2a2a2f,
+    0 0 90px -20px rgb(240 240 230 / 0.25);
+}
+.screen__frame iframe {
+  display: block;
+  width: 100%;
+  min-height: 640px;
+}
+.screen__note {
+  margin: 12px 0 0;
+  font-size: 14px;
+  color: var(--dim);
+}
+.screen__note a {
+  color: var(--screen);
+}
+.room__nav {
+  margin-top: clamp(48px, 8vh, 80px);
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+}
+.room__nav a {
+  display: grid;
+  gap: 2px;
+  text-decoration: none;
+  font-family: var(--f-title);
+  font-style: italic;
+  font-size: clamp(22px, 2.2vw, 30px);
+}
+.room__nav a span {
+  font-family: var(--f-cond);
+  font-style: normal;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 12px;
+  color: var(--dim);
+}
+.room__nav a:hover {
+  color: var(--sub);
+}
+.room__next {
+  text-align: right;
+}
+
+/* ================================================================ responsive */
+@media (max-width: 1100px) {
+  .program__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .extras {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 760px) {
+  .room__grid {
+    grid-template-columns: 1fr;
+  }
+  .room__poster {
+    position: relative;
+    top: auto;
+    width: min(300px, 80%);
+  }
+  .screen__frame {
+    padding: 6px;
+  }
+}
+@media (max-width: 560px) {
+  .program__grid {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 340px;
+    margin: 0 auto;
+  }
+  .marquee__bulbs--2,
+  .marquee__bulbs--3 {
+    display: none;
+  }
+  .marquee {
+    padding: 26px 12px;
+  }
+  .marquee__title {
+    font-size: 21vw;
+  }
+  .marquee__sub {
+    font-size: 6vw;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee__bulbs {
+    animation: none;
+  }
+  .poster,
+  .extra {
+    transition: none;
+  }
+}

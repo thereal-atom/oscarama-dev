@@ -1,0 +1,51 @@
+---
+import OpusLayout from "@/v2/opus/layouts/OpusLayout.astro";
+import Altimeter from "@/v2/opus/components/Altimeter.astro";
+import Starfield from "@/v2/opus/components/Starfield.astro";
+import Hero from "@/v2/opus/components/home/Hero.astro";
+import Now from "@/v2/opus/components/home/Now.astro";
+import FlightLog from "@/v2/opus/components/home/FlightLog.astro";
+import BaseCamp from "@/v2/opus/components/home/BaseCamp.astro";
+import Hacks from "@/v2/opus/components/home/Hacks.astro";
+import Highlights from "@/v2/opus/components/home/Highlights.astro";
+import Missions from "@/v2/opus/components/home/Missions.astro";
+import Karman from "@/v2/opus/components/home/Karman.astro";
+import Orbit from "@/v2/opus/components/home/Orbit.astro";
+---
+
+<OpusLayout bodyClass="has-alt">
+  <Altimeter />
+  <main>
+    <Hero />
+    <Now />
+    <FlightLog />
+    <BaseCamp />
+    <Hacks />
+    <div class="space">
+      <Starfield />
+      <Highlights />
+      <Missions />
+      <Karman />
+      <Orbit />
+    </div>
+  </main>
+</OpusLayout>
+
+<style>
+  .space {
+    position: relative;
+    clip-path: inset(0);
+    background: linear-gradient(
+      to bottom,
+      var(--sky-2) 0%,
+      var(--sky-3) 22%,
+      var(--sky-4) 48%,
+      var(--void) 70%,
+      var(--void) 100%
+    );
+  }
+  .space > :global(section) {
+    position: relative;
+    z-index: 1;
+  }
+</style>

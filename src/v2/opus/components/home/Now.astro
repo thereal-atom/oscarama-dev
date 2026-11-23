@@ -1,0 +1,300 @@
+---
+import { Image } from "astro:assets";
+import Topo from "../Topo.astro";
+import Chip from "../Chip.astro";
+import { logos, links, outpostFormats } from "../../data/content";
+---
+
+<section class="now" id="now" data-alt="40" data-theme="light" data-zone="london">
+  <div class="wrap">
+    <header class="sec-head label" data-reveal>
+      <span class="no">§01</span><span>current missions</span><span class="rule"></span><span
+        >status: active</span
+      >
+    </header>
+
+    <h2 class="now__h display" data-reveal>
+      build things.<br /><span class="serif now__h-s">gather the builders.</span>
+    </h2>
+
+    <div class="now__grid">
+      <article class="mis mis--coloop" data-reveal style="--d:80">
+        <div class="mis__top label">
+          <span>mission 01</span>
+          <span class="mis__live"><span class="dot"></span>active</span>
+        </div>
+        <div class="mis__brand">
+          <span class="mis__logo"><Image src={logos.coloop} alt="" width={96} height={96} /></span>
+          <div>
+            <h3 class="mis__name display">coloop ai</h3>
+            <p class="label dim">software engineer · yc s21</p>
+          </div>
+        </div>
+        <p class="mis__body">
+          i work across the whole stack at a <Chip
+            href={links.coloopYc}
+            logo={logos.yc}
+            text="yc startup"
+            after=":"
+          /> frontend, backend, ai and product. i also do events, growth engineering and lots of other
+          fun stuff there, like coworking days and the coloop sports club.
+        </p>
+        <dl class="mis__spec">
+          <div><dt class="label">joined</dt><dd>at 18, before finishing high school</dd></div>
+          <div><dt class="label">stack</dt><dd>ts · bun · svelte · next · aws · genai</dd></div>
+        </dl>
+        <a
+          class="btn"
+          href={links.coloop}
+          target="_blank"
+          rel="noopener noreferrer"
+          data-ph="cta"
+          data-ph-label="coloop">coloop.ai <span class="arr">↗</span></a
+        >
+      </article>
+
+      <article class="mis mis--outpost on-dark" data-reveal style="--d:180">
+        <div class="mis__topo" aria-hidden="true">
+          <Topo
+            seed={42}
+            levels={9}
+            cell={30}
+            scale={0.0016}
+            width={900}
+            height={900}
+            peak={[0.15, 0.1, 0.35, 0.5]}
+          />
+        </div>
+        <div class="mis__top label">
+          <span>mission 02</span>
+          <span class="mis__live"><span class="dot"></span>active</span>
+        </div>
+        <div class="mis__brand">
+          <span class="mis__logo mis__logo--outpost"
+            ><Image src={logos.outpost} alt="" width={96} height={96} /></span
+          >
+          <div>
+            <h3 class="mis__name stencil">outpost</h3>
+            <p class="label dim">a small crew at the frontier</p>
+          </div>
+        </div>
+        <p class="mis__body">
+          i run outpost, a community in london for people building at the frontier. ambitious
+          people, in the same room.
+        </p>
+        <ul class="mis__tags" aria-label="what outpost does">
+          {outpostFormats.map((f) => <li class="label">{f}</li>)}
+        </ul>
+        <div class="mis__stat">
+          <span class="stencil">5k+</span>
+          <span class="label dim">members<br />and counting</span>
+        </div>
+        <div class="mis__ctas">
+          <a
+            class="btn btn--hot"
+            href={links.outpostLuma}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-ph="cta"
+            data-ph-label="outpost-event">come to an event <span class="arr">↗</span></a
+          >
+          <a
+            class="btn"
+            href={links.outpost}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-ph="cta"
+            data-ph-label="outpost-site">outpostcrew.co <span class="arr">↗</span></a
+          >
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<style>
+  .now {
+    position: relative;
+    padding: clamp(72px, 9vw, 140px) 0 clamp(64px, 8vw, 120px);
+    background: var(--paper);
+  }
+  .now__h {
+    margin: 28px 0 clamp(36px, 5vw, 64px);
+    font-size: clamp(54px, 8.4vw, 132px);
+  }
+  .now__h-s {
+    text-transform: none;
+    font-size: 0.86em;
+    color: var(--orange-ink);
+    letter-spacing: -0.02em;
+  }
+
+  .now__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
+    gap: clamp(16px, 2vw, 28px);
+    align-items: stretch;
+  }
+
+  .mis {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    padding: clamp(22px, 2.6vw, 36px);
+    border: 1px solid var(--rule-strong);
+    border-radius: 4px;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .mis--coloop {
+    background: var(--paper-2);
+  }
+  .mis--outpost {
+    background: #0b0b0a;
+    border-color: #0b0b0a;
+  }
+  .mis__topo {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    color: #8d8a83;
+    opacity: 0.75;
+  }
+  .mis__topo::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(115deg, transparent 20%, rgb(11 11 10 / 0.9) 62%);
+  }
+  .mis__top {
+    display: flex;
+    justify-content: space-between;
+    color: var(--ink-2);
+  }
+  .on-dark .mis__top {
+    color: var(--star-2);
+  }
+  .mis__live {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--orange-ink);
+  }
+  .on-dark .mis__live {
+    color: var(--orange);
+  }
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--orange);
+    box-shadow: 0 0 0 3px var(--orange-soft);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .dot {
+      animation: pulse 2s var(--ease-io) infinite;
+    }
+  }
+  @keyframes pulse {
+    50% {
+      box-shadow: 0 0 0 6px rgb(255 79 0 / 0);
+    }
+  }
+  .mis__brand {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+  .mis__logo {
+    flex: none;
+    width: 64px;
+    height: 64px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #0e0d0b;
+  }
+  .mis__logo--outpost {
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.18);
+  }
+  .mis__logo :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .mis__name {
+    font-size: clamp(44px, 5vw, 72px);
+    line-height: 0.85;
+    margin-bottom: 6px;
+  }
+  .mis__body {
+    max-width: 48ch;
+    font-size: 13.5px;
+  }
+  .mis__spec {
+    margin: 0;
+    border-top: 1px solid var(--rule);
+  }
+  .mis__spec div {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 12px;
+    padding: 9px 0 8px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .mis__spec dt {
+    color: var(--ink-2);
+    padding-top: 2px;
+  }
+  .mis__spec dd {
+    margin: 0;
+    font-size: 12px;
+  }
+  .mis .btn {
+    align-self: flex-start;
+    margin-top: auto;
+  }
+
+  .mis__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    max-width: 520px;
+  }
+  .mis__tags li {
+    padding: 6px 9px 5px;
+    border: 1px solid rgb(236 232 223 / 0.28);
+    border-radius: 999px;
+    color: var(--star);
+    background: rgb(11 11 10 / 0.6);
+  }
+  .mis__tags li:last-child {
+    border-style: dashed;
+    color: var(--star-2);
+  }
+  .mis__stat {
+    display: flex;
+    align-items: flex-end;
+    gap: 14px;
+  }
+  .mis__stat .stencil {
+    font-size: clamp(64px, 7vw, 104px);
+    color: var(--orange);
+    line-height: 0.8;
+  }
+  .mis__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: auto;
+  }
+  .mis__ctas .btn {
+    margin-top: 0;
+  }
+
+  @media (max-width: 860px) {
+    .now__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

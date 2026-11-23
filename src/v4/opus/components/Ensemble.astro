@@ -1,0 +1,208 @@
+---
+import { Image } from "astro:assets";
+import SceneHead from "./SceneHead.astro";
+import { montage, links, logos } from "../content";
+
+const range = (n: number) => Array.from({ length: n }, (_, i) => i);
+// deterministic scatter for the meetups crowd + the bouldering holds
+const rnd = (i: number) => {
+  const x = Math.sin(i * 91.17 + 3.3) * 43758.5453;
+  return x - Math.floor(x);
+};
+---
+
+<section id="ensemble" class="scene ensemble" data-scene data-no="04" data-title="the ensemble">
+  <SceneHead
+    scene="04"
+    title="the ensemble"
+    dek="he runs <strong>outpost</strong>, a community for those building at the frontier. 5k+ members. here's the montage."
+  />
+
+  <div class="split" data-cut>
+    {
+      montage.map((m, i) =>
+        m.key === "outpost" ? (
+          <div class="split__cell split__cell--hero" style={`--d:${i}`}>
+            <Image src={logos.outpost} alt="outpost" width={180} height={180} class="split__logo" />
+            <p class="split__members">
+              <span>5k+</span> members
+            </p>
+          </div>
+        ) : (
+          <figure class={`split__cell px px--${m.key.replace(" ", "-")}`} style={`--d:${i}`}>
+            <svg viewBox="0 0 240 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              {m.key === "hackathons" && (
+                <g>
+                  {[30, 62].map((y) => (
+                    <rect x="22" y={y} width="196" height="8" class="px-ink" />
+                  ))}
+                  {range(9).map((i) =>
+                    [21, 71].map((y, r) => (
+                      <rect
+                        x={28 + i * 21}
+                        y={y}
+                        width="12"
+                        height="7"
+                        class="px-screen"
+                        style={`--k:${(i * 7 + r * 3) % 10}`}
+                      />
+                    ))
+                  )}
+                  <circle cx="120" cy="50" r="3" class="px-acc px-pulse" />
+                </g>
+              )}
+              {m.key === "meetups" && (
+                <g>
+                  {range(22).map((i) => (
+                    <circle
+                      cx={20 + rnd(i) * 200}
+                      cy={18 + rnd(i + 40) * 64}
+                      r={i % 7 === 0 ? 3.6 : 2.8}
+                      class={i % 7 === 0 ? "px-acc px-drift" : "px-fg px-drift"}
+                      style={`--k:${i % 6}`}
+                    />
+                  ))}
+                </g>
+              )}
+              {m.key === "dinners" && (
+                <g>
+                  <rect x="34" y="40" width="172" height="20" rx="2" class="px-ink2" />
+                  {range(8).map((i) => (
+                    <>
+                      <circle cx={46 + i * 21} cy="31" r="6" class="px-plate" />
+                      <circle cx={46 + i * 21} cy="69" r="6" class="px-plate" />
+                    </>
+                  ))}
+                  {[80, 120, 160].map((x, k) => (
+                    <circle cx={x} cy="50" r="2.4" class="px-acc px-flame" style={`--k:${k * 3}`} />
+                  ))}
+                </g>
+              )}
+              {m.key === "coworking" && (
+                <g>
+                  {range(4).map((i) => (
+                    <g transform={`translate(${30 + i * 50} 0)`}>
+                      <polygon
+                        points="18,14 6,62 36,62 24,14"
+                        class="px-cone"
+                        style={`--k:${i * 2}`}
+                      />
+                      <rect x="0" y="62" width="42" height="5" class="px-ink" />
+                      <rect
+                        x="12"
+                        y="52"
+                        width="18"
+                        height="10"
+                        class="px-screen"
+                        style={`--k:${i * 3 + 1}`}
+                      />
+                      <rect x="16" y="10" width="10" height="4" class="px-fg" />
+                    </g>
+                  ))}
+                </g>
+              )}
+              {m.key === "run clubs" && (
+                <g>
+                  <line x1="0" y1="72" x2="240" y2="72" class="px-line" />
+                  <g class="px-ground">
+                    {range(16).map((i) => (
+                      <line x1={i * 30} y1="84" x2={i * 30 + 12} y2="84" class="px-line" />
+                    ))}
+                  </g>
+                  {range(4).map((i) => (
+                    <rect
+                      x={70 + i * 26}
+                      y="54"
+                      width="5"
+                      height="16"
+                      rx="2.5"
+                      class={i === 1 ? "px-acc px-bob" : "px-fg px-bob"}
+                      style={`--k:${i}`}
+                    />
+                  ))}
+                </g>
+              )}
+              {m.key === "cafes" && (
+                <g>
+                  <circle cx="120" cy="58" r="26" class="px-plate" />
+                  <circle cx="120" cy="58" r="17" class="px-cup" />
+                  <circle cx="120" cy="58" r="12" class="px-coffee" />
+                  <path d="M120 58 m-5 0 a5 4 0 1 0 10 0 a5 4 0 1 0 -10 0" class="px-art" />
+                  {[-14, 0, 14].map((x, k) => (
+                    <path
+                      d={`M${120 + x} 34 q -6 -8 0 -14 q 6 -6 0 -14`}
+                      class="px-steam"
+                      style={`--k:${k}`}
+                    />
+                  ))}
+                </g>
+              )}
+              {m.key === "demo nights" && (
+                <g>
+                  <polygon points="120,100 72,12 168,12" class="px-beam" />
+                  <rect x="72" y="8" width="96" height="40" class="px-proj" />
+                  <rect x="82" y="16" width="40" height="5" class="px-ink px-type" />
+                  <rect x="82" y="26" width="64" height="3" class="px-ink" />
+                  <rect x="82" y="32" width="52" height="3" class="px-ink" />
+                  {range(9).map((i) => (
+                    <circle cx={14 + i * 27} cy={98} r={11 + (i % 3)} class="px-head" />
+                  ))}
+                </g>
+              )}
+              {m.key === "bouldering" && (
+                <g>
+                  <polygon points="40,100 70,0 240,0 240,100" class="px-wall" />
+                  {range(18).map((i) => (
+                    <ellipse
+                      cx={70 + rnd(i + 3) * 160}
+                      cy={8 + rnd(i + 70) * 84}
+                      rx={3 + rnd(i + 9) * 4}
+                      ry={2 + rnd(i + 11) * 3}
+                      transform-origin="center"
+                      class="px-hold"
+                    />
+                  ))}
+                  {[
+                    [96, 86],
+                    [118, 66],
+                    [112, 46],
+                    [140, 30],
+                    [150, 10],
+                  ].map(([x, y], k) => (
+                    <circle cx={x} cy={y} r="4.2" class="px-acc px-route" style={`--k:${k}`} />
+                  ))}
+                </g>
+              )}
+            </svg>
+            <figcaption>
+              <span class="px__shot">
+                {m.shot} — {m.note}
+              </span>
+              <span class="px__word">{m.key}</span>
+            </figcaption>
+          </figure>
+        )
+      )
+    }
+  </div>
+
+  <div class="ensemble__foot">
+    <p class="ensemble__copy">
+      hackathons, meetups, dinners, coworking, run clubs, cafes, demo nights, bouldering <em
+        >and much more</em
+      >. the cast changes every week; the casting call is always open.
+    </p>
+    <p class="ensemble__ctas">
+      <a class="btn btn--sub" href={links.luma} target="_blank" rel="noopener noreferrer"
+        >come to an event ↗</a
+      >
+      <a class="btn" href={links.outpost} target="_blank" rel="noopener noreferrer"
+        >outpostcrew.co ↗</a
+      >
+    </p>
+    <aside class="dc">
+      <b>director's commentary</b>
+      split-screen montage, the late-sixties way of saying "a lot happens here".
+    </aside>
+  </div>
+</section>

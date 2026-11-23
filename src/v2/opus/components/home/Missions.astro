@@ -1,0 +1,287 @@
+---
+import Patch from "../Patch.astro";
+import { logos, missions, testFlights, stack } from "../../data/content";
+---
+
+<section class="ms on-dark" id="missions" data-alt="50000" data-theme="dark" data-zone="archive">
+  <div class="wrap">
+    <header class="sec-head label" data-reveal>
+      <span class="no">§06</span><span>mesosphere</span><span class="rule"></span><span
+        >archive</span
+      >
+    </header>
+
+    <h2 class="ms__h display" data-reveal>previous<br />missions</h2>
+
+    <ol class="patches">
+      {
+        missions.map((m, i) => (
+          <li class="patches__i" data-reveal style={`--d:${i * 120}`}>
+            <a
+              class="patches__a"
+              href={m.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-ph="mission"
+              data-ph-label={m.name}
+              aria-label={`${m.name} (opens in a new tab)`}
+            >
+              <Patch id={`p-${m.name}`} top={m.name} bottom={m.ring} logo={logos[m.logo]} />
+            </a>
+            <div class="patches__cap">
+              <span class="label dim">mission 0{i + 1}</span>
+              <h3 class="display">{m.name}</h3>
+              <p>
+                {m.what}
+                {"extraHref" in m && (
+                  <>
+                    {" "}
+                    <a class="lnk" href={m.extraHref} target="_blank" rel="noopener noreferrer">
+                      (the acquisition ↗)
+                    </a>
+                  </>
+                )}
+              </p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+
+    <div class="ms__lower">
+      <div class="tf" data-reveal>
+        <div class="tf__head">
+          <h3 class="label">test flights <span class="dim">/ side projects</span></h3>
+          <a
+            class="label lnk"
+            href="https://github.com/thereal-atom"
+            target="_blank"
+            rel="noopener noreferrer">all on github ↗</a
+          >
+        </div>
+        <ul class="tf__list">
+          {
+            testFlights.map((t, i) => (
+              <li>
+                <a
+                  class="tf__row"
+                  href={t.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-ph="project"
+                  data-ph-label={t.name}
+                >
+                  <span class="tf__no label">{String(i + 1).padStart(2, "0")}</span>
+                  <span class="tf__name">{t.name}</span>
+                  <span class="tf__what">{t.what}</span>
+                  <span class="tf__tag label">{t.tag}</span>
+                  <span class="tf__arr" aria-hidden="true">
+                    ↗
+                  </span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <aside class="sys" data-reveal style="--d:120">
+        <h3 class="label">onboard systems</h3>
+        <dl>
+          {
+            stack.map(([k, v]) => (
+              <div>
+                <dt class="label">{k}</dt>
+                <dd>{v}</dd>
+              </div>
+            ))
+          }
+        </dl>
+        <p class="sys__note label">
+          <span class="sys__ok"></span> all systems nominal
+        </p>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<style>
+  .ms {
+    position: relative;
+    padding: clamp(40px, 6vw, 90px) 0 clamp(72px, 9vw, 140px);
+  }
+  .ms__h {
+    margin: 28px 0 clamp(36px, 5vw, 64px);
+    font-size: clamp(54px, 8.4vw, 132px);
+  }
+
+  .patches {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(24px, 4vw, 64px);
+  }
+  .patches__i {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+  .patches__a {
+    display: block;
+    width: min(100%, 240px);
+    border-radius: 50%;
+    transition:
+      rotate 0.8s var(--ease-out),
+      scale 0.8s var(--ease-out);
+  }
+  .patches__i:nth-child(1) .patches__a {
+    rotate: -6deg;
+  }
+  .patches__i:nth-child(2) .patches__a {
+    rotate: 4deg;
+  }
+  .patches__i:nth-child(3) .patches__a {
+    rotate: -2deg;
+  }
+  .patches__a:hover {
+    rotate: 8deg;
+    scale: 1.04;
+  }
+  .patches__cap h3 {
+    font-size: clamp(32px, 3vw, 44px);
+    margin: 4px 0 10px;
+  }
+  .patches__cap p {
+    max-width: 40ch;
+    color: #c5cad8;
+  }
+
+  .ms__lower {
+    display: grid;
+    grid-template-columns: minmax(0, 1.9fr) minmax(0, 1fr);
+    gap: clamp(24px, 4vw, 64px);
+    margin-top: clamp(64px, 8vw, 120px);
+    align-items: start;
+  }
+  .tf__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgb(236 232 223 / 0.5);
+  }
+  .tf__row {
+    display: grid;
+    grid-template-columns: 30px 196px minmax(0, 1fr) 92px 16px;
+    align-items: baseline;
+    gap: 14px;
+    padding: 12px 6px 11px;
+    border-bottom: 1px solid var(--rule);
+    color: inherit;
+    text-decoration: none;
+    transition:
+      background 0.2s,
+      padding 0.3s var(--ease-out);
+  }
+  .tf__row:hover {
+    background: rgb(255 79 0 / 0.08);
+    padding-left: 14px;
+  }
+  .tf__no {
+    color: var(--star-2);
+  }
+  .tf__name {
+    font-family: var(--f-display);
+    font-weight: 800;
+    font-size: 21px;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+  .tf__what {
+    font-size: 12px;
+    color: #c5cad8;
+  }
+  .tf__tag {
+    color: var(--star-2);
+    font-size: 9px;
+    white-space: nowrap;
+    text-align: right;
+  }
+  .tf__arr {
+    color: var(--orange);
+    transition: transform 0.3s var(--ease-out);
+  }
+  .tf__row:hover .tf__arr {
+    transform: translate(2px, -2px);
+  }
+
+  .sys {
+    padding: 20px;
+    border: 1px solid rgb(236 232 223 / 0.22);
+    border-radius: 4px;
+    background: rgb(10 15 36 / 0.6);
+  }
+  .sys dl {
+    margin: 14px 0 0;
+  }
+  .sys dl div {
+    padding: 10px 0 9px;
+    border-top: 1px solid var(--rule);
+  }
+  .sys dt {
+    color: var(--star-2);
+    font-size: 9px;
+  }
+  .sys dd {
+    margin: 4px 0 0;
+    font-size: 12px;
+  }
+  .sys__note {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    padding-top: 12px;
+    border-top: 1px solid var(--rule);
+    color: #8fe3a5;
+  }
+  .sys__ok {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #8fe3a5;
+    box-shadow: 0 0 10px #8fe3a5;
+  }
+
+  @media (max-width: 960px) {
+    .ms__lower {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 760px) {
+    .patches {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+    .patches__i {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 18px;
+      align-items: center;
+    }
+    .tf__row {
+      grid-template-columns: 26px 1fr 16px;
+      row-gap: 4px;
+    }
+    .tf__what {
+      grid-column: 2;
+      grid-row: 2;
+    }
+    .tf__tag {
+      display: none;
+    }
+    .tf__arr {
+      grid-column: 3;
+      grid-row: 1;
+    }
+  }
+</style>

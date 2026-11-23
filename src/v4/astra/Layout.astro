@@ -1,0 +1,213 @@
+---
+import Icon from "./Icon.astro";
+import "./workspace.css";
+interface Props {
+  title?: string;
+  page?: string;
+  description?: string;
+}
+const {
+  title = "oscar falemara — an open workspace",
+  page = "overview",
+  description = "self-taught software & AI engineer in london. building at coloop, bringing people together at outpost, and figuring out the rest.",
+} = Astro.props;
+const home = "/v4/astra";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title><meta name="description" content={description} /><meta
+      name="robots"
+      content="noindex"
+    />
+    <meta property="og:title" content={title} /><meta
+      property="og:description"
+      content={description}
+    /><meta property="og:image" content="https://oscarama.dev/og.png" /><meta
+      property="og:type"
+      content="website"
+    />
+    <meta name="theme-color" content="#29232f" />
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" /><link
+      rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;450;500;600&family=Manrope:wght@400;450;500;550;600;650;700;750;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <a href="#main" class="skip-link">skip to content</a>
+    <aside class="sidebar">
+      <a class="brand" href={home} aria-label="oscar workspace home"
+        ><span class="brand-mark">o<span>:</span></span><span
+          >oscar<span class="brand-light">.workspace</span></span
+        ></a
+      >
+      <div class="workspace-label">
+        <span class="status-dot"></span> a person, in progress <span class="version">v.04</span>
+      </div>
+      <button class="search-button js-only" data-command
+        ><Icon name="search" size={15} /><span>find anything</span><kbd>⌘ K</kbd></button
+      >
+      <nav aria-label="Workspace navigation" class="side-nav">
+        <p class="nav-label">WORKSPACE</p>
+        <a class:list={{ selected: page === "overview" }} href={home}
+          ><Icon name="grid" /><span>overview</span><span class="nav-number">01</span></a
+        >
+        <a href={`${home}#work`}
+          ><Icon name="code" /><span>selected work</span><span class="nav-number">02</span></a
+        >
+        <a class:list={{ selected: page === "events" }} href={`${home}/events`}
+          ><Icon name="people" /><span>people & events</span><span class="nav-number">03</span></a
+        >
+        <a href={`${home}#changelog`}
+          ><Icon name="branch" /><span>changelog</span><span class="nav-number">04</span></a
+        >
+        <a href={`${home}#outside`}
+          ><Icon name="coffee" /><span>away from keyboard</span><span class="nav-number">05</span
+          ></a
+        >
+      </nav>
+      <div class="sidebar-note">
+        <span class="mono">// a small disclaimer</span><p>
+          no degree.<br />many open tabs.<br />lots of curiosity.
+        </p><span class="note-line"></span>
+      </div>
+      <nav class="side-links" aria-label="Elsewhere">
+        <p class="nav-label">ELSEWHERE</p><a
+          href="https://github.com/thereal-atom"
+          target="_blank"
+          rel="noreferrer">github <Icon name="external" size={15} /></a
+        ><a href="https://linkedin.com/in/oscarfalemara" target="_blank" rel="noreferrer"
+          >linkedin <Icon name="external" size={15} /></a
+        ><a href="https://x.com/oscarfalll" target="_blank" rel="noreferrer"
+          >twitter / x <Icon name="external" size={15} /></a
+        >
+      </nav>
+      <a class="back-hub" href="/v4">← other versions <span>v4</span></a>
+    </aside>
+    <div class="workspace">
+      <header class="topbar">
+        <div class="breadcrumb">
+          <Icon name="file" size={16} /><a href={home}>oscar falemara</a><span>/</span><span
+            >{page}</span
+          >
+        </div><div class="top-actions">
+          <span class="local-time mono">london <span data-clock>—</span></span><button
+            class="quick-button js-only"
+            data-brief>the 10-second version <Icon name="external" size={14} /></button
+          ><button class="mobile-search js-only" data-command aria-label="Search workspace"
+            ><Icon name="search" /></button
+          >
+        </div>
+      </header>
+      <nav class="document-tabs" aria-label="Documents">
+        <a class:list={{ active: page === "overview" }} href={home}
+          ><Icon name="file" size={14} /> readme.md <span class="tab-dot"></span></a
+        ><a class:list={{ active: page === "events" }} href={`${home}/events`}
+          ><Icon name="calendar" size={14} /> people.irl</a
+        ><span class="tab-caption">a public workspace / make yourself at home</span>
+      </nav>
+      <main id="main" tabindex="-1"><slot /></main>
+      <footer class="page-footer">
+        <span>built with curiosity. still figuring it out.</span><a
+          href="https://x.com/oscarfalll"
+          target="_blank"
+          rel="noreferrer">say hello ↗</a
+        >
+      </footer>
+    </div>
+    <footer class="statusbar">
+      <span
+        ><Icon name="branch" size={12} /> main <span class="status-separator">/</span>
+        <span class="status-dot"></span> always a work in progress</span
+      ><span
+        ><span class="status-right">human-written life · software-shaped site</span><button
+          class="js-only"
+          data-command
+          aria-label="Open keyboard shortcuts">? <span>shortcuts</span></button
+        ></span
+      >
+    </footer>
+    <dialog id="command-dialog" class="command-dialog" aria-labelledby="command-title">
+      <div class="command-search">
+        <Icon name="search" /><label for="command-input" class="sr-only" id="command-title"
+          >Find anything in Oscar's workspace</label
+        ><input
+          id="command-input"
+          type="search"
+          placeholder="where would you like to go?"
+          autocomplete="off"
+        /><button data-close aria-label="Close search"><kbd>esc</kbd></button>
+      </div><div class="command-results">
+        <p class="mono command-label">JUMP TO</p><a
+          data-search="home about overview readme engineer"
+          href={home}
+          ><Icon name="grid" /><span>meet oscar<small>the person behind the workspace</small></span
+          ><kbd>↵</kbd></a
+        ><a data-search="projects work code engineering" href={`${home}#work`}
+          ><Icon name="code" /><span
+            >explore the work<small>software, experiments & things shipped</small></span
+          ></a
+        ><a data-search="events people outpost calendar community" href={`${home}/events`}
+          ><Icon name="people" /><span
+            >find your people<small>four calendars, plenty of excuses to meet</small></span
+          ></a
+        ><a data-search="story history changelog university" href={`${home}#changelog`}
+          ><Icon name="branch" /><span
+            >read the changelog<small>an unconventional route into tech</small></span
+          ></a
+        ><a
+          data-search="hobbies climbing camera aerospace rockets sudo coffee"
+          href={`${home}#outside`}
+          ><Icon name="coffee" /><span>away from keyboard<small>sudo go outside</small></span></a
+        ><a
+          data-search="hello contact linkedin recruiter"
+          href="https://linkedin.com/in/oscarfalemara"
+          target="_blank"
+          rel="noreferrer"
+          ><Icon name="external" /><span
+            >start a conversation<small>find me on linkedin</small></span
+          ></a
+        ><p id="no-results" hidden>no matching tabs. try “work”, “events” or “hello”.</p>
+      </div><div class="command-footer mono">
+        <span><kbd>↓</kbd><kbd>↑</kbd> navigate <kbd>↵</kbd> open</span><span
+          ><kbd>⌘</kbd><kbd>K</kbd> anytime</span
+        >
+      </div>
+    </dialog>
+    <dialog id="brief-dialog" class="brief-dialog" aria-labelledby="brief-title">
+      <div class="brief-top mono">
+        <span>README / COMPACT VIEW</span><button data-close aria-label="Close brief"
+          ><Icon name="close" /></button
+        >
+      </div><span class="eyebrow">the 10-second version</span><h2 id="brief-title">
+        hi, i'm oscar.
+      </h2><p>
+        i’m a <strong>self-taught software & AI engineer</strong> from london, building at <strong
+          >coloop ai (yc s21)</strong
+        >.
+      </p><p>
+        i also run <strong>outpost</strong>, a community for people building at the frontier. 30+
+        events hosted or helped organise. 2,000+ attendees.
+      </p><p>
+        started coding at 14. joined coloop at 18. never went to uni. still very much learning.
+      </p><div class="brief-actions">
+        <a
+          class="button primary"
+          href="https://linkedin.com/in/oscarfalemara"
+          target="_blank"
+          rel="noreferrer">let's talk <Icon name="external" /></a
+        ><button class="button" data-copy><Icon name="copy" size={16} /> copy the brief</button>
+      </div><p class="mono copy-feedback" aria-live="polite"></p>
+    </dialog>
+    <div class="toast" role="status" aria-live="polite" hidden></div>
+    <script src="./workspace.ts"></script>
+  </body>
+</html>

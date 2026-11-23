@@ -1,0 +1,40 @@
+<canvas class="stars" aria-hidden="true"></canvas>
+<script>
+  const c = document.querySelector<HTMLCanvasElement>("canvas.stars");
+  if (c) {
+    const ctx = c.getContext("2d")!;
+    // tiny seeded prng so the sky is the same sky every visit
+    let s = 1969;
+    const r = () => ((s = (s * 16807) % 2147483647) - 1) / 2147483646;
+    const stars = Array.from({ length: 320 }, () => ({
+      x: r(),
+      y: r(),
+      z: r(),
+      warm: r() > 0.86,
+    }));
+    const draw = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      c.width = w * dpr;
+      c.height = h * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, w, h);
+      const n = Math.min(stars.length, Math.round((w * h) / 4200));
+      for (const st of stars.slice(0, n)) {
+        const rad = 0.35 + st.z * st.z * 1.25;
+        ctx.globalAlpha = 0.25 + st.z * 0.75;
+        ctx.fillStyle = st.warm ? "#ff9d6b" : "#ece5d5";
+        ctx.beginPath();
+        ctx.arc(st.x * w, st.y * h, rad, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    };
+    draw();
+    let t = 0;
+    window.addEventListener("resize", () => {
+      clearTimeout(t);
+      t = window.setTimeout(draw, 150);
+    });
+  }
+</script>

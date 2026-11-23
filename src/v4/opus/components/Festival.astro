@@ -1,0 +1,93 @@
+---
+import { Image } from "astro:assets";
+import SceneHead from "./SceneHead.astro";
+import { festivals } from "../content";
+
+// one laurel branch, generated: leaves in pairs along an arc, shrinking toward the tip
+const cx = 100;
+const cy = 96;
+const R = 78;
+const leaves: { x: number; y: number; a: number; s: number }[] = [];
+const N = 12;
+for (let i = 0; i < N; i++) {
+  const k = i / (N - 1);
+  const th = ((104 + k * 128) * Math.PI) / 180;
+  const x = cx + R * Math.cos(th);
+  const y = cy + R * Math.sin(th);
+  const tan = (th * 180) / Math.PI + 90; // direction of travel
+  const s = 1.15 - k * 0.5;
+  leaves.push({ x, y, a: tan - 38, s }); // outer leaf
+  leaves.push({ x, y, a: tan + 38, s: s * 0.92 }); // inner leaf
+}
+const stemStart = {
+  x: cx + R * Math.cos((100 * Math.PI) / 180),
+  y: cy + R * Math.sin((100 * Math.PI) / 180),
+};
+const stemEnd = {
+  x: cx + R * Math.cos((234 * Math.PI) / 180),
+  y: cy + R * Math.sin((234 * Math.PI) / 180),
+};
+const stem = `M${stemStart.x.toFixed(1)} ${stemStart.y.toFixed(1)} A${R} ${R} 0 0 1 ${stemEnd.x.toFixed(1)} ${stemEnd.y.toFixed(1)}`;
+const leaf = "M0 0 C5 -6.5 15 -6.5 21 0 C15 6.5 5 6.5 0 0Z";
+---
+
+<section id="festival" class="scene festival" data-scene data-no="06" data-title="festival circuit">
+  <SceneHead
+    scene="06"
+    title="festival circuit"
+    dek="hackathons are just film festivals with worse sleep. three screenings, two flights, one actual win."
+  />
+
+  <ol class="laurels">
+    {
+      festivals.map((f, i) => (
+        <li class={`laurel ${i === 0 ? "laurel--win" : ""}`} data-cut style={`--d:${i}`}>
+          <div class="laurel__wreath">
+            <svg viewBox="0 0 200 200" aria-hidden="true">
+              {[1, -1].map((dir) => (
+                <g transform={dir === -1 ? "translate(200 0) scale(-1 1)" : undefined}>
+                  <path d={stem} class="laurel__stem" />
+                  {leaves.map((l, k) => (
+                    <path
+                      d={leaf}
+                      class="laurel__leaf"
+                      style={`--k:${Math.floor(k / 2)}`}
+                      transform={`translate(${l.x.toFixed(1)} ${l.y.toFixed(1)}) rotate(${l.a.toFixed(1)}) scale(${l.s.toFixed(2)})`}
+                    />
+                  ))}
+                </g>
+              ))}
+            </svg>
+            <div class="laurel__text">
+              <p class="laurel__honour">{f.honour}</p>
+              <p class="laurel__fest">{f.festival}</p>
+              {f.place && <p class="laurel__place">{f.place}</p>}
+            </div>
+          </div>
+          <div class="laurel__body">
+            <p class="laurel__film">
+              <span class="laurel__logos">
+                {f.logos.map((l) => (
+                  <Image src={l} alt="" width={30} height={30} />
+                ))}
+              </span>
+              {f.film}
+            </p>
+            <p class="laurel__log">{f.logline}</p>
+            <p class="laurel__links">
+              {f.links.map((l) => (
+                <a href={l.href} target="_blank" rel="noopener noreferrer">
+                  {l.label} ↗
+                </a>
+              ))}
+            </p>
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+  <aside class="dc festival__dc">
+    <b>director's commentary</b>
+    "out of competition" is a real festival term: screened, not judged. tobogganing counts.
+  </aside>
+</section>

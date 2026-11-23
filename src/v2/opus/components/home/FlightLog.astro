@@ -1,0 +1,277 @@
+---
+import { flightLog } from "../../data/content";
+
+// a gravity-turn style ascent curve: nodes sit at column centres
+const n = flightLog.length;
+const nodes = flightLog.map((_, i) => {
+  const t = i / (n - 1);
+  return { x: ((i + 0.5) / n) * 100, y: 92 - 84 * Math.pow(t, 1.55) };
+});
+// smooth path through nodes (catmull-rom -> bezier) in a 0..100 box
+const pts = [{ x: 0, y: 98 }, ...nodes, { x: 100, y: 2 }];
+let d = `M${pts[0].x} ${pts[0].y}`;
+for (let i = 0; i < pts.length - 1; i++) {
+  const p0 = pts[i - 1] ?? pts[i];
+  const p1 = pts[i];
+  const p2 = pts[i + 1];
+  const p3 = pts[i + 2] ?? p2;
+  const c1 = { x: p1.x + (p2.x - p0.x) / 6, y: p1.y + (p2.y - p0.y) / 6 };
+  const c2 = { x: p2.x - (p3.x - p1.x) / 6, y: p2.y - (p3.y - p1.y) / 6 };
+  d += `C${c1.x.toFixed(2)} ${c1.y.toFixed(2)} ${c2.x.toFixed(2)} ${c2.y.toFixed(2)} ${p2.x.toFixed(2)} ${p2.y.toFixed(2)}`;
+}
+---
+
+<section class="log" id="flight-log" data-alt="120" data-theme="light" data-zone="liftoff">
+  <div class="wrap">
+    <header class="sec-head label" data-reveal>
+      <span class="no">§02</span><span>flight log</span><span class="rule"></span><span
+        >t+0 = age 14</span
+      >
+    </header>
+
+    <div class="log__intro">
+      <h2 class="log__h display" data-reveal>
+        how i got<br />off the ground
+      </h2>
+      <p class="log__lede" data-reveal style="--d:120">
+        self-taught from day one. no degree, just a laptop at 14 and a lot of googling. here's the
+        trajectory so far.
+      </p>
+    </div>
+
+    <div class="log__chart" data-reveal data-draw>
+      <svg class="log__curve" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+        <path class="log__ghost" d={d}></path>
+      </svg>
+      <svg
+        class="log__curve log__curve--hot"
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+      >
+        <path class="log__path" d={d}></path>
+      </svg>
+      <div class="log__axis label" aria-hidden="true"><span>altitude</span><span>age →</span></div>
+      {
+        nodes.map((p, i) => (
+          <span
+            class:list={["log__node", { "is-now": i === n - 1 }]}
+            style={`left:${p.x}%;top:${p.y}%;--d:${i * 160}`}
+            aria-hidden="true"
+          />
+        ))
+      }
+    </div>
+
+    <ol class="log__list">
+      {
+        flightLog.map((e, i) => (
+          <li class="log__item" data-reveal style={`--d:${i * 70}`}>
+            <span class="log__age stencil">{e.age}</span>
+            <h3 class="log__t label">
+              {e.href ? (
+                <a class="lnk" href={e.href} target="_blank" rel="noopener noreferrer">
+                  {e.title} ↗
+                </a>
+              ) : (
+                e.title
+              )}
+            </h3>
+            <p class="log__b">{e.body}</p>
+            {e.note && <p class="log__note label">↳ {e.note}</p>}
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .log {
+    position: relative;
+    padding: clamp(56px, 7vw, 110px) 0 clamp(72px, 9vw, 140px);
+    background: var(--paper);
+    border-top: 1px solid var(--rule);
+  }
+  .log__intro {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    gap: 32px;
+    align-items: end;
+    margin: 28px 0 clamp(28px, 4vw, 48px);
+  }
+  .log__h {
+    font-size: clamp(54px, 8.4vw, 132px);
+  }
+  .log__lede {
+    max-width: 44ch;
+    font-size: 13.5px;
+    color: var(--ink-2);
+    padding-bottom: 10px;
+  }
+
+  .log__chart {
+    position: relative;
+    height: clamp(150px, 17vw, 240px);
+    margin: 0 0 8px;
+    border-left: 1px solid var(--rule-strong);
+    border-bottom: 1px solid var(--rule-strong);
+    background-image:
+      linear-gradient(to right, var(--rule) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--rule) 1px, transparent 1px);
+    background-size:
+      calc(100% / 6) 100%,
+      100% 25%;
+  }
+  .log__curve {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .log__ghost,
+  .log__path {
+    fill: none;
+    vector-effect: non-scaling-stroke;
+  }
+  .log__ghost {
+    stroke: var(--ink);
+    stroke-opacity: 0.18;
+    stroke-width: 1;
+    stroke-dasharray: 3 5;
+  }
+  .log__path {
+    stroke: var(--orange);
+    stroke-width: 2.5;
+  }
+  .log__axis {
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    color: var(--ink-2);
+    font-size: 9px;
+  }
+  .log__node {
+    position: absolute;
+    width: 13px;
+    height: 13px;
+    margin: -6.5px 0 0 -6.5px;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 2.5px solid var(--orange);
+  }
+  .log__node.is-now {
+    background: var(--orange);
+    box-shadow: 0 0 0 6px var(--orange-soft);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global(html.js) .log__curve--hot {
+      clip-path: inset(-10px 100% -10px -10px);
+      transition: clip-path 2.4s var(--ease-io) 0.2s;
+    }
+    :global(html.js) .is-in .log__curve--hot {
+      clip-path: inset(-10px -10px -10px -10px);
+    }
+    :global(html.js) .log__node {
+      transform: scale(0);
+      transition: transform 0.6s var(--ease-out);
+      transition-delay: calc(var(--d) * 1ms + 500ms);
+    }
+    :global(html.js) .is-in .log__node {
+      transform: scale(1);
+    }
+  }
+
+  .log__list {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 0;
+  }
+  .log__item {
+    padding: 18px 16px 0 0;
+  }
+  .log__age {
+    display: block;
+    font-size: clamp(52px, 5.4vw, 84px);
+    line-height: 0.8;
+  }
+  .log__item:last-child .log__age {
+    color: var(--orange);
+  }
+  .log__t {
+    margin: 14px 0 8px;
+    font-size: 10.5px;
+    color: var(--ink);
+  }
+  .log__b {
+    font-size: 12px;
+    line-height: 1.65;
+    color: var(--ink-2);
+  }
+  .log__note {
+    margin-top: 10px;
+    color: var(--orange-ink);
+    font-size: 9px;
+  }
+
+  @media (max-width: 1100px) {
+    .log__list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      row-gap: 28px;
+    }
+    .log__chart {
+      display: none;
+    }
+    .log__item {
+      border-top: 1px solid var(--rule-strong);
+    }
+  }
+  @media (max-width: 760px) {
+    .log__intro {
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+    .log__list {
+      grid-template-columns: 1fr;
+      row-gap: 0;
+      border-left: 2px solid var(--orange);
+      margin-left: 6px;
+    }
+    .log__item {
+      position: relative;
+      display: grid;
+      grid-template-columns: 84px 1fr;
+      column-gap: 14px;
+      padding: 18px 0 18px 18px;
+      border-top: 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .log__item::before {
+      content: "";
+      position: absolute;
+      left: -8px;
+      top: 26px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--paper);
+      border: 2px solid var(--orange);
+    }
+    .log__age {
+      grid-row: span 3;
+      font-size: 52px;
+    }
+    .log__item:last-child .log__age {
+      font-size: 34px;
+      padding-top: 8px;
+    }
+    .log__t {
+      margin-top: 2px;
+    }
+  }
+</style>

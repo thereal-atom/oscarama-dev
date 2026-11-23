@@ -1,0 +1,228 @@
+---
+import { Image } from "astro:assets";
+import mark from "@/assets/oscarama.png";
+
+const path = Astro.url.pathname.replace(/\/$/, "");
+const isHome = path === "/v2/opus";
+const isEvents = path.startsWith("/v2/opus/events");
+
+const socials = [
+  { href: "https://github.com/thereal-atom", label: "github", short: "gh" },
+  { href: "https://x.com/oscarfalll", label: "x", short: "x" },
+  { href: "https://linkedin.com/in/oscarfalemara", label: "linkedin", short: "in" },
+];
+---
+
+<header class="topbar" data-topbar>
+  <div class="topbar__inner">
+    <a class="brand" href="/v2/opus" aria-label="oscarama, home">
+      <Image src={mark} alt="" width={64} height={64} class="brand__mark" loading="eager" />
+      <span class="brand__word">oscarama</span>
+      <span class="brand__ver label" aria-hidden="true">v2 / opus</span>
+    </a>
+
+    <nav class="nav" aria-label="primary">
+      <a
+        href="/v2/opus"
+        class:list={["nav__a", { "is-on": isHome }]}
+        aria-current={isHome ? "page" : undefined}>home</a
+      >
+      <a
+        href="/v2/opus/events"
+        class:list={["nav__a", { "is-on": isEvents }]}
+        aria-current={isEvents ? "page" : undefined}>events</a
+      >
+      <span class="nav__sep" aria-hidden="true"></span>
+      {
+        socials.map((s) => (
+          <a
+            href={s.href}
+            class="nav__a nav__ext"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`${s.label} (opens in a new tab)`}
+            data-ph="social"
+            data-ph-label={s.label}
+          >
+            <span class="full">{s.label}</span>
+            <span class="short" aria-hidden="true">
+              {s.short}
+            </span>
+            <span class="ext" aria-hidden="true">
+              ↗
+            </span>
+          </a>
+        ))
+      }
+    </nav>
+  </div>
+</header>
+
+<style>
+  .topbar {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 50;
+    pointer-events: none;
+    color: var(--ink);
+    transition: color 0.5s var(--ease-out);
+  }
+  .topbar::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgb(236 230 217 / 0.82);
+    backdrop-filter: blur(12px) saturate(1.2);
+    -webkit-backdrop-filter: blur(12px) saturate(1.2);
+    -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent);
+    mask-image: linear-gradient(to bottom, #000 62%, transparent);
+    opacity: 0;
+    transition:
+      opacity 0.5s,
+      background 0.5s;
+  }
+  :global(html[data-scrolled]) .topbar::before {
+    opacity: 1;
+  }
+  :global(html[data-hud="dark"]) .topbar {
+    color: var(--star);
+  }
+  :global(html[data-hud="dark"]) .topbar::before {
+    background: rgb(5 7 15 / 0.72);
+  }
+
+  .topbar__inner {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px var(--gutter) 18px;
+    pointer-events: auto;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: inherit;
+    text-decoration: none;
+  }
+  .brand :global(.brand__mark) {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 0 0 1.5px currentColor;
+    transition: transform 0.6s var(--ease-out);
+  }
+  .brand:hover :global(.brand__mark) {
+    transform: rotate(-12deg) scale(1.06);
+  }
+  .brand__word {
+    font-family: var(--f-display);
+    font-weight: 800;
+    font-size: 20px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    line-height: 1;
+    padding-top: 2px;
+  }
+  .brand__ver {
+    opacity: 0.55;
+    padding-top: 2px;
+  }
+
+  .nav {
+    display: flex;
+    align-items: center;
+    gap: clamp(10px, 2vw, 22px);
+    font-size: 11px;
+    font-stretch: 75%;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .nav__a {
+    position: relative;
+    color: inherit;
+    text-decoration: none;
+    padding: 6px 0;
+    white-space: nowrap;
+  }
+  .nav__a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 1px;
+    height: 1.5px;
+    background: var(--orange);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s var(--ease-out);
+  }
+  .nav__a:hover::after,
+  .nav__a.is-on::after {
+    transform: scaleX(1);
+  }
+  .nav__sep {
+    width: 1px;
+    height: 14px;
+    background: currentColor;
+    opacity: 0.3;
+  }
+  .ext {
+    font-size: 0.9em;
+    opacity: 0.6;
+    margin-left: 2px;
+  }
+  .short {
+    display: none;
+  }
+
+  @media (max-width: 720px) {
+    .brand__ver {
+      display: none;
+    }
+  }
+  @media (max-width: 520px) {
+    .full,
+    .ext {
+      display: none;
+    }
+    .short {
+      display: inline;
+    }
+    .brand__word {
+      font-size: 18px;
+    }
+    .nav {
+      gap: 12px;
+    }
+  }
+  @media (max-width: 370px) {
+    .brand__word {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  // shared tiny bits: scrolled state + posthog click tracking for data-ph links
+  const root = document.documentElement;
+  const onScroll = () => {
+    if (window.scrollY > 24) root.setAttribute("data-scrolled", "");
+    else root.removeAttribute("data-scrolled");
+  };
+  onScroll();
+  window.addEventListener("scroll", onScroll, { passive: true });
+
+  document.addEventListener("click", (e) => {
+    const a = (e.target as HTMLElement | null)?.closest<HTMLAnchorElement>("a[data-ph]");
+    if (!a) return;
+    const ph = (window as unknown as { posthog?: { capture: (n: string, p: object) => void } })
+      .posthog;
+    ph?.capture(`v2opus_${a.dataset.ph}_clicked`, { label: a.dataset.phLabel, href: a.href });
+  });
+</script>

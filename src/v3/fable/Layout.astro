@@ -1,0 +1,74 @@
+---
+import { getImage } from "astro:assets";
+import avatar from "@/assets/oscarama.png";
+import "./wall.css";
+
+interface Props {
+  title: string;
+  description: string;
+  /** "pan" = the big explorable wall, "page" = a normal scrolling wall */
+  mode?: "pan" | "page";
+  current?: "home" | "events";
+}
+
+const { title, description, mode = "page", current = "home" } = Astro.props;
+const mark = await getImage({ src: avatar, width: 64, height: 64, format: "webp" });
+const canonical = new URL(Astro.url.pathname, Astro.site ?? "https://oscarama.dev");
+const og = new URL("/og.png", Astro.site ?? "https://oscarama.dev");
+---
+
+<!doctype html>
+<html lang="en" data-mode={mode}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#0f3b2e" />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={og} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={og} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=DM+Mono:wght@400;500&family=Onest:wght@400;500;600;700&family=Unbounded:wght@500;700;900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <a class="skip" href="#wall">skip to the wall</a>
+
+    <header class="topbar">
+      <a class="brand" href="/v3/fable" aria-label="oscarama, home">
+        <img src={mark.src} width="32" height="32" alt="" />
+        <span>oscarama</span>
+      </a>
+      <a class="hublink" href="/v3" title="back to the redesign hub">v3 / fable</a>
+      <nav aria-label="site">
+        <a href="/v3/fable" aria-current={current === "home" ? "page" : undefined}>wall</a>
+        <a href="/v3/fable/events" aria-current={current === "events" ? "page" : undefined}
+          >events</a
+        >
+        <span class="sep" aria-hidden="true"></span>
+        <a href="https://github.com/thereal-atom" target="_blank" rel="noopener noreferrer"
+          >github</a
+        >
+        <a href="https://linkedin.com/in/oscarfalemara" target="_blank" rel="noopener noreferrer"
+          >linkedin</a
+        >
+        <a href="https://x.com/oscarfalll" target="_blank" rel="noopener noreferrer">x</a>
+      </nav>
+    </header>
+
+    <slot />
+  </body>
+</html>

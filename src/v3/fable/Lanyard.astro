@@ -1,0 +1,38 @@
+---
+import type { ImageMetadata } from "astro";
+import Logo from "./Logo.astro";
+
+interface Props {
+  name: string;
+  description: string;
+  logo: ImageMetadata;
+  href: string;
+  lumaUrl: string;
+  strap?: string;
+  kicker?: string;
+  style?: string;
+  big?: boolean;
+}
+
+const { name, description, logo, href, lumaUrl, strap = "pink", kicker, style, big } = Astro.props;
+---
+
+<article class:list={["hang", "lanyard", `strap-${strap}`, { big }]} data-hang style={style}>
+  <i class="hook" aria-hidden="true"></i>
+  <i class="strap" aria-hidden="true"></i>
+  <div class="body badge">
+    <i class="slot" aria-hidden="true"></i>
+    <div class="badge-top">
+      <Logo src={logo} size={big ? 64 : 52} tile="light" />
+      <span class="badge-kind">{kicker ?? "series pass"}</span>
+    </div>
+    <h3>{name}</h3>
+    <p>{description}</p>
+    <div class="badge-links">
+      <a class="btn" href={href}>see what's on <span aria-hidden="true">→</span></a>
+      <a href={lumaUrl} target="_blank" rel="noopener noreferrer"
+        >luma <span aria-hidden="true">↗</span></a
+      >
+    </div>
+  </div>
+</article>

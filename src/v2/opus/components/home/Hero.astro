@@ -1,0 +1,456 @@
+---
+import { Image } from "astro:assets";
+import portrait from "@/assets/oscarama.png";
+import Topo from "../Topo.astro";
+import Chip from "../Chip.astro";
+import { logos, links } from "../../data/content";
+---
+
+<section class="hero" id="main" data-alt="11" data-theme="light" data-zone="london">
+  <div class="hero__topo">
+    <Topo
+      seed={11}
+      levels={13}
+      cell={24}
+      draw
+      hot={10}
+      peak={[0.36, 0.5, 0.07, 1.6]}
+      summitLabel="you are here"
+    />
+  </div>
+
+  <div class="wrap hero__wrap">
+    <div class="hero__meta label">
+      <span class="hero__meta-a"><span class="no">§00</span> ground level</span>
+      <span class="hero__meta-b">51.5072° n &nbsp;0.1276° w</span>
+      <span class="hero__meta-c">london <span class="tnum" data-clock>--:--:--</span></span>
+    </div>
+
+    <h1 class="hero__name stencil" aria-label="oscar falemara">
+      <span class="hero__row" aria-hidden="true">
+        {
+          "oscar".split("").map((c, i) => (
+            <span class="ch" style={`--i:${i}`}>
+              {c}
+            </span>
+          ))
+        }
+      </span>
+      <span class="hero__row" aria-hidden="true">
+        {
+          "falemara".split("").map((c, i) => (
+            <span class="ch" style={`--i:${i + 5}`}>
+              {c}
+            </span>
+          ))
+        }
+      </span>
+    </h1>
+
+    <div class="hero__grid">
+      <div class="hero__lead">
+        <p class="hero__tag serif">
+          self-taught software engineer, community builder <span class="amp">&amp;</span> aspiring rocket
+          person.
+        </p>
+        <p class="hero__p">
+          i write code at <Chip href={links.coloop} logo={logos.coloop} text="coloop ai" /> (yc s21),
+          run <Chip href={links.outpost} logo={logos.outpost} text="outpost" after="," /> a community
+          for people building at the frontier, and spend the rest of my time trying to get higher: up
+          mountains, up climbing walls and, one day, into orbit.
+        </p>
+        <div class="hero__cta">
+          <a
+            class="btn btn--hot"
+            href={links.outpostLuma}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-ph="cta"
+            data-ph-label="hero-event">come to an event <span class="arr">→</span></a
+          >
+          <a class="btn" href="#now">scroll to ascend <span class="arr arr--down">↓</span></a>
+        </div>
+      </div>
+
+      <figure class="vf">
+        <div class="vf__frame">
+          <Image
+            src={portrait}
+            alt="illustration of oscar giving two thumbs up at his desk"
+            widths={[320, 520, 720]}
+            sizes="(max-width: 760px) 80vw, 300px"
+            class="vf__img"
+            loading="eager"
+            fetchpriority="high"
+          />
+          <span class="vf__c vf__c--tl"></span><span class="vf__c vf__c--tr"></span><span
+            class="vf__c vf__c--bl"></span><span class="vf__c vf__c--br"></span>
+          <span class="vf__focus"></span>
+          <span class="vf__hud vf__hud--tl label"><span class="rec"></span>rec</span>
+          <span class="vf__hud vf__hud--tr label">4k · 24</span>
+          <span class="vf__hud vf__hud--bl label">iso 400 · f/2.8</span>
+          <span class="vf__hud vf__hud--br label">pilot</span>
+        </div>
+        <figcaption class="label dim">fig. 01: the pilot, pre-launch</figcaption>
+      </figure>
+
+      <dl class="tele">
+        <div><dt class="label">callsign</dt><dd>oscarama</dd></div>
+        <div><dt class="label">base</dt><dd>london, uk</dd></div>
+        <div><dt class="label">day job</dt><dd>software eng @ coloop ai</dd></div>
+        <div><dt class="label">night job</dt><dd>running outpost</dd></div>
+        <div><dt class="label">formal education</dt><dd>high school</dd></div>
+        <div><dt class="label">status</dt><dd><span class="blink"></span>building</dd></div>
+        <div><dt class="label">objective</dt><dd>orbit (eventually)</dd></div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: clamp(760px, 100svh, 1000px);
+    padding: 96px 0 64px;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .hero__topo {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    color: var(--ink);
+  }
+  .hero__topo::after {
+    /* fade the map out under the copy */
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 40% 42% at 18% 68%, rgb(236 230 217 / 0.9) 20%, transparent 75%),
+      linear-gradient(to bottom, var(--paper) 0%, transparent 16%);
+    pointer-events: none;
+  }
+
+  .hero__meta {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 16px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--rule-strong);
+    color: var(--ink-2);
+  }
+  .hero__meta .no {
+    color: var(--orange-ink);
+    margin-right: 6px;
+  }
+  .hero__meta-b {
+    text-align: center;
+  }
+  .hero__meta-c {
+    text-align: right;
+  }
+
+  .hero__name {
+    --fit: calc((100vw - var(--gutter) * 2) / 6.5);
+    display: flex;
+    flex-wrap: nowrap;
+    column-gap: 0.18em;
+    margin: clamp(18px, 2.6vw, 30px) 0 clamp(22px, 2.8vw, 40px) -0.03em;
+    font-size: min(var(--fit), 206px);
+    line-height: 0.82;
+    color: var(--ink);
+  }
+  @media (min-width: 1100px) {
+    .hero__name {
+      --fit: calc((100vw - var(--gutter) - max(var(--gutter), 112px)) / 6.5);
+    }
+  }
+  .hero__row {
+    display: inline-flex;
+  }
+  .ch {
+    display: inline-block;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    :global(html.js) .ch {
+      animation: rise 1.2s var(--ease-out) both;
+      animation-delay: calc(var(--i) * 45ms + 120ms);
+    }
+  }
+  @keyframes rise {
+    from {
+      transform: translate3d(0, 0.5em, 0);
+      opacity: 0;
+      clip-path: inset(0 0 100% 0);
+    }
+    to {
+      transform: none;
+      opacity: 1;
+      clip-path: inset(0 0 -10% 0);
+    }
+  }
+
+  .hero__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 5.2fr) minmax(0, 3fr) minmax(0, 3fr);
+    gap: clamp(24px, 3.4vw, 56px);
+    align-items: start;
+  }
+
+  .hero__tag {
+    font-size: clamp(30px, 2.9vw, 42px);
+    line-height: 1.04;
+    max-width: 19ch;
+    text-wrap: balance;
+  }
+  .hero__tag .amp {
+    color: var(--orange);
+  }
+  .hero__p {
+    margin-top: 22px;
+    max-width: 52ch;
+    font-size: 13.5px;
+  }
+  .hero__cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 28px;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .arr--down {
+      display: inline-block;
+      animation: bob 1.8s var(--ease-io) infinite;
+    }
+  }
+  @keyframes bob {
+    50% {
+      transform: translateY(3px);
+    }
+  }
+
+  /* viewfinder */
+  .vf {
+    margin: 0;
+  }
+  .vf__frame {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background: var(--paper-3);
+  }
+  .vf :global(.vf__img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 30%;
+    filter: saturate(0.9) contrast(1.02);
+  }
+  .vf__frame::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      rgb(0 0 0 / 0.25),
+      transparent 22%,
+      transparent 78%,
+      rgb(0 0 0 / 0.3)
+    );
+    pointer-events: none;
+  }
+  .vf__c {
+    position: absolute;
+    z-index: 2;
+    width: 18px;
+    height: 18px;
+    border: 0 solid #fff;
+  }
+  .vf__c--tl {
+    top: 10px;
+    left: 10px;
+    border-top-width: 2px;
+    border-left-width: 2px;
+  }
+  .vf__c--tr {
+    top: 10px;
+    right: 10px;
+    border-top-width: 2px;
+    border-right-width: 2px;
+  }
+  .vf__c--bl {
+    bottom: 10px;
+    left: 10px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+  }
+  .vf__c--br {
+    bottom: 10px;
+    right: 10px;
+    border-bottom-width: 2px;
+    border-right-width: 2px;
+  }
+  .vf__focus {
+    position: absolute;
+    z-index: 2;
+    left: 50%;
+    top: 36%;
+    width: 22%;
+    aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+    border: 1.5px solid var(--orange);
+    opacity: 0.95;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .vf__focus {
+      animation: focus 3.2s var(--ease-out) 0.8s both;
+    }
+  }
+  @keyframes focus {
+    0% {
+      transform: translate(-50%, -50%) scale(1.8);
+      opacity: 0;
+    }
+    30% {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+    }
+    40%,
+    50% {
+      opacity: 0.4;
+    }
+    45%,
+    60% {
+      opacity: 1;
+    }
+  }
+  .vf__hud {
+    position: absolute;
+    z-index: 2;
+    color: #fff;
+    font-size: 9px;
+    text-shadow: 0 1px 2px rgb(0 0 0 / 0.5);
+  }
+  .vf__hud--tl {
+    top: 14px;
+    left: 34px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .vf__hud--tr {
+    top: 14px;
+    right: 34px;
+  }
+  .vf__hud--bl {
+    bottom: 14px;
+    left: 34px;
+  }
+  .vf__hud--br {
+    bottom: 14px;
+    right: 34px;
+  }
+  .rec {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--orange);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .rec {
+      animation: blink 1.2s steps(1, end) infinite;
+    }
+  }
+  @keyframes blink {
+    50% {
+      opacity: 0;
+    }
+  }
+  .vf figcaption {
+    margin-top: 10px;
+  }
+
+  /* telemetry */
+  .tele {
+    margin: 0;
+    padding: 0 12px;
+    border-top: 1px solid var(--rule-strong);
+    background: rgb(236 230 217 / 0.86);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+  }
+  .tele div {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 9px 0 8px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .tele dt {
+    color: var(--ink-2);
+    padding-top: 2px;
+  }
+  .tele dd {
+    margin: 0;
+    text-align: right;
+    font-size: 12px;
+  }
+  .blink {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    margin-right: 8px;
+    border-radius: 50%;
+    background: var(--orange);
+    box-shadow: 0 0 0 3px var(--orange-soft);
+    vertical-align: 1px;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .blink {
+      animation: blink 1.6s steps(1, end) infinite;
+    }
+  }
+
+  @media (max-width: 1099px) {
+    .hero__grid {
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    }
+    .tele {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      column-gap: 32px;
+    }
+  }
+  @media (max-width: 760px) {
+    .hero {
+      padding-top: 80px;
+    }
+    .hero__meta {
+      grid-template-columns: 1fr auto;
+    }
+    .hero__meta-b {
+      display: none;
+    }
+    .hero__name {
+      font-size: calc((100vw - var(--gutter) * 2) / 3.95);
+      flex-direction: column;
+      line-height: 0.86;
+    }
+    .hero__grid {
+      grid-template-columns: 1fr;
+    }
+    .vf {
+      max-width: 340px;
+    }
+    .tele {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  import { startClock } from "../../scripts/clock";
+  startClock();
+</script>

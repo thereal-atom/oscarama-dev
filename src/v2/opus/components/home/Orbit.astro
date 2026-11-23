@@ -1,0 +1,275 @@
+---
+import Launch from "../Launch.astro";
+import Footer from "../Footer.astro";
+import { links } from "../../data/content";
+
+const comms = [
+  { k: "x / twitter", v: "@oscarfalll", href: links.x, note: "dms open. fastest way to reach me" },
+  { k: "linkedin", v: "oscarfalemara", href: links.linkedin, note: "for the professional types" },
+  { k: "github", v: "thereal-atom", href: links.github, note: "where the code lives" },
+  { k: "luma", v: "luma.com/oscarama", href: links.myLuma, note: "come to the next event" },
+];
+---
+
+<section
+  class="orbit on-dark"
+  id="orbit"
+  data-alt="150000"
+  data-alt-end="408000"
+  data-theme="dark"
+  data-zone="leo"
+>
+  <div class="wrap">
+    <header class="sec-head label" data-reveal>
+      <span class="no">§07</span><span>low earth orbit</span><span class="rule"></span><span
+        >408 km · iss altitude</span
+      >
+    </header>
+
+    <div class="orbit__grid">
+      <div class="orbit__copy">
+        <h2 class="orbit__h" data-reveal>
+          <span class="stencil orbit__next">next mission</span>
+          <span class="serif orbit__what">an aerospace company.</span>
+        </h2>
+        <p class="orbit__p" data-reveal style="--d:120">
+          aerospace is the thing i'm most obsessed with. rockets, spacecraft, the engineering, all
+          of it. one of my first ever projects was a website listing every spacex launch, and i want
+          to start an aerospace company soon.
+        </p>
+        <p class="orbit__p orbit__p--hot" data-reveal style="--d:200">
+          if you're building anything that leaves the ground, i'd love to talk.
+        </p>
+      </div>
+
+      <div class="orbit__launch" data-reveal style="--d:160">
+        <Launch />
+      </div>
+    </div>
+
+    <div class="comms" data-reveal>
+      <div class="comms__head label">
+        <span>open comms channels</span>
+        <span class="comms__sig"
+          ><span></span><span></span><span></span><span></span> signal strong</span
+        >
+      </div>
+      <ul>
+        {
+          comms.map((c) => (
+            <li>
+              <a
+                class="comms__row"
+                href={c.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-ph="social"
+                data-ph-label={c.k}
+              >
+                <span class="comms__k label">{c.k}</span>
+                <span class="comms__v display">{c.v}</span>
+                <span class="comms__n">{c.note}</span>
+                <span class="comms__arr" aria-hidden="true">
+                  ↗
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+
+  <div class="earth">
+    <div class="earth__body" aria-hidden="true"></div>
+    <div class="earth__sun" aria-hidden="true"></div>
+    <Footer />
+  </div>
+</section>
+
+<style>
+  .orbit {
+    position: relative;
+    padding: clamp(40px, 6vw, 80px) 0 0;
+    overflow-x: clip;
+  }
+  .orbit__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    gap: clamp(32px, 5vw, 80px);
+    align-items: end;
+    margin-top: 28px;
+  }
+  .orbit__h {
+    display: flex;
+    flex-direction: column;
+  }
+  .orbit__next {
+    font-size: clamp(72px, 11vw, 178px);
+    line-height: 0.86;
+  }
+  .orbit__what {
+    margin-top: 0.12em;
+    font-size: clamp(40px, 5.4vw, 86px);
+    line-height: 1;
+    color: var(--orange);
+  }
+  .orbit__p {
+    max-width: 54ch;
+    margin-top: 26px;
+    color: #c5cad8;
+  }
+  .orbit__p--hot {
+    margin-top: 14px;
+    color: var(--star);
+  }
+  .orbit__launch {
+    justify-self: end;
+    width: 100%;
+    max-width: 420px;
+  }
+
+  .comms {
+    position: relative;
+    z-index: 2;
+    margin-top: clamp(64px, 8vw, 120px);
+  }
+  .comms__head {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgb(236 232 223 / 0.5);
+    color: var(--star-2);
+  }
+  .comms__sig {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 2px;
+    color: #8fe3a5;
+  }
+  .comms__sig span {
+    width: 3px;
+    background: currentColor;
+  }
+  .comms__sig span:nth-child(1) {
+    height: 4px;
+  }
+  .comms__sig span:nth-child(2) {
+    height: 7px;
+  }
+  .comms__sig span:nth-child(3) {
+    height: 10px;
+  }
+  .comms__sig span:nth-child(4) {
+    height: 13px;
+    margin-right: 8px;
+  }
+  .comms__row {
+    display: grid;
+    grid-template-columns: 140px minmax(0, 1.2fr) minmax(0, 1fr) 24px;
+    align-items: baseline;
+    gap: 18px;
+    padding: 20px 4px 18px;
+    border-bottom: 1px solid var(--rule);
+    color: inherit;
+    text-decoration: none;
+    transition:
+      padding 0.35s var(--ease-out),
+      background 0.25s;
+  }
+  .comms__row:hover {
+    padding-left: 16px;
+    background: linear-gradient(to right, rgb(255 79 0 / 0.14), transparent 70%);
+  }
+  .comms__k {
+    color: var(--star-2);
+  }
+  .comms__v {
+    font-size: clamp(28px, 3.4vw, 52px);
+    line-height: 0.9;
+    text-transform: lowercase;
+    overflow-wrap: anywhere;
+  }
+  .comms__n {
+    font-size: 12px;
+    color: #c5cad8;
+  }
+  .comms__arr {
+    color: var(--orange);
+    font-size: 18px;
+    transition: transform 0.3s var(--ease-out);
+  }
+  .comms__row:hover .comms__arr {
+    transform: translate(3px, -3px);
+  }
+
+  /* the planet, seen from orbit */
+  .earth {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    height: clamp(260px, 28vw, 440px);
+    margin-top: clamp(24px, 4vw, 60px);
+    overflow: hidden;
+  }
+  .earth__body {
+    position: absolute;
+    left: 50%;
+    top: 70px;
+    pointer-events: none;
+    width: max(260vw, 2200px);
+    aspect-ratio: 1;
+    transform: translateX(-50%);
+    border-radius: 50%;
+    background:
+      radial-gradient(ellipse 40% 7% at 50% 0.4%, rgb(170 215 255 / 0.65), transparent 70%),
+      radial-gradient(circle at 50% 2%, #2a5ba3 0%, #12346d 4%, #0a1d40 9%, #050c1d 18%);
+    box-shadow:
+      0 0 0 1px rgb(160 210 255 / 0.55),
+      0 -6px 26px 2px rgb(90 160 255 / 0.55),
+      0 -30px 120px 20px rgb(60 120 255 / 0.22);
+  }
+  .earth__sun {
+    position: absolute;
+    left: 72%;
+    top: 62px;
+    pointer-events: none;
+    width: 52vw;
+    height: 64px;
+    transform: translateX(-50%);
+    background:
+      radial-gradient(ellipse 6% 40% at 50% 50%, rgb(255 244 220 / 0.95), transparent 70%),
+      radial-gradient(
+        ellipse 50% 50% at 50% 50%,
+        rgb(255 170 90 / 0.55),
+        rgb(255 79 0 / 0.14) 45%,
+        transparent 70%
+      );
+    filter: blur(4px);
+  }
+
+  @media (max-width: 960px) {
+    .orbit__grid {
+      grid-template-columns: 1fr;
+    }
+    .orbit__launch {
+      justify-self: start;
+    }
+    .comms__row {
+      grid-template-columns: 110px minmax(0, 1fr) 24px;
+    }
+    .comms__n {
+      display: none;
+    }
+  }
+  @media (max-width: 520px) {
+    .comms__row {
+      grid-template-columns: minmax(0, 1fr) 24px;
+      row-gap: 6px;
+    }
+    .comms__k {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

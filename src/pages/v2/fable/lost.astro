@@ -1,0 +1,37 @@
+---
+import Layout from "@/v2/fable/Layout.astro";
+import Hud from "@/v2/fable/Hud.astro";
+import Stars from "@/v2/fable/Stars.astro";
+---
+
+<Layout
+  title="signal lost — oscar falemara"
+  description="you've drifted off course. it happens."
+  path="/v2/fable/lost"
+  bodyClass="ev"
+>
+  <Hud alt="???" phase="off course" />
+  <Stars />
+  <main class="lost" id="content">
+    <svg class="lost__astro" viewBox="0 0 100 120" aria-hidden="true">
+      <rect x="28" y="50" width="44" height="46" rx="14" fill="#ece5d5"></rect>
+      <rect x="14" y="54" width="16" height="30" rx="8" fill="#ece5d5"></rect>
+      <rect x="70" y="54" width="16" height="30" rx="8" fill="#ece5d5"></rect>
+      <rect x="32" y="90" width="15" height="26" rx="7" fill="#ece5d5"></rect>
+      <rect x="53" y="90" width="15" height="26" rx="7" fill="#ece5d5"></rect>
+      <circle cx="50" cy="32" r="26" fill="#ece5d5"></circle>
+      <rect x="31" y="20" width="38" height="24" rx="12" fill="#15130e"></rect>
+      <circle cx="58" cy="28" r="4" fill="#ff4d00"></circle>
+      <rect x="40" y="62" width="20" height="12" rx="2" fill="#ff4d00"></rect>
+    </svg>
+    <p class="mono"><span class="o"><i class="blink"></i>404-ish</span> &nbsp;telemetry: none</p>
+    <h1 class="big">signal <span class="serif">lost.</span></h1>
+    <p class="lede">
+      you've drifted off the flight plan. no stress, it's mostly empty out here anyway.
+    </p>
+    <p class="pad__cta">
+      <a class="btn btn--solid" href="/v2/fable">re-enter atmosphere ↓</a>
+      <a class="btn" href="/v2/fable/events">go to an event instead</a>
+    </p>
+  </main>
+</Layout>

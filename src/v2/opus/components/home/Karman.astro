@@ -1,0 +1,59 @@
+---
+
+---
+
+<section
+  class="karman on-dark"
+  data-alt="100000"
+  data-theme="dark"
+  data-zone="kármán"
+  aria-label="the kármán line"
+>
+  <div class="karman__line" data-reveal></div>
+  <div class="wrap karman__row">
+    <span class="label karman__k"
+      >kármán line <span class="dim">· 100 km · edge of space</span></span
+    >
+    <p class="serif karman__msg" data-reveal style="--d:200">
+      congratulations. you are now, technically, in space.
+    </p>
+  </div>
+</section>
+
+<style>
+  .karman {
+    position: relative;
+    padding: 28px 0 clamp(40px, 6vw, 80px);
+  }
+  .karman__line {
+    height: 0;
+    border-top: 2px dashed var(--orange);
+    transform-origin: left;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    :global(html.js) .karman__line[data-reveal] {
+      opacity: 1;
+      transform: scaleX(0);
+      transition: transform 2.2s var(--ease-io);
+    }
+    :global(html.js) .karman__line[data-reveal].is-in {
+      transform: scaleX(1);
+    }
+  }
+  .karman__row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px 32px;
+    padding-top: 14px;
+  }
+  .karman__k {
+    color: var(--orange);
+  }
+  .karman__msg {
+    font-size: clamp(24px, 2.6vw, 38px);
+    line-height: 1.1;
+    color: var(--star);
+  }
+</style>

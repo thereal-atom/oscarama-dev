@@ -1,0 +1,85 @@
+---
+import Layout from "@/v4/opus/Layout.astro";
+import Poster from "@/v4/opus/components/Poster.astro";
+import { screenings } from "@/v4/opus/events";
+import "@/v4/opus/styles/events.css";
+
+export const prerender = true;
+
+export function getStaticPaths() {
+  return screenings.map((s) => ({ params: { slug: s.slug } }));
+}
+
+const { slug } = Astro.params;
+const i = screenings.findIndex((s) => s.slug === slug);
+const s = screenings[i];
+const next = screenings[(i + 1) % screenings.length];
+const prev = screenings[(i - 1 + screenings.length) % screenings.length];
+---
+
+<Layout
+  title={`${s.name} · now showing · oscarama`}
+  description={s.description}
+  path={`/v4/opus/events/${s.slug}`}
+  label={`screen ${s.screen} · ${s.name}`}
+>
+  <section class="room" aria-labelledby="room-title">
+    <a class="room__back" href="/v4/opus/events">&larr; now showing</a>
+
+    <div class="room__grid">
+      <div class="room__poster">
+        <Poster
+          slug={s.slug}
+          name={s.name}
+          logo={s.logo}
+          tagline={s.tagline}
+          billing={s.billing}
+          screen={s.screen}
+          large
+        />
+      </div>
+
+      <div class="room__main">
+        <p class="room__k">screen {s.screen} of {screenings.length} · the screening room</p>
+        <h1 class="room__title" id="room-title">{s.name}</h1>
+        <p class="room__desc">{s.description}</p>
+        <p class="room__luma">
+          <a class="btn btn--sub" href={s.lumaUrl} target="_blank" rel="noopener noreferrer"
+            >rsvp on luma ↗</a
+          >
+          <span>{s.lumaUrl.replace("https://", "")}</span>
+        </p>
+
+        <div class="screen">
+          <p class="screen__label"><span>showtimes</span><span>upcoming</span></p>
+          <div class="screen__frame">
+            <iframe
+              src={`https://luma.com/embed/calendar/${s.lumaCalendarId}/events`}
+              title={`${s.name} upcoming events on luma`}
+              width="100%"
+              height="640"
+              loading="lazy"
+              style="border: 0; background: transparent;"
+              allowfullscreen></iframe>
+          </div>
+          <p class="screen__note">
+            if the projector's shy, every showtime is on <a
+              href={s.lumaUrl}
+              target="_blank"
+              rel="noopener noreferrer">luma ↗</a
+            >
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <nav class="room__nav" aria-label="other screenings">
+      <a href={`/v4/opus/events/${prev.slug}`}
+        ><span>&larr; screen {prev.screen}</span>{prev.name}</a
+      >
+      <a href={`/v4/opus/events/${next.slug}`} class="room__next"
+        ><span>screen {next.screen} &rarr;</span>{next.name}</a
+      >
+    </nav>
+  </section>
+</Layout>
