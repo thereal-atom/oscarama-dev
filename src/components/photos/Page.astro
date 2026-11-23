@@ -287,6 +287,7 @@ const ig = `https://www.instagram.com/${contact.instagram}/`, tw = `https://x.co
       .logo img.sm{height:clamp(28px,3.4cqw,50px)}
       .you{display:flex;flex-direction:column;justify-content:space-between}
       .you b{font:400 clamp(22px,2.4cqw,34px)/1 var(--px)}
+      a.you:is(:hover,:focus-visible,:active){background:var(--blue);color:var(--on-a);outline-color:currentColor}
       /* testimonials: r3/4's stair-notched blocks, cut in whole modules; alternating ink / accent, left / right */
       .q{--qb:var(--fg);--qf:var(--bg);--qa:var(--blue);background:var(--qb);color:var(--qf);padding:var(--pad) calc(var(--pad) + 4px) calc(var(--pad) + 6px);
         clip-path:polygon(0 0,calc(100% - var(--r) * 2) 0,calc(100% - var(--r) * 2) var(--r),calc(100% - var(--r)) var(--r),calc(100% - var(--r)) calc(var(--r) * 2),100% calc(var(--r) * 2),100% 100%,0 100%)}
@@ -420,7 +421,7 @@ const ig = `https://www.instagram.com/${contact.instagram}/`, tw = `https://x.co
           <div class="vl" aria-hidden="true">{L.map((i) => <i style={`--i:${i}`} />)}</div>
           <p class="c lab mono" style="--am:1/1/span 1/span 2;--ad:1/1/span 1/span 6"><span>D — Shot for</span></p>
           {clients.map((c, i) => <div class="c logo" style={`--am:${2 + Math.floor(i / 2) * 2}/${(i % 2) + 1}/span 2/span 1;--ad:2/${i + 1}/span 2/span 1`}><img class:list={{ sm: c.name === "SPACEXAI" }} src={S.dark && c.name === "SPACEXAI" ? "/photos/spacexai-mark.svg" : c.logo.src} alt={c.name} loading="lazy" style={S.dark ? "filter:brightness(0)" : undefined} /><span class="mono">{c.name}</span></div>)}
-          <a class="c fill you" href="#contact" style="--am:6/2/span 2/span 1;--ad:2/6/span 2/span 1"><span class="mono">next</span><b>YOUR LOGO →</b></a>
+          <a class="c fill you" href="#contact" style="--am:6/2/span 2/span 1;--ad:2/6/span 2/span 1"><span class="mono">Your logo here</span><b>BOOK A SHOOT <span aria-hidden="true">→</span></b></a>
         </section>
 
         <section class="g t-paper" id="get" data-sec="E" style="--cm:2;--cd:4">
