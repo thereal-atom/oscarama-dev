@@ -4,7 +4,8 @@
 // the page ground, then the compact mark on the accent, inverted, and at 32px / 16px (favicon sizes).
 import Switcher from "@/components/photos/Switcher.astro";
 import Mark from "./Mark.astro";
-import type { MarkId } from "./marks";
+import ShootsMark from "./ShootsMark.astro";
+import type { MarkId, ShootsId } from "./marks";
 import { schemes, alpha, onAccent, type SchemeId } from "@/components/photos/schemes";
 
 interface Props { scheme: SchemeId }
@@ -28,6 +29,20 @@ const concepts: Array<{ id: MarkId; t: string; d: string }> = [
   { id: "app", t: "App tile", d: "o. on an accent square. Built for avatars and favicons first." },
 ];
 const pad = (n: number) => String(n).padStart(2, "0");
+
+const shoots: Array<{ id: ShootsId; t: string; d: string }> = [
+  { id: "wordmark", t: "Wordmark", d: "Lowercase Inter Tight 900 with the square accent stop. Compact: os." },
+  { id: "weights", t: "Two weights", d: "oscar heavy, shoots light: the who, then the what." },
+  { id: "verb", t: "Accent verb", d: "The verb in the accent. Reads like the hero line it came from." },
+  { id: "stack", t: "Stacked caps", d: "OSCAR / SHOOTS in the headline caps, with an accent rule. Compact: O over S." },
+  { id: "pixel", t: "Pixel stack", d: "Both words in the page's bitmap alphabet, stacked, with the accent pixel full stop." },
+  { id: "lens-o", t: "Lens o", d: "The o of oscar is a pixel lens with an accent centre. The lens alone is the icon." },
+  { id: "viewfinder", t: "Viewfinder", d: "Accent viewfinder corners framing the name." },
+  { id: "rec", t: "Rec", d: "A record light before the name. The light alone works as a tiny mark." },
+  { id: "hand", t: "Handwritten", d: "Caveat with a drawn arrow, like the note on your hero photo." },
+  { id: "sticker", t: "Sticker", d: "The hero's tilted accent tag with the new name on it." },
+  { id: "tile", t: "App tile", d: "os. on an accent square, beside the wordmark. Made for avatars and favicons." },
+];
 
 // Name ideas for the photo + video side. Grouped by where the idea comes from. Availability (domains, handles)
 // is not checked: every one needs a search before it's taken seriously.
@@ -63,7 +78,7 @@ const names: Array<{ group: string; items: Array<{ n: string; d: string; px?: bo
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>oscarama — names + logos</title>
+    <title>Oscar Shoots — logos</title>
     <meta name="robots" content="noindex" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -150,14 +165,50 @@ const names: Array<{ group: string; items: Array<{ n: string; d: string; px?: bo
       .compact .app{width:1.3em;height:1.3em;font-size:.85em;line-height:1.3;padding-top:0;align-items:center}
       .compact .app .stop{align-self:flex-end;margin-bottom:.32em}
       .f16 .app,.f32 .app{font-size:1em}
+      /* oscar shoots */
+      .board.long .stage{font-size:clamp(30px,3.8vw,52px)}
+      .wm .lt{font-weight:500;letter-spacing:-.04em;margin-left:.06em}
+      .bm.px16{height:1.5em}
+      .lo{display:inline-flex;align-items:baseline;gap:.03em}
+      .lo .bm.pxx{height:.56em;align-self:baseline;transform:translateY(.02em)}
+      .compact .lo .bm.pxx{height:.95em}
+      .rec{display:inline-flex;align-items:center;gap:.3em}
+      .rec .dot{display:inline-block;width:.34em;height:.34em;border-radius:50%;background:var(--acc)}
+      .rec .recw{font:900 .8em/1 "Inter Tight",sans-serif;letter-spacing:-.05em}
+      .compact .rec .dot{width:.7em;height:.7em}
+      .compact .rec .recw{display:none}
+      .app.wide{width:auto;padding:.08em .14em 0 .12em}
+      .compact .app.wide{width:auto;padding:0 .16em;font-size:.62em;height:1.6em;border-radius:.3em}
     </style>
   </head>
   <body style={vars}>
     <div class="wrap">
       <header>
-        <p class="lab mono"><span>LG — Names + logos</span><b>{names.reduce((n, g) => n + g.items.length, 0)} names · {concepts.length} marks · {S.label}</b></p>
+        <p class="lab mono"><span>LG — Oscar Shoots</span><b>{shoots.length} marks · {S.label}</b></p>
+        <h1>Oscar Shoots</h1>
+        <p>Logo concepts for the name. Each one shows the full lockup, then the compact mark on the accent, inverted, and at favicon sizes. Earlier name ideas and the oscarama marks are further down.</p>
+      </header>
+      <main class="board long">
+        {shoots.map((c, i) => (
+          <section class="card" aria-label={c.t}>
+            <div>
+              <h2><span class="n">{pad(i + 1)}</span><span>{c.t}</span></h2>
+              <p class="d">{c.d}</p>
+            </div>
+            <div class="stage on-g"><ShootsMark id={c.id} /></div>
+            <div class="row">
+              <div class="tile"><span class="sw on-a"><ShootsMark id={c.id} mark /></span><small>accent</small></div>
+              <div class="tile"><span class="sw on-i"><ShootsMark id={c.id} mark /></span><small>inverse</small></div>
+              <div class="tile"><span class="fav f32 on-g"><ShootsMark id={c.id} mark /></span><small>32px</small></div>
+              <div class="tile"><span class="fav f16 on-g"><ShootsMark id={c.id} mark /></span><small>16px</small></div>
+            </div>
+          </section>
+        ))}
+      </main>
+      <header class="h2">
+        <p class="lab mono"><span>Earlier — Names</span><b>{names.reduce((n, g) => n + g.items.length, 0)} names · {concepts.length} marks · {S.label}</b></p>
         <h1>Names</h1>
-        <p>Name ideas for the photo + video side, set the way the wordmark would be. None of the domains or handles have been checked yet.</p>
+        <p>The first round of name ideas, set the way the wordmark would be. None of the domains or handles were checked.</p>
       </header>
       <section class="names" aria-label="name ideas">
         {names.map((g) => (
@@ -175,7 +226,7 @@ const names: Array<{ group: string; items: Array<{ n: string; d: string; px?: bo
         ))}
       </section>
       <header class="h2">
-        <p class="lab mono"><span>Logo concepts</span><b>{concepts.length} marks</b></p>
+        <p class="lab mono"><span>Earlier — oscarama marks</span><b>{concepts.length} marks</b></p>
         <h1>Logos</h1>
         <p>Rough marks, drawn for oscarama but they work with most of the names above. Each one shows the full lockup, then the compact mark on the accent, inverted, and at favicon sizes.</p>
       </header>

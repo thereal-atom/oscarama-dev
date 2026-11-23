@@ -16,6 +16,11 @@ function thin(rows: string[], seed: number, from: number): string[] {
   }).join(""));
 }
 
+export type ShootsId = "wordmark" | "weights" | "verb" | "stack" | "pixel" | "lens-o" | "viewfinder" | "rec" | "hand" | "sticker" | "tile";
+export const shootsPixel = glyphRows("OSCAR SHOOTS.");
+export const shootsPixelStack = [...glyphRows("OSCAR"), ".".repeat(24), ...glyphRows("SHOOTS.")];
+export const osPixel = glyphRows("OS.");
+
 export const pixelWord = glyphRows("OSCARAMA.");
 export const pixelO = glyphRows("O.");
 export const dissolveWord = thin(glyphRows("OSCARAMA"), 11, 0.45);

@@ -1,0 +1,22 @@
+---
+// "Oscar Shoots" logo concepts: full lockup or compact mark. Same colour contract as Mark.astro:
+// currentColor = main, --acc = accent, --acc-fg = type on an accent shape.
+import Bits from "@/components/photos/fable/r3/Bits.astro";
+import { shootsPixel, shootsPixelStack, osPixel, lens, type ShootsId } from "./marks";
+
+interface Props { id: ShootsId; mark?: boolean }
+const { id, mark = false } = Astro.props;
+---
+<span class:list={["mk", `os-${id}`, { compact: mark }]}>
+  {id === "wordmark" && <span class="wm">{mark ? "os" : "oscar shoots"}<i class="stop" /></span>}
+  {id === "weights" && <span class="wm">{mark ? "o" : "oscar"}<span class="lt">{mark ? "s" : "shoots"}</span></span>}
+  {id === "verb" && <span class="wm">{mark ? "o" : "oscar "}<b>{mark ? "s" : "shoots"}</b></span>}
+  {id === "stack" && <span class="stk">{mark ? <>O<br />S</> : <>OSCAR<br />SHOOTS</>}</span>}
+  {id === "pixel" && <Bits rows={mark ? osPixel : shootsPixelStack} class:list={[mark ? "px7" : "px16"]} />}
+  {id === "lens-o" && <span class="lo"><Bits rows={lens} class="pxx" />{!mark && <span class="wm">scar shoots</span>}</span>}
+  {id === "viewfinder" && <span class="vf"><i /><i /><i /><i /><span class="wm sm">{mark ? "os" : "oscar shoots"}</span></span>}
+  {id === "rec" && <span class="rec"><i class="dot" /><span class="recw">{mark ? "" : <>oscar shoots</>}</span></span>}
+  {id === "hand" && <span class="hd">{mark ? "os" : "oscar shoots"}{!mark && <svg class="arw" viewBox="0 0 60 40" aria-hidden="true"><path d="M4 6 C 22 2, 44 10, 50 30 M50 30 l-7 -3 M50 30 l2 -7" /></svg>}</span>}
+  {id === "sticker" && <span class="stkr">{mark ? "os" : "oscar shoots"}</span>}
+  {id === "tile" && <><span class="app wide">os<i class="stop" /></span>{!mark && <span class="wm sm">oscar shoots</span>}</>}
+</span>
