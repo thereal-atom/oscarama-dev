@@ -11,10 +11,10 @@ interface Props { viewerData: Awaited<ReturnType<typeof loadSelects>>["viewerDat
 const D = schemes["orange-light"];
 const { viewerData, bg = D.ink, fg = D.paper, accent = D.accent, onAccent = D.ink, mono = "ui-monospace, monospace", display = "inherit", radius = "0px", bookHref = "#book", bookLabel = "book a shoot like this →" } = Astro.props;
 ---
-<div class="rv" id="rv" hidden role="dialog" aria-modal="true" aria-label="photo viewer"
+<div class="rv" id="rv" hidden role="dialog" aria-modal="true" aria-label="photo viewer" data-photos={JSON.stringify(viewerData)}
   style={`--rv-bg:${bg};--rv-fg:${fg};--rv-accent:${accent};--rv-on:${onAccent};--rv-mono:${mono};--rv-display:${display};--rv-radius:${radius}`}>
   <div class="rv-top">
-    <span class="rv-count" id="rv-count">01 / 01</span>
+    <span class="rv-count" id="rv-count" aria-live="polite">01 / 01</span>
     <span class="rv-ev" id="rv-ev"></span>
     <button class="rv-btn" data-mute type="button" aria-pressed="false">sound on</button>
     <button class="rv-btn rv-close" id="rv-close" type="button" aria-label="close viewer">close ✕</button>
@@ -31,11 +31,11 @@ const { viewerData, bg = D.ink, fg = D.paper, accent = D.accent, onAccent = D.in
   <div class="rv-bot">
     <p class="rv-cap" id="rv-cap"></p>
     <p class="rv-meta" id="rv-meta"></p>
+    <p class="rv-error" id="rv-error" role="status"></p>
     <p class="rv-exif" id="rv-exif"></p>
     <a class="rv-book" href={bookHref} id="rv-book">{bookLabel}</a>
   </div>
 </div>
-<script type="application/json" id="rv-data" set:html={JSON.stringify(viewerData)} />
 
 <style is:global>
   .rv{position:fixed;inset:0;z-index:1000;background:var(--rv-bg);color:var(--rv-fg);display:grid;grid-template-rows:auto minmax(0,1fr) auto;
@@ -69,23 +69,32 @@ const { viewerData, bg = D.ink, fg = D.paper, accent = D.accent, onAccent = D.in
   .rv-meta{opacity:.75}.rv-exif{opacity:.5}
   .rv-book{grid-column:2;grid-row:1/4;align-self:end;color:var(--rv-on);background:var(--rv-accent);text-decoration:none;padding:11px 13px;border-radius:var(--rv-radius);white-space:nowrap}
   .rv-book:hover,.rv-book:focus-visible{background:var(--rv-fg);color:var(--rv-bg);outline:none}
-  @media (max-width:560px){.rv-bot{grid-template-columns:1fr;padding-right:120px}.rv-book{grid-column:1;grid-row:auto;justify-self:start;margin-top:8px}.rv-ev{display:none}.rv-count{flex:1}}
+  .rv-error:empty{display:none}
+  @media (max-width:560px){.rv-bot{grid-template-columns:minmax(0,1fr)}.rv-book{grid-column:1;grid-row:auto;justify-self:start;white-space:normal;margin-top:8px}.rv-ev{display:none}.rv-count{flex:1}}
   @media (prefers-reduced-motion:reduce){.rv.snap .rv-black{animation:none}.rv-frame img{transition:none}}
 </style>
 
 <script>
+  import { capturePhotoEvent } from "./analytics";
   import { shutter, wireMute } from "./shutter";
   type V = { src: string; thumb: string; w: number; h: number; cap: string; ev: string; client: string; date: string; place: string; exif: string };
-  const data: V[] = JSON.parse(document.getElementById("rv-data")!.textContent || "[]");
   const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
   const root = $("rv"), img = $<HTMLImageElement>("rv-img"), cv = $<HTMLCanvasElement>("rv-thumb"), frame = $("rv-frame");
+  const data: V[] = JSON.parse(root.dataset.photos ?? "[]");
   let cur = 0, opener: HTMLElement | null = null, token = 0;
   wireMute();
 
   const warmed = new Map<number, HTMLImageElement>();
   function warm(i: number) {
     if (warmed.has(i) || !data[i]) return warmed.get(i);
-    const im = new Image(); im.decoding = "async"; im.src = data[i].src; warmed.set(i, im); return im;
+    // Keep only a few full-resolution frames alive on mobile.
+    if (warmed.size >= 3) warmed.delete(warmed.keys().next().value!);
+    const im = new Image();
+    im.decoding = "async";
+    im.addEventListener("error", () => { if (warmed.get(i) === im) warmed.delete(i); }, { once: true });
+    im.src = data[i].src;
+    warmed.set(i, im);
+    return im;
   }
   // start fetching the full frame as soon as there's intent
   const intent = (e: Event) => { const el = (e.target as HTMLElement).closest?.<HTMLElement>("[data-shot]"); if (el) warm(Number(el.dataset.shot)); };
@@ -103,7 +112,8 @@ const { viewerData, bg = D.ink, fg = D.paper, accent = D.accent, onAccent = D.in
   }
   function paintThumb(im: HTMLImageElement, s: V) {
     // cover-fit the thumb (it may have been cropped differently on the page) into the shot's true aspect
-    const w = 640, h = Math.round((640 * s.h) / s.w);
+    const scale = 640 / Math.max(s.w, s.h);
+    const w = Math.max(1, Math.round(s.w * scale)), h = Math.max(1, Math.round(s.h * scale));
     cv.width = w; cv.height = h;
     const x = cv.getContext("2d")!; const r = Math.max(w / im.naturalWidth, h / im.naturalHeight);
     x.drawImage(im, (w - im.naturalWidth * r) / 2, (h - im.naturalHeight * r) / 2, im.naturalWidth * r, im.naturalHeight * r);
@@ -113,16 +123,24 @@ const { viewerData, bg = D.ink, fg = D.paper, accent = D.accent, onAccent = D.in
   function show(i: number, from: HTMLElement | null = null, soft = false) {
     cur = (i + data.length) % data.length;
     const s = data[cur], my = ++token;
+    capturePhotoEvent("photo_viewed", { photo_index: cur, photo_src: s.src, caption: s.cap });
     frame.style.setProperty("--ar", String(s.w / s.h));
-    img.classList.remove("in"); img.removeAttribute("src"); img.alt = [s.cap, s.ev].filter(Boolean).join(" — ");
+    img.classList.remove("in"); img.removeAttribute("src"); img.alt = [s.cap, s.ev].filter(Boolean).join(" — ") || `Portfolio photo ${cur + 1}`;
+    $("rv-error").textContent = "";
     const th = loadedThumb(cur, from);
     if (th) paintThumb(th, s);
     else { cv.getContext("2d")!.clearRect(0, 0, cv.width, cv.height); const t = new Image(); t.onload = () => { if (my === token && !img.classList.contains("in")) paintThumb(t, s); }; t.src = s.thumb; }
     root.classList.remove("snap"); void root.offsetWidth; root.classList.add("snap");
     shutter(soft);
-    const full = warm(cur) ?? new Image();
+    const index = cur, full = warm(index)!;
     const done = () => { if (my !== token) return; img.src = s.src; img.classList.add("in"); };
-    if (full.complete && full.naturalWidth) done(); else (full.decode ? full.decode().then(done, done) : (full.onload = done));
+    const failed = () => {
+      if (my === token) $("rv-error").textContent = "Full-size photo unavailable.";
+      if (warmed.get(index) === full) warmed.delete(index);
+    };
+    if (full.complete && full.naturalWidth) done();
+    else if (full.decode) full.decode().then(done, failed);
+    else { full.onload = done; full.onerror = failed; }
     $("rv-count").textContent = `${pad(cur + 1)} / ${pad(data.length)}`;
     $("rv-ev").textContent = [s.ev, s.client].filter(Boolean).join(" — ");
     $("rv-cap").textContent = s.cap;
@@ -132,17 +150,21 @@ const { viewerData, bg = D.ink, fg = D.paper, accent = D.accent, onAccent = D.in
     root.dispatchEvent(new CustomEvent("rv:show", { detail: { index: cur } }));
   }
   function open(i: number, from: HTMLElement | null) {
+    if (!data[i]) return;
     opener = from; root.hidden = false; document.documentElement.classList.add("rv-open");
+    $("body").closest<HTMLElement>(".page")!.inert = true;
+    $("cta").inert = true;
     show(i, from); $("rv-close").focus({ preventScroll: true });
   }
   function close() {
     root.hidden = true; document.documentElement.classList.remove("rv-open"); token++;
+    $("body").closest<HTMLElement>(".page")!.inert = false;
+    $("cta").inert = false;
     opener?.focus({ preventScroll: true });
   }
-  (window as any).r3Viewer = { open, close, show };
   document.addEventListener("click", (e) => {
     const el = (e.target as HTMLElement).closest?.<HTMLElement>("[data-shot]");
-    if (!el || root.contains(el) || el.hasAttribute("data-noview")) return;
+    if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || !el || root.contains(el) || el.hasAttribute("data-noview")) return;
     e.preventDefault(); open(Number(el.dataset.shot), el);
   });
   $("rv-close").addEventListener("click", close);

@@ -6,6 +6,8 @@ export interface Shot {
   id: string;
   src: string;
   thumb: string;
+  thumbWidth: number;
+  srcWidth: number;
   width: number;
   height: number;
   caption: string;
@@ -58,6 +60,8 @@ export const events: EventShoot[] = raw.map(({ n, captions, ...e }, ei) => ({
       id: `${e.slug}-${i + 1}`,
       src: `https://picsum.photos/seed/${seed}/${w}/${h}`,
       thumb: `https://picsum.photos/seed/${seed}/${Math.round(w / 3)}/${Math.round(h / 3)}`,
+      thumbWidth: Math.round(w / 3),
+      srcWidth: w,
       width: w,
       height: h,
       caption: captions[i] ?? e.name,
@@ -85,7 +89,7 @@ export async function loadPortfolio() {
   const realShots = (portfolio?.photos ?? []).flatMap((p) => {
     const img = p.ref ? sanityImage(p.ref) : null;
     if (!img) return [];
-    const shot: Shot = { id: p._key, src: img.url(2400), thumb: img.url(800), width: img.width, height: img.height, caption: p.caption?.trim() ?? "" };
+    const shot: Shot = { id: p._key, src: img.url(2400), thumb: img.url(800), thumbWidth: Math.min(800, img.width), srcWidth: Math.min(2400, img.width), width: img.width, height: img.height, caption: p.caption?.trim() ?? "" };
     return [{ ...shot, event: noEvent }];
   });
   const hasPortfolio = portfolio != null;
@@ -102,7 +106,7 @@ export const services = [
   { name: "fast turnaround", detail: "first selects within 24h so you can post while it's still hot." },
 ];
 
-export const contact = { email: "hello@oscarama.dev", instagram: "oscarfalll", x: "oscarfalll", basedIn: "London" };
+export const contact = { email: "me@oscarama.dev", instagram: "oscarfalll", x: "oscarfalll", basedIn: "London" };
 
 // Real clients to show as logos (user will add more). Use these instead of KPIs/stats.
 import spacexai from "@/assets/logos/spacexai.svg";
