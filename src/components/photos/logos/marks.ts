@@ -49,3 +49,53 @@ export const camera = [
   "#.........#",
   "###########",
 ];
+
+// ── round 2: more creative Oscar Shoots ideas ──
+export type IdeaId = "sprout" | "statuette" | "screen" | "peaking" | "contact" | "pass" | "slate" | "rolling" | "burst" | "bracket" | "aperture";
+
+/** a pixel sprout: green shoots (startups growing) as the full stop */
+export const sprout = [
+  "gg.gg",
+  "ggggg",
+  ".ggg.",
+  "..#..",
+  "..#..",
+  "..#..",
+  "..#..",
+  ".###.",
+];
+
+/** the award statuette, holding a camera up to its face */
+export const statuette = [
+  "..ggg..",
+  "..g##..",
+  "..g##..",
+  "...g...",
+  ".ggggg.",
+  "gg.g.gg",
+  "g..g..g",
+  "..ggg..",
+  "..ggg..",
+  "..g.g..",
+  "..g.g..",
+  "..g.g..",
+  ".ggggg.",
+  "#######",
+  "#######",
+];
+
+/** six-blade aperture as an SVG path set (viewBox -50 -50 100 100): outer ring, blade lines, hexagonal opening */
+export const aperture = (() => {
+  const R = 46, r = 19;
+  const pt = (rad: number, a: number) => [+(rad * Math.cos(a)).toFixed(2), +(rad * Math.sin(a)).toFixed(2)];
+  const hex = Array.from({ length: 6 }, (_, i) => pt(r, (Math.PI / 3) * i - Math.PI / 2));
+  const blades = hex.map(([x, y], i) => {
+    // each blade edge runs from a hexagon corner out to the ring, tangent-ish (rotated 60° on from the corner)
+    const a = Math.atan2(y, x) + Math.PI / 2.2;
+    const [ex, ey] = [x + Math.cos(a) * 60, y + Math.sin(a) * 60];
+    // clip to the ring: walk back until inside R
+    let t = 1; while (Math.hypot(x + (ex - x) * t, y + (ey - y) * t) > R) t -= 0.01;
+    return `M${x} ${y}L${(x + (ex - x) * t).toFixed(2)} ${(y + (ey - y) * t).toFixed(2)}`;
+  }).join("");
+  return { hex: hex.map(([x, y]) => `${x},${y}`).join(" "), blades, R };
+})();
