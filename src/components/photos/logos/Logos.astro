@@ -6,6 +6,11 @@ import Switcher from "@/components/photos/Switcher.astro";
 import Mark from "./Mark.astro";
 import ShootsMark from "./ShootsMark.astro";
 import IdeaMark from "./IdeaMark.astro";
+import xPng from "../../../../design/social/oscar-shoots-x.png?url";
+import liPng from "../../../../design/social/oscar-shoots-linkedin.png?url";
+import ytPng from "../../../../design/social/oscar-shoots-youtube.png?url";
+import avDarkPng from "../../../../design/social/oscar-shoots-avatar-dark.png?url";
+import avOrangePng from "../../../../design/social/oscar-shoots-avatar-orange.png?url";
 import type { MarkId, ShootsId, IdeaId } from "./marks";
 import { schemes, alpha, onAccent, type SchemeId } from "@/components/photos/schemes";
 
@@ -28,6 +33,14 @@ const concepts: Array<{ id: MarkId; t: string; d: string }> = [
   { id: "hand", t: "Handwritten", d: "Caveat with a drawn arrow, like the note on the hero photo." },
   { id: "sticker", t: "Sticker", d: "The hero's tilted accent tag on its own." },
   { id: "app", t: "App tile", d: "o. on an accent square. Built for avatars and favicons first." },
+];
+// social banners for the burst-in-pixels mark: design/social/*.png, exported from /photos/banners/<id>
+const social = [
+  { t: "X header", size: "1500×500", src: xPng, cls: "wide" },
+  { t: "LinkedIn banner", size: "1584×396", src: liPng, cls: "wide" },
+  { t: "YouTube banner", size: "2560×1440", src: ytPng, cls: "wide" },
+  { t: "Avatar, dark", size: "800×800", src: avDarkPng, cls: "sq" },
+  { t: "Avatar, orange", size: "800×800", src: avOrangePng, cls: "sq" },
 ];
 const pad = (n: number) => String(n).padStart(2, "0");
 
@@ -240,6 +253,13 @@ const names: Array<{ group: string; items: Array<{ n: string; d: string; px?: bo
       .compact .rec .recw{display:none}
       .app.wide{width:auto;padding:.08em .14em 0 .12em}
       .compact .app.wide{width:auto;padding:0 .16em;font-size:.62em;height:1.6em;border-radius:.3em}
+      .social{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
+      .social figure{margin:0;background:var(--paper);padding:14px;display:flex;flex-direction:column;gap:10px}
+      .social figure.wide{grid-column:1/-1}
+      .social img{display:block;width:100%;height:auto;outline:1px solid var(--line)}
+      .social figure.sq img{max-width:320px;border-radius:50%}
+      .social figcaption{display:flex;justify-content:space-between;font:500 11px/1.2 "Geist Mono",monospace;text-transform:uppercase;letter-spacing:.04em}
+      .social figcaption b{font-weight:500;color:var(--sub)}
     </style>
   </head>
   <body style={vars}>
@@ -266,6 +286,19 @@ const names: Array<{ group: string; items: Array<{ n: string; d: string; px?: bo
           </section>
         ))}
       </main>
+      <header class="h2">
+        <p class="lab mono"><span>Socials — Burst, in pixels</span><b>{social.length} files</b></p>
+        <h1>Socials</h1>
+        <p>Banners and profile pictures for the burst-in-pixels mark. On X and LinkedIn the profile photo covers the bottom left, so everything sits on the right; on YouTube it stays inside the strip that shows on every screen. Avatars are shown cropped to a circle, the way every platform shows them.</p>
+      </header>
+      <section class="social" aria-label="social banners">
+        {social.map((f) => (
+          <figure class={f.cls}>
+            <img src={f.src} alt={f.t} loading="lazy" />
+            <figcaption><span>{f.t}</span><b>{f.size}</b></figcaption>
+          </figure>
+        ))}
+      </section>
       <header class="h2">
         <p class="lab mono"><span>First round — Oscar Shoots</span><b>{shoots.length} marks</b></p>
         <h1>Round 1</h1>

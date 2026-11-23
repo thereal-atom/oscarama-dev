@@ -5,6 +5,9 @@
 // and YouTube crops its 2560×1440 art down to 1546×423 in the middle on most screens.
 import { burstWord, burstO } from "@/components/photos/logos/marks";
 import { dissolve } from "@/components/photos/fable/r3/bits";
+import openai from "@/assets/logos/openai.png";
+import vercel from "@/assets/logos/vercel.png";
+import corgi from "@/assets/logos/corgi.png";
 
 type Spec = { w: number; h: number; safe: [number, number, number, number]; align: "center" | "end"; kind: "banner" | "avatar"; bg?: "dark" | "accent" };
 const specs: Record<string, Spec> = {
@@ -23,12 +26,21 @@ const ACC = "#FF3B1F", INK = "#111111", PAPER = "#F3F1EA";
 const accentBg = s.bg === "accent";
 const ground = accentBg ? ACC : INK, fg = accentBg ? INK : PAPER, echo = accentBg ? PAPER : ACC;
 const [sx, sy, sw, sh] = s.safe;
+// "shot for" row: each logo is used as a mask so they all come out in one colour; ar = width / height
+const worked = [
+  { name: "SpaceXAI", src: "/photos/opus/spacexai-mark.svg", ar: 512 / 240 },
+  { name: "OpenAI", src: openai.src, ar: 485 / 480 },
+  { name: "Vercel", src: vercel.src, ar: 2310 / 2000 },
+  { name: "Corgi", src: corgi.src, ar: 628 / 667 },
+];
 
 // the grid module: banners get 10 rows of module across their height (YouTube: across the safe strip)
 const m = s.kind === "avatar" ? s.w / 8 : id === "youtube" ? sh / 6 : s.h / 8;
 // wordmark: fit the safe width (banners) or ~62% of the avatar
+const dzH = s.kind === "avatar" ? 0 : 3 * (m / 2);
+const bottom = Math.min(sy + sh, s.h - dzH - m / 2);
 const b = s.kind === "avatar" ? burstO : burstWord;
-const cell = s.kind === "avatar" ? Math.floor((s.w * 0.5) / b.w) : Math.floor(Math.min((sw * 0.92) / b.w, (sh * 0.5) / b.h));
+const cell = s.kind === "avatar" ? Math.floor((s.w * 0.5) / b.w) : Math.floor(Math.min((sw * 0.92) / b.w, (bottom - sy) / (b.h + 15)));
 const ww = cell * b.w, wh = cell * b.h;
 // bottom dissolve, the F2 footer, in module-sized cells
 const dzCols = Math.ceil(s.w / (m / 2)), dzRows = s.kind === "avatar" ? 0 : 3;
@@ -47,9 +59,14 @@ const dzPath = dz.map((row, y) => [...row].map((c, x) => (c === "#" ? `M${x} ${y
       .c{position:relative;overflow:hidden}
       .grid{position:absolute;inset:0}
       .safe{position:absolute;display:flex;flex-direction:column;justify-content:center;gap:0}
+      .safe>*{flex-shrink:0}
       .tag{font:500 var(--ts)/1.2 "Geist Mono",ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase;display:flex;gap:1.4em;white-space:nowrap}
       .tag b{font-weight:500}
       svg{display:block}
+      .shot{display:flex;align-items:center;white-space:nowrap;font:500 var(--ts)/1 "Geist Mono",ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase}
+      .shot .lbl{opacity:.5}
+      .shot .co{display:flex;align-items:center;gap:.6em}
+      .shot i{display:block;height:var(--lh);background:currentColor;-webkit-mask:var(--u) center/contain no-repeat;mask:var(--u) center/contain no-repeat}
       astro-dev-toolbar{display:none !important}
     </style>
   </head>
@@ -62,15 +79,21 @@ const dzPath = dz.map((row, y) => [...row].map((c, x) => (c === "#" ? `M${x} ${y
       {dzRows > 0 && (
         <svg style={`position:absolute;left:0;bottom:0`} width={dzCols * (m / 2)} height={dzRows * (m / 2)} viewBox={`0 0 ${dzCols} ${dzRows}`} shape-rendering="crispEdges" aria-hidden="true"><path d={dzPath} fill={ACC} /></svg>
       )}
-      <div class="safe" style={`left:${sx}px;top:${sy}px;width:${sw}px;height:${sh}px;align-items:${s.align === "end" ? "flex-end" : "center"}`}>
+      <div class="safe" style={`left:${sx}px;top:${sy}px;width:${sw}px;height:${bottom - sy}px;align-items:${s.align === "end" ? "flex-end" : "center"}`}>
         <svg width={ww} height={wh} viewBox={`0 0 ${b.w} ${b.h}`} shape-rendering="crispEdges" aria-label="Oscar Shoots">
           {b.echoes.map((e) => <path d={e.d} fill={echo} fill-opacity={e.o} />)}
           <path d={b.ink} fill={fg} />
         </svg>
         {s.kind === "banner" && (
-          <p class="tag" style={`--ts:${Math.round(cell * 2.1)}px;margin:${Math.round(cell * 3.2)}px 0 0;width:${ww}px;justify-content:space-between`}>
+          <p class="tag" style={`--ts:${Math.round(cell * 1.9)}px;margin:${Math.round(cell * 3.2)}px 0 0;width:${ww}px;justify-content:space-between`}>
             <span>Photo + video for startups &amp; tech</span><b style={`color:${ACC}`}>London</b>
           </p>
+        )}
+        {s.kind === "banner" && (
+          <div class="shot" style={`--ts:${Math.round(cell * 1.5)}px;--lh:${Math.round(cell * 2.4)}px;margin-top:${Math.round(cell * 2.6)}px;width:${ww}px;gap:${Math.round(cell * 1.6)}px;justify-content:space-between;padding-top:${Math.round(cell * 2.6)}px;border-top:1px solid ${ACC}55`}>
+            <span class="lbl">Shot for</span>
+            {worked.map((c) => <span class="co"><i style={`--u:url(${c.src});width:${Math.round(cell * 2.4 * c.ar)}px`} /><span>{c.name}</span></span>)}
+          </div>
         )}
       </div>
     </div>
