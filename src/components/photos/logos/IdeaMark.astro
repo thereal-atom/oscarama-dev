@@ -1,30 +1,26 @@
 ---
 // Oscar Shoots concepts, rounds 2–3: double meanings (the Oscar, laurels) and photo techniques applied to the type
-// itself (bracketing, long exposure, double exposure, histogram, thirds, zoom, ISO noise, raw file, crop).
+// itself (burst, long exposure, double exposure, histogram, thirds, zoom, ISO noise, raw file, crop).
 // Same colour contract as Mark.astro.
 import Bits from "@/components/photos/fable/r3/Bits.astro";
 import { glyphRows } from "@/components/photos/fable/r3/bits";
-import { statuette, shootsWord, osWord, oGlyph, expose, laurelL, laurelR, trail, histogram, noise, type IdeaId } from "./marks";
+import { statuette, shootsWord, osWord, oGlyph, burstWord, burstO, laurelL, laurelR, trail, histogram, noise, type IdeaId } from "./marks";
 
 interface Props { id: IdeaId; mark?: boolean }
 const { id, mark = false } = Astro.props;
 const glyphOrWord = (m: boolean) => (m ? glyphRows("S") : glyphRows("SHOOTS"));
-const evs = [["−1", -1], ["0", 0], ["+1", 1]] as const;
 ---
 <span class:list={["mk", `id-${id}`, { compact: mark }]}>
   {id === "statuette" && <span class="stat"><Bits rows={statuette} class="fig" />{!mark && <span class="sw2"><small>and the</small><span class="wm sm">oscar shoots</span></span>}</span>}
 
-  {id === "bracket" && (
-    mark
-      ? <span class="brk3"><i /><i /><i /></span>
-      : <span class="brk">{evs.map(([ev], i) => <span class:list={["ev", `e${i}`]}><small>{ev}</small><span class="wm sm">oscar shoots</span></span>)}</span>
-  )}
+  {id === "burst" && <span class="wm bst">{mark ? "os" : <>oscar <span class="echo">shoots</span></>}</span>}
 
-  {id === "bracket-px" && (
-    mark
-      ? <span class="brkp-m">{evs.map(([, ev]) => <Bits rows={expose(oGlyph, ev, 5)} class="pxo" />)}</span>
-      : <span class="brk px">{evs.map(([label, ev]) => <span class="ev"><small>{label}</small><Bits rows={expose(shootsWord, ev, 9)} class="pxr" /></span>)}</span>
-  )}
+  {id === "burst-px" && (() => { const b = mark ? burstO : burstWord; return (
+    <svg class:list={["bm", mark ? "px7m" : "px7"]} viewBox={`0 0 ${b.w} ${b.h}`} aria-hidden="true">
+      {b.echoes.map((e) => <path class="ac" d={e.d} fill-opacity={e.o} />)}
+      <path d={b.ink} />
+    </svg>
+  ); })()}
 
   {id === "laurels" && (
     <span class="lau"><Bits rows={laurelL} class="lf" /><span class="lw">{mark ? "OS" : <>OSCAR<br />SHOOTS</>}</span><Bits rows={laurelR} class="lf" /></span>

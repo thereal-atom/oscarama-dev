@@ -51,7 +51,7 @@ export const camera = [
 ];
 
 // ── round 2/3: Oscar Shoots ideas ──
-export type IdeaId = "statuette" | "bracket" | "bracket-px" | "laurels" | "trail" | "double" | "histogram" | "thirds" | "zoom" | "noise" | "raw" | "crop";
+export type IdeaId = "statuette" | "burst" | "burst-px" | "laurels" | "trail" | "double" | "histogram" | "thirds" | "zoom" | "noise" | "raw" | "crop";
 
 const seeded = (seed: number) => { let s = seed * 9301 + 49297; return () => ((s = (s * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff); };
 const width = (rows: string[]) => Math.max(...rows.map((r) => r.length));
@@ -80,13 +80,21 @@ export const shootsWord = glyphRows("OSCAR SHOOTS");
 export const osWord = glyphRows("OS");
 export const oGlyph = glyphRows("O");
 
-/** exposure bracket in pixels: −1 = underexposed (cells drop out), 0 = as shot, +1 = blown (accent, bloomed a cell wider) */
-export function expose(rows: string[], ev: -1 | 0 | 1, seed = 3): string[] {
-  const r = padRows(rows);
-  if (ev === 0) return r;
-  if (ev === -1) { const rnd = seeded(seed); return r.map((row) => [...row].map((c) => (c === "#" && rnd() < 0.35 ? "." : c)).join("")); }
-  return r.map((row) => [...row].map((c, x) => (c === "#" || row[x - 1] === "#" ? "g" : ".")).join("") + ".");
+/** burst mode in pixels, drawn like the type version: the ink from column `from` on is repeated 1, 2 and 3 cells to
+ *  the left in the accent at falling opacity, underneath the letters. Returns SVG paths for <svg viewBox="0 0 w h">. */
+export function burstPx(rows: string[], from: number, lead = 0) {
+  const r = padRows(rows), w = width(r) + lead, h = r.length;
+  const cells = (pick: (c: string, x: number) => boolean, dx: number) => {
+    let d = "";
+    r.forEach((row, y) => [...row].forEach((c, x) => { if (pick(c, x)) d += `M${x + lead - dx} ${y}h1v1h-1z`; }));
+    return d;
+  };
+  const echoes = [[3, 0.2], [2, 0.45], [1, 0.75]].map(([dx, o]) => ({ d: cells((c, x) => c === "#" && x >= from, dx), o }));
+  return { w, h, ink: cells((c) => c === "#", 0), echoes };
 }
+const oscarCols = glyphRows("OSCAR")[0].length + 3;
+export const burstWord = burstPx(glyphRows("OSCAR SHOOTS"), oscarCols);
+export const burstO = burstPx(glyphRows("OS"), 5, 0);
 
 /** laurel branch (left); the right one is the mirror */
 export const laurelL = [
@@ -134,36 +142,3 @@ export function noise(rows: string[], seed: number): string[] {
     return n < 0.06 ? "#" : n < 0.11 ? "g" : ".";
   }).join(""));
 }
-
-// ── round 2 as first shown (restored alongside round 3) ──
-export type Round2Id = "sprout" | "statuette" | "screen" | "peaking" | "contact" | "pass" | "slate" | "rolling" | "burst" | "bracket" | "aperture";
-
-/** a pixel sprout: green shoots (startups growing) as the full stop */
-export const sprout = [
-  "gg.gg",
-  "ggggg",
-  ".ggg.",
-  "..#..",
-  "..#..",
-  "..#..",
-  "..#..",
-  ".###.",
-];
-
-/** the award statuette, holding a camera up to its face */
-
-/** six-blade aperture as an SVG path set (viewBox -50 -50 100 100): outer ring, blade lines, hexagonal opening */
-export const aperture = (() => {
-  const R = 46, r = 19;
-  const pt = (rad: number, a: number) => [+(rad * Math.cos(a)).toFixed(2), +(rad * Math.sin(a)).toFixed(2)];
-  const hex = Array.from({ length: 6 }, (_, i) => pt(r, (Math.PI / 3) * i - Math.PI / 2));
-  const blades = hex.map(([x, y], i) => {
-    // each blade edge runs from a hexagon corner out to the ring, tangent-ish (rotated 60° on from the corner)
-    const a = Math.atan2(y, x) + Math.PI / 2.2;
-    const [ex, ey] = [x + Math.cos(a) * 60, y + Math.sin(a) * 60];
-    // clip to the ring: walk back until inside R
-    let t = 1; while (Math.hypot(x + (ex - x) * t, y + (ey - y) * t) > R) t -= 0.01;
-    return `M${x} ${y}L${(x + (ex - x) * t).toFixed(2)} ${(y + (ey - y) * t).toFixed(2)}`;
-  }).join("");
-  return { hex: hex.map(([x, y]) => `${x},${y}`).join(" "), blades, R };
-})();
