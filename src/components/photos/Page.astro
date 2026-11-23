@@ -91,10 +91,10 @@ const lead = hasPortfolio ? (mixed.find((s) => s.height > s.width) ?? mixed[0]) 
 const L = Array.from({ length: 17 }, (_, i) => i);
 
 const links = [
-  { href: "#about", t: "About", d: "who's holding the camera" },
-  { href: "#work", t: "Work", d: `${picks.length} select${picks.length === 1 ? "" : "s"}` },
-  { href: "#get", t: "What I shoot", d: "events, products + more" },
-  { href: "#contact", t: "Contact", d: "send a message" },
+  { href: "#about", t: "About" },
+  { href: "#work", t: "Work" },
+  { href: "#get", t: "What I shoot" },
+  { href: "#contact", t: "Contact" },
 ];
 // the hero's last word cycles through these with a pixel wipe (first one is what renders without JS)
 const words = ["events.", "hackathons.", "meetups.", "launches.", "products.", "startups."];
@@ -227,18 +227,14 @@ const ig = `https://www.instagram.com/${contact.instagram}/`, tw = `https://x.co
       .lede{display:flex;align-items:flex-end;text-transform:none;letter-spacing:0;font-size:12px}
       .lk{display:flex;align-items:stretch;padding:0}
       .lk .n{flex:0 0 var(--r);padding:var(--pad);color:var(--blue)}
-      .lk .t{flex:1;font:800 clamp(26px,8.4cqw,40px)/.95 var(--sans);letter-spacing:-.035em;text-transform:uppercase;display:flex;align-items:center;white-space:nowrap}
+      .lk .t{flex:1;min-width:0;font:800 clamp(26px,8.4cqw,40px)/.95 var(--sans);letter-spacing:-.035em;text-transform:uppercase;display:flex;align-items:center;white-space:nowrap}
       .lk .a{flex:0 0 var(--r);display:grid;place-items:center;font:400 24px/1 var(--px);box-shadow:inset 1px 0 var(--line)}
-      .lk .d{display:none}
-      .lk .m{flex:1;display:flex;align-items:center;min-width:0}
       .lk:hover .n,.lk:focus-visible .n{color:inherit}
       @media (min-width:900px){
         .lk{flex-direction:column;justify-content:space-between;padding:var(--pad)}
         .lk .n{flex:none;padding:0;display:flex;justify-content:space-between}
         .lk .t{flex:none;font-size:clamp(34px,3.5cqw,56px);white-space:normal;align-items:flex-end;max-width:6em}
         .lk .a{display:none}
-        .lk .m{flex:none;display:block}
-        .lk .d{display:block;opacity:.6;text-transform:none;letter-spacing:0;margin-top:6px}
         .lede{font-size:13px}
       }
 
@@ -376,7 +372,7 @@ const ig = `https://www.instagram.com/${contact.instagram}/`, tw = `https://x.co
           {links.map((l, i) => (
             <a class="c lk" href={l.href} style={`--am:${6 + i}/1/span 1/span 6;--ad:8/${1 + i * 3}/span 2/span 3`}>
               <span class="n mono"><span>{pad(i + 1)}</span><span class="dk" aria-hidden="true">↓</span></span>
-              <span class="m"><span class="t">{l.t}</span><span class="d mono">{l.d}</span></span>
+              <span class="t">{l.t}</span>
               <span class="a" aria-hidden="true">↓</span>
             </a>
           ))}
