@@ -1,0 +1,23 @@
+---
+// One logo concept, as a full lockup or as the compact mark (favicon / avatar). Colours come from the context:
+// currentColor = the main colour, --acc = the accent, --acc-fg = type set on an accent shape.
+import Bits from "@/components/photos/fable/r3/Bits.astro";
+import { pixelWord, pixelO, dissolveWord, dissolveO, lens, camera, type MarkId } from "./marks";
+interface Props { id: MarkId; mark?: boolean }
+const { id, mark = false } = Astro.props;
+const cells = [[0, 0], [1, 0], [2, 0], [0, 1], [2, 1], [0, 2], [1, 2], [2, 2]];
+---
+<span class:list={["mk", `mk-${id}`, { compact: mark }]}>
+  {id === "wordmark" && <span class="wm">{mark ? "o" : "oscarama"}<i class="stop" /></span>}
+  {id === "split" && <span class="wm">{mark ? "o" : "oscar"}<b>{mark ? "a" : "ama"}</b></span>}
+  {id === "stack" && <span class="stk">{mark ? <>OS<br />CA</> : <>OSCA<br />RAMA</>}</span>}
+  {id === "pixel" && <Bits rows={mark ? pixelO : pixelWord} class="px7" />}
+  {id === "dissolve" && <Bits rows={mark ? dissolveO : dissolveWord} class="px7" />}
+  {id === "lens" && <><Bits rows={lens} class="px9" />{!mark && <span class="wm sm">oscarama</span>}</>}
+  {id === "camera" && <><Bits rows={camera} class="px9" />{!mark && <span class="pxt">oscarama</span>}</>}
+  {id === "module" && <><svg class="mod" viewBox="0 0 3 3" aria-hidden="true">{cells.map(([x, y]) => <rect x={x + 0.06} y={y + 0.06} width=".88" height=".88" class={x === 2 && y === 0 ? "ac" : undefined} />)}</svg>{!mark && <span class="wm sm">oscarama</span>}</>}
+  {id === "viewfinder" && <span class="vf"><i /><i /><i /><i /><span class="wm sm">{mark ? "o" : "oscarama"}</span></span>}
+  {id === "hand" && <span class="hd">{mark ? "o" : "oscarama"}{!mark && <svg class="arw" viewBox="0 0 60 40" aria-hidden="true"><path d="M4 6 C 22 2, 44 10, 50 30 M50 30 l-7 -3 M50 30 l2 -7" /></svg>}</span>}
+  {id === "sticker" && <span class="stkr">{mark ? "o" : "oscarama"}</span>}
+  {id === "app" && <><span class="app">o<i class="stop" /></span>{!mark && <span class="wm sm">oscarama</span>}</>}
+</span>

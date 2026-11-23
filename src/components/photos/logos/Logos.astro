@@ -1,0 +1,144 @@
+---
+// Logo concepts for oscarama, drawn in the fable 2 language: Inter Tight 900, Geist Mono labels, Geist Pixel,
+// the 7-row bitmap alphabet, Caveat for the handwritten bits, one accent. Each concept shows the full lockup on
+// the page ground, then the compact mark on the accent, inverted, and at 32px / 16px (favicon sizes).
+import Switcher from "@/components/photos/Switcher.astro";
+import Mark from "./Mark.astro";
+import type { MarkId } from "./marks";
+import { schemes, alpha, onAccent, type SchemeId } from "@/components/photos/schemes";
+
+interface Props { scheme: SchemeId }
+const S = schemes[Astro.props.scheme];
+const ink = S.dark ? S.paper : S.ink, paper = S.dark ? S.ink : S.paper;
+const onA = S.dark ? paper : onAccent(S, "paper", 3);
+const vars = [`--acc0:${S.accent}`, `--ink:${ink}`, `--paper:${paper}`, `--on-a:${onA}`, `--line:${alpha(S.accent, S.dark ? 0.22 : 0.28)}`, `--grid:${alpha(ink, 0.06)}`, `--sub:${alpha(ink, 0.55)}`].join(";");
+
+const concepts: Array<{ id: MarkId; t: string; d: string }> = [
+  { id: "wordmark", t: "Wordmark", d: "Lowercase Inter Tight 900, tight, with a square accent full stop. The plainest option." },
+  { id: "split", t: "Name split", d: "oscar + ama. Your name in ink, the rest in the accent." },
+  { id: "stack", t: "Stacked caps", d: "The headline caps from the page, stacked 4 + 4 into a block." },
+  { id: "pixel", t: "Pixel wordmark", d: "The page's 7-row bitmap alphabet, with the accent pixel as a full stop." },
+  { id: "dissolve", t: "Dissolve", d: "The pixel wordmark breaking up to the right, like the footer dissolve." },
+  { id: "lens", t: "Lens", d: "A 9×9 pixel lens: rings and one accent pixel in the middle." },
+  { id: "camera", t: "Pixel camera", d: "A pixel camera with the record light in the accent. Pairs with the pixel font." },
+  { id: "module", t: "Module o", d: "An o built from eight grid modules, one in the accent. The page grid as a mark." },
+  { id: "viewfinder", t: "Viewfinder", d: "Accent viewfinder corners framing the name." },
+  { id: "hand", t: "Handwritten", d: "Caveat with a drawn arrow, like the note on the hero photo." },
+  { id: "sticker", t: "Sticker", d: "The hero's tilted accent tag on its own." },
+  { id: "app", t: "App tile", d: "o. on an accent square. Built for avatars and favicons first." },
+];
+const pad = (n: number) => String(n).padStart(2, "0");
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>oscarama — logo concepts</title>
+    <meta name="robots" content="noindex" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;800;900&family=Geist+Mono:wght@400;500&family=Caveat:wght@600;700&display=swap" rel="stylesheet" />
+    <style is:inline>
+      @font-face{font-family:"Geist Pixel";src:url("https://cdn.jsdelivr.net/npm/geist@1.9.2/dist/fonts/geist-pixel/GeistPixel-Square.woff2") format("woff2");font-display:swap}
+      *,*::before,*::after{box-sizing:border-box}
+      html{-webkit-text-size-adjust:100%}
+      body{margin:0;background:var(--paper);color:var(--ink);font:400 13px/1.45 "Geist Mono",ui-monospace,monospace}
+      .wrap{max-width:1440px;margin:0 auto;padding:0 16px 96px}
+      @media (min-width:900px){.wrap{padding:0 26px 120px}}
+      .mono{font-family:"Geist Mono",ui-monospace,monospace}
+      header{padding:22px 0 28px;border-bottom:1px solid var(--line)}
+      .lab{display:flex;justify-content:space-between;gap:12px;text-transform:uppercase;letter-spacing:.04em;font-size:11px;color:var(--acc0)}
+      .lab b{font-weight:500;color:var(--sub)}
+      h1{margin:18px 0 10px;font:900 clamp(64px,14vw,200px)/.82 "Inter Tight","Helvetica Neue",Arial,sans-serif;letter-spacing:-.045em;text-transform:uppercase}
+      header p{max-width:52ch;margin:0;color:var(--sub)}
+
+      /* the board: 1px gaps on the line colour read as the grid */
+      .board{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,400px),1fr));gap:1px;background:var(--line);border:1px solid var(--line);margin-top:28px}
+      .card{background:var(--paper);display:grid;grid-template-rows:auto 1fr auto}
+      .card h2{margin:0;padding:12px 14px 0;display:flex;gap:10px;align-items:baseline;font:500 11px/1.2 "Geist Mono",monospace;text-transform:uppercase;letter-spacing:.04em}
+      .card h2 .n{font:400 15px/1 "Geist Pixel","Geist Mono",monospace;color:var(--acc0)}
+      .card .d{margin:6px 14px 0;color:var(--sub);font-size:12px;min-height:3em}
+      .stage{display:grid;place-items:center;min-height:220px;padding:28px 18px;font-size:clamp(40px,5.2vw,64px);
+        background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:24px 24px;background-position:center}
+      .row{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line)}
+      .tile{display:grid;grid-template-rows:1fr auto;place-items:center;aspect-ratio:1;min-height:0;border-left:1px solid var(--line);padding:8px 4px 6px}
+      .tile:first-child{border-left:0}
+      .tile small{font-size:9.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--sub)}
+      .tile .sw{display:grid;place-items:center;width:64%;aspect-ratio:1;font-size:clamp(22px,2.6vw,32px);overflow:hidden}
+      .tile .fav{display:grid;place-items:center;overflow:hidden}
+      .tile .f32{width:32px;height:32px;font-size:21px}
+      .tile .f16{width:16px;height:16px;font-size:10.5px}
+
+      /* colour contexts. currentColor = main, --acc = accent, --acc-fg = type on an accent shape */
+      .on-g{color:var(--ink);--acc:var(--acc0);--acc-fg:var(--paper)}
+      .on-a{background:var(--acc0);color:var(--paper);--acc:var(--ink);--acc-fg:var(--acc0)}
+      .on-i{background:var(--ink);color:var(--paper);--acc:var(--acc0);--acc-fg:var(--ink)}
+      .fav.on-g{outline:1px dashed var(--line);outline-offset:3px}
+
+      /* ── the marks ── */
+      .mk{display:inline-flex;align-items:center;gap:.28em;line-height:1;white-space:nowrap}
+      .wm{font:900 1em/.9 "Inter Tight","Helvetica Neue",Arial,sans-serif;letter-spacing:-.055em;display:inline-flex;align-items:baseline}
+      .wm.sm{font-size:.62em;letter-spacing:-.045em}
+      .wm .stop,.app .stop{display:inline-block;width:.2em;height:.2em;background:var(--acc);margin-left:.06em}
+      .wm b{color:var(--acc);font-weight:inherit}
+      .stk{font:900 1em/.8 "Inter Tight","Helvetica Neue",Arial,sans-serif;letter-spacing:-.04em;text-transform:uppercase;display:block;padding:.08em 0}
+      .stk::first-line{color:inherit}
+      .mk-stack .stk{border-left:.12em solid var(--acc);padding-left:.12em}
+      .bm{display:block;fill:currentColor;shape-rendering:crispEdges;width:auto;overflow:visible}
+      .bm .ac{fill:var(--acc)}
+      .bm.px7{height:.78em}
+      .bm.px9{height:.95em}
+      .compact .bm.px7{height:.7em}
+      .pxt{font:400 .5em/1 "Geist Pixel","Geist Mono",monospace;letter-spacing:.02em}
+      .mod{display:block;height:.95em;width:.95em;fill:currentColor}
+      .mod .ac{fill:var(--acc)}
+      .vf{position:relative;display:inline-flex;padding:.22em .3em}
+      .vf i{position:absolute;width:.3em;height:.3em;border:0 solid var(--acc)}
+      .vf i:nth-child(1){left:0;top:0;border-width:.06em 0 0 .06em}
+      .vf i:nth-child(2){right:0;top:0;border-width:.06em .06em 0 0}
+      .vf i:nth-child(3){left:0;bottom:0;border-width:0 0 .06em .06em}
+      .vf i:nth-child(4){right:0;bottom:0;border-width:0 .06em .06em 0}
+      .compact .vf{padding:.12em .2em}
+      .compact .vf .wm.sm{font-size:.8em}
+      .hd{position:relative;font:700 1.15em/1 "Caveat","Bradley Hand",cursive;color:var(--acc);letter-spacing:0}
+      .hd .arw{position:absolute;left:96%;top:-.35em;width:.9em;height:.6em;overflow:visible}
+      .hd .arw path{fill:none;stroke:var(--acc);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+      .compact .hd{font-size:1.4em}
+      .stkr{font:700 1em/1 "Caveat","Bradley Hand",cursive;background:var(--acc);color:var(--acc-fg);padding:.04em .24em .12em;transform:rotate(-7deg);display:inline-block}
+      .compact .stkr{font-size:1.2em;padding:0 .2em .08em}
+      .app{display:inline-flex;align-items:baseline;justify-content:center;width:1.15em;height:1.15em;padding-top:.08em;background:var(--acc);color:var(--acc-fg);border-radius:.22em;font:900 .9em/1 "Inter Tight",sans-serif;letter-spacing:-.05em}
+      .app .stop{background:var(--acc-fg)}
+      .compact .app{width:1.3em;height:1.3em;font-size:.85em;line-height:1.3;padding-top:0;align-items:center}
+      .compact .app .stop{align-self:flex-end;margin-bottom:.32em}
+      .f16 .app,.f32 .app{font-size:1em}
+    </style>
+  </head>
+  <body style={vars}>
+    <div class="wrap">
+      <header>
+        <p class="lab mono"><span>LG — Logo concepts</span><b>{concepts.length} marks · {S.label}</b></p>
+        <h1>Logos</h1>
+        <p>Rough concepts for oscarama in the F2 language. Each one shows the full lockup, then the compact mark on the accent, inverted, and at favicon sizes.</p>
+      </header>
+      <main class="board">
+        {concepts.map((c, i) => (
+          <section class="card" aria-label={c.t}>
+            <div>
+              <h2><span class="n">{pad(i + 1)}</span><span>{c.t}</span></h2>
+              <p class="d">{c.d}</p>
+            </div>
+            <div class="stage on-g"><Mark id={c.id} /></div>
+            <div class="row">
+              <div class="tile"><span class="sw on-a"><Mark id={c.id} mark /></span><small>accent</small></div>
+              <div class="tile"><span class="sw on-i"><Mark id={c.id} mark /></span><small>inverse</small></div>
+              <div class="tile"><span class="fav f32 on-g"><Mark id={c.id} mark /></span><small>32px</small></div>
+              <div class="tile"><span class="fav f16 on-g"><Mark id={c.id} mark /></span><small>16px</small></div>
+            </div>
+          </section>
+        ))}
+      </main>
+    </div>
+    <Switcher />
+  </body>
+</html>
