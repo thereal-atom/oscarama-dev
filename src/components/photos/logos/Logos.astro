@@ -6,7 +6,8 @@ import Switcher from "@/components/photos/Switcher.astro";
 import Mark from "./Mark.astro";
 import ShootsMark from "./ShootsMark.astro";
 import IdeaMark from "./IdeaMark.astro";
-import type { MarkId, ShootsId, IdeaId } from "./marks";
+import Round2Mark from "./Round2Mark.astro";
+import type { MarkId, ShootsId, IdeaId, Round2Id } from "./marks";
 import { schemes, alpha, onAccent, type SchemeId } from "@/components/photos/schemes";
 
 interface Props { scheme: SchemeId }
@@ -44,6 +45,20 @@ const ideas: Array<{ id: IdeaId; t: string; d: string; keep?: boolean }> = [
   { id: "noise", t: "ISO 6400", d: "High-ISO grain: the pixel wordmark with ink and accent noise, as shot in a dark venue." },
   { id: "raw", t: "Raw file", d: "The name as a camera file. Unedited, straight off the card." },
   { id: "crop", t: "Cropped", d: "Crop handles in the accent, cutting the name the way an edit would." },
+];
+
+const round2: Array<{ id: Round2Id; t: string; d: string }> = [
+  { id: "sprout", t: "Green shoots", d: "Startup speak for early growth, and your clients are startups. A pixel sprout grows out of the full stop." },
+  { id: "statuette", t: "The Oscar", d: "And the Oscar goes to… A pixel statuette, holding a camera up to its eye like your hero photo." },
+  { id: "screen", t: "Camera screen", d: "The name as it'd look on the back of the camera: REC, battery, settings, focus box." },
+  { id: "peaking", t: "Focus peaking", d: "Cameras mark in-focus edges with bright speckles. The name, outlined in accent peaking dots." },
+  { id: "contact", t: "Contact sheet", d: "The name on a strip of film, with the select circled in grease pencil." },
+  { id: "pass", t: "All-access pass", d: "The lanyard everyone at an event wears. Yours says photo + video." },
+  { id: "slate", t: "Slate", d: "A clapperboard for the video side. Prod: Oscar Shoots, scene 01, take 01." },
+  { id: "rolling", t: "Rolling shutter", d: "The wobble a fast pan gives video: the name sheared in slices, one slice in the accent." },
+  { id: "burst", t: "Burst", d: "Shoots fired in burst mode, trailing accent echoes." },
+  { id: "bracket", t: "Bracketed", d: "Exposure bracketing: the same shot at −1, 0 and +1." },
+  { id: "aperture", t: "Aperture o", d: "The o of oscar as six aperture blades, the opening in the accent." },
 ];
 
 const shoots: Array<{ id: ShootsId; t: string; d: string }> = [
@@ -234,6 +249,73 @@ const names: Array<{ group: string; items: Array<{ n: string; d: string; px?: bo
       .crp .cf i:nth-child(1){left:0;top:0;border-width:.06em 0 0 .06em}.crp .cf i:nth-child(2){right:0;top:0;border-width:.06em .06em 0 0}
       .crp .cf i:nth-child(3){left:0;bottom:0;border-width:0 0 .06em .06em}.crp .cf i:nth-child(4){right:0;bottom:0;border-width:0 .06em .06em 0}
       .compact .crp .wm{font-size:.75em}
+      /* round 2 (restored) */
+      .spr{height:.78em;margin-left:.08em}
+      .compact .spr{height:1em;margin:0}
+      .stat{display:inline-flex;align-items:flex-end;gap:.3em}
+      .fig{height:1.6em}
+      .compact .fig{height:1em}
+      .sw2{display:grid;gap:.12em;padding-bottom:.05em}
+      .sw2 small{font:700 .42em/1 "Caveat",cursive;color:var(--acc)}
+      .scr{display:inline-grid;gap:.18em;padding:.22em .32em;border:.035em solid currentColor;border-radius:.14em;font-size:.9em}
+      .compact .scr{padding:.12em;border-width:.06em;gap:0}
+      .hud{display:flex;justify-content:space-between;gap:.8em;font:500 .2em/1 "Geist Mono",monospace;letter-spacing:.04em;opacity:.8}
+      .hud .dot,.compact .hud .dot{display:inline-block;width:.8em;height:.8em;border-radius:50%;background:var(--acc);vertical-align:-.05em}
+      .compact .hud{font-size:.3em;justify-content:flex-start}
+      .fb{position:relative;display:inline-flex;justify-content:center;padding:.1em .3em}
+      .fb i{position:absolute;width:.22em;height:.22em;border:0 solid var(--acc)}
+      .fb i:nth-child(1){left:0;top:0;border-width:.045em 0 0 .045em}.fb i:nth-child(2){right:0;top:0;border-width:.045em .045em 0 0}
+      .fb i:nth-child(3){left:0;bottom:0;border-width:0 0 .045em .045em}.fb i:nth-child(4){right:0;bottom:0;border-width:0 .045em .045em 0}
+      .compact .fb .wm.sm{font-size:.5em}
+      .pk{height:1em;width:auto;overflow:visible}
+      .pk text{font:900 92px "Inter Tight",sans-serif;fill:currentColor;fill-opacity:.16;stroke:var(--acc);stroke-width:3.2;stroke-dasharray:1.5 5;stroke-linecap:square}
+      .cs{position:relative;display:inline-block}
+      .strip{display:flex;gap:.08em;padding:.16em .1em;border-radius:.03em;background-image:radial-gradient(circle,var(--paper-ctx,var(--paper)) .045em,transparent .05em),radial-gradient(circle,var(--paper-ctx,var(--paper)) .045em,transparent .05em);
+        background-color:currentColor;background-size:.2em .2em;background-repeat:repeat-x;background-position:0 .03em,0 calc(100% - .03em)}
+      .fr{display:grid;place-items:center;min-width:.7em;height:.9em;padding:0 .12em;background:var(--paper-ctx,var(--paper));color:currentColor}
+      .fr span{font:900 .5em/1 "Inter Tight",sans-serif;letter-spacing:-.04em;color:var(--ink)}
+      .on-a{--paper-ctx:var(--acc0)}.on-i{--paper-ctx:var(--ink)}
+      .on-a .fr span{color:var(--paper)}.on-i .fr span{color:var(--paper)}
+      .ring{position:absolute;left:0;top:0;width:0;height:0;overflow:visible;pointer-events:none}
+      .ring path{fill:none;stroke:var(--acc);stroke-width:3;stroke-linecap:round;vector-effect:non-scaling-stroke}
+      .cs .ring{left:var(--rx,50%);top:-.04em;width:var(--rw,1.6em);height:1.3em}
+      .r2-contact:not(.compact) .cs{--rx:calc(50% - .1em);--rw:1.7em}
+      .compact .cs{--rx:-.12em;--rw:1.1em}
+      .compact .cs .ring{height:1.15em;top:-.04em}
+      .pass{position:relative;display:inline-grid;justify-items:start;gap:.1em;padding:.5em .4em .3em;background:var(--paper-ctx,var(--paper));border:.03em solid currentColor;border-radius:.1em;transform:rotate(-4deg);min-width:3.4em}
+      .compact .pass{min-width:0;padding:.42em .2em .18em;transform:rotate(-6deg)}
+      .pass .slot{position:absolute;top:.14em;left:50%;width:.7em;height:.1em;margin-left:-.35em;border-radius:.06em;border:.03em solid currentColor}
+      .compact .pass .slot{width:.5em;margin-left:-.25em;top:.12em}
+      .pass .band{align-self:stretch;justify-self:stretch;background:var(--acc);color:var(--acc-fg);font:500 .2em/1 "Geist Mono",monospace;letter-spacing:.12em;padding:.4em .5em;min-height:.8em}
+      .compact .pass .band{padding:0;height:.14em;min-height:0}
+      .pass .who{font:900 .62em/.85 "Inter Tight",sans-serif;letter-spacing:-.04em}
+      .compact .pass .who{font-size:.5em}
+      .pass .role{font:500 .17em/1 "Geist Mono",monospace;letter-spacing:.08em;opacity:.7}
+      .slate{display:inline-grid;width:3.6em}
+      .compact .slate{width:1em}
+      .clap{height:.36em;background:repeating-linear-gradient(-45deg,currentColor 0 .2em,var(--acc) .2em .4em);transform:rotate(-8deg);transform-origin:0 100%;margin-bottom:.04em}
+      .compact .clap{height:.3em;background:repeating-linear-gradient(-45deg,currentColor 0 .14em,var(--acc) .14em .28em)}
+      .slate .body{display:grid;grid-template-columns:auto 1fr;gap:.25em .4em;padding:.3em .3em;border:.03em solid currentColor;font:500 .17em/1 "Geist Mono",monospace;letter-spacing:.06em}
+      .slate .body b{font:900 1.9em/1 "Inter Tight",sans-serif;letter-spacing:-.03em}
+      .slate .body.s{height:.62em;padding:0;border-width:.07em}
+      .roll{position:relative;display:inline-block}
+      .roll .sl{position:absolute;left:0;top:0}
+      .roll .base{visibility:hidden}
+      .roll .sl.ac{color:var(--acc)}
+      .bst .echo{text-shadow:-.09em 0 0 color-mix(in srgb,var(--acc) 75%,transparent),-.18em 0 0 color-mix(in srgb,var(--acc) 45%,transparent),-.27em 0 0 color-mix(in srgb,var(--acc) 20%,transparent)}
+      .compact.r2-burst .wm{text-shadow:-.09em 0 0 color-mix(in srgb,var(--acc) 70%,transparent),-.18em 0 0 color-mix(in srgb,var(--acc) 35%,transparent)}
+      .brk{display:grid;gap:.06em}
+      .brk .ev{display:grid;grid-template-columns:1.1em auto;align-items:center}
+      .brk small{font:500 .2em/1 "Geist Mono",monospace;opacity:.7}
+      .brk .e0 .wm{opacity:.3}.brk .e2 .wm{color:var(--acc)}
+      .brk3{display:grid;grid-template-columns:repeat(3,.3em);gap:.05em}
+      .brk3 i{height:.9em;background:currentColor}.brk3 i:nth-child(1){opacity:.3}.brk3 i:nth-child(3){background:var(--acc)}
+      .ap{display:inline-flex;align-items:baseline;gap:.04em}
+      .apx{height:.6em;width:.6em;overflow:visible;transform:translateY(.03em)}
+      .compact .apx{height:1em;width:1em}
+      .apx circle{fill:none;stroke:currentColor;stroke-width:7}
+      .apx polygon{fill:var(--acc)}
+      .apx path{stroke:currentColor;stroke-width:5;stroke-linecap:round}
       /* oscar shoots */
       .board.long .stage{font-size:clamp(30px,3.8vw,52px)}
       .wm .lt{font-weight:500;letter-spacing:-.04em;margin-left:.06em}
@@ -270,6 +352,28 @@ const names: Array<{ group: string; items: Array<{ n: string; d: string; px?: bo
               <div class="tile"><span class="sw on-i"><IdeaMark id={c.id} mark /></span><small>inverse</small></div>
               <div class="tile"><span class="fav f32 on-g"><IdeaMark id={c.id} mark /></span><small>32px</small></div>
               <div class="tile"><span class="fav f16 on-g"><IdeaMark id={c.id} mark /></span><small>16px</small></div>
+            </div>
+          </section>
+        ))}
+      </main>
+      <header class="h2">
+        <p class="lab mono"><span>Round 2 — Oscar Shoots</span><b>{round2.length} ideas</b></p>
+        <h1>Round 2</h1>
+        <p>The round-2 ideas, back in full and numbered as they were first shown.</p>
+      </header>
+      <main class="board long">
+        {round2.map((c, i) => (
+          <section class="card" aria-label={c.t}>
+            <div>
+              <h2><span class="n">{pad(i + 1)}</span><span>{c.t}</span></h2>
+              <p class="d">{c.d}</p>
+            </div>
+            <div class="stage on-g"><Round2Mark id={c.id} /></div>
+            <div class="row">
+              <div class="tile"><span class="sw on-a"><Round2Mark id={c.id} mark /></span><small>accent</small></div>
+              <div class="tile"><span class="sw on-i"><Round2Mark id={c.id} mark /></span><small>inverse</small></div>
+              <div class="tile"><span class="fav f32 on-g"><Round2Mark id={c.id} mark /></span><small>32px</small></div>
+              <div class="tile"><span class="fav f16 on-g"><Round2Mark id={c.id} mark /></span><small>16px</small></div>
             </div>
           </section>
         ))}
