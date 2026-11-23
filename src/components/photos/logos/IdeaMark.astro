@@ -1,80 +1,54 @@
 ---
-// Round 2 of the Oscar Shoots concepts: ideas pulled from the double meanings (green shoots, the Oscar statuette)
-// and from the gear (camera screen, focus peaking, contact sheets, slates, rolling shutter, bracketing, aperture),
-// plus the one event object everyone wears: the lanyard pass. Same colour contract as Mark.astro.
+// Oscar Shoots concepts, rounds 2–3: double meanings (the Oscar, laurels) and photo techniques applied to the type
+// itself (bracketing, long exposure, double exposure, histogram, thirds, zoom, ISO noise, raw file, crop).
+// Same colour contract as Mark.astro.
 import Bits from "@/components/photos/fable/r3/Bits.astro";
-import { sprout, statuette, aperture, type IdeaId } from "./marks";
+import { glyphRows } from "@/components/photos/fable/r3/bits";
+import { statuette, shootsWord, osWord, oGlyph, expose, laurelL, laurelR, trail, histogram, noise, type IdeaId } from "./marks";
 
 interface Props { id: IdeaId; mark?: boolean }
 const { id, mark = false } = Astro.props;
-const word = mark ? "os" : "oscar shoots";
-const slices = 7;
+const glyphOrWord = (m: boolean) => (m ? glyphRows("S") : glyphRows("SHOOTS"));
+const evs = [["−1", -1], ["0", 0], ["+1", 1]] as const;
 ---
 <span class:list={["mk", `id-${id}`, { compact: mark }]}>
-  {id === "sprout" && <span class="wm">{!mark && "oscar shoots"}<Bits rows={sprout} class="spr" /></span>}
-
   {id === "statuette" && <span class="stat"><Bits rows={statuette} class="fig" />{!mark && <span class="sw2"><small>and the</small><span class="wm sm">oscar shoots</span></span>}</span>}
-
-  {id === "screen" && (
-    <span class="scr">
-      <span class="hud t"><span><i class="dot" />{mark ? "" : " REC"}</span>{!mark && <span>▮▮▮▯</span>}</span>
-      <span class="fb"><i /><i /><i /><i /><span class="wm sm">{word}</span></span>
-      {!mark && <span class="hud b"><span>1/250</span><span>f/1.8</span><span>ISO 3200</span></span>}
-    </span>
-  )}
-
-  {id === "peaking" && (
-    <svg class="pk" viewBox={mark ? "0 0 120 100" : "0 0 600 100"} aria-label={word}>
-      <text x="2" y="80" textLength={mark ? 114 : 594} lengthAdjust="spacingAndGlyphs">{word}</text>
-    </svg>
-  )}
-
-  {id === "contact" && (
-    <span class="cs">
-      <span class="strip">
-        {(mark ? ["o"] : ["", "oscar", "shoots", ""]).map((w, i) => <span class:list={["fr", { pick: mark || i === 2 }]}><span>{w}</span></span>)}
-      </span>
-      <svg class="ring" viewBox="0 0 100 60" preserveAspectRatio="none" aria-hidden="true"><path d="M8 34 C 6 10, 60 2, 88 16 C 104 26, 92 54, 52 56 C 20 58, 4 46, 12 26" /></svg>
-    </span>
-  )}
-
-  {id === "pass" && (
-    <span class="pass">
-      <i class="slot" />
-      <span class="band">{mark ? "" : "ALL ACCESS"}</span>
-      <span class="who">{mark ? "OS" : <>OSCAR<br />SHOOTS</>}</span>
-      {!mark && <span class="role">PHOTO + VIDEO</span>}
-    </span>
-  )}
-
-  {id === "slate" && (
-    <span class="slate">
-      <span class="clap" />
-      {mark ? <span class="body s" /> : <span class="body"><span>PROD</span><b>OSCAR SHOOTS</b><span>SCENE</span><b>01</b><span>TAKE</span><b>01</b></span>}
-    </span>
-  )}
-
-  {id === "rolling" && (
-    <span class="roll">
-      <span class="wm base">{word}</span>
-      {Array.from({ length: slices }, (_, i) => (
-        <span class:list={["wm", "sl", { ac: i === slices - 2 }]} aria-hidden="true" style={`clip-path:inset(${(i * 100) / slices}% 0 ${100 - ((i + 1) * 100) / slices}% 0);transform:translateX(${(i * 0.035).toFixed(3)}em)`}>{word}</span>
-      ))}
-    </span>
-  )}
-
-  {id === "burst" && <span class="wm bst">{mark ? "os" : <>oscar <span class="echo">shoots</span></>}</span>}
 
   {id === "bracket" && (
     mark
       ? <span class="brk3"><i /><i /><i /></span>
-      : <span class="brk">{["−1", "0", "+1"].map((ev, i) => <span class:list={["ev", `e${i}`]}><small>{ev}</small><span class="wm sm">oscar shoots</span></span>)}</span>
+      : <span class="brk">{evs.map(([ev], i) => <span class:list={["ev", `e${i}`]}><small>{ev}</small><span class="wm sm">oscar shoots</span></span>)}</span>
   )}
 
-  {id === "aperture" && (
-    <span class="ap">
-      <svg class="apx" viewBox="-50 -50 100 100" aria-hidden="true"><circle r={aperture.R} /><polygon points={aperture.hex} /><path d={aperture.blades} /></svg>
-      {!mark && <span class="wm">scar shoots</span>}
+  {id === "bracket-px" && (
+    mark
+      ? <span class="brkp-m">{evs.map(([, ev]) => <Bits rows={expose(oGlyph, ev, 5)} class="pxo" />)}</span>
+      : <span class="brk px">{evs.map(([label, ev]) => <span class="ev"><small>{label}</small><Bits rows={expose(shootsWord, ev, 9)} class="pxr" /></span>)}</span>
+  )}
+
+  {id === "laurels" && (
+    <span class="lau"><Bits rows={laurelL} class="lf" /><span class="lw">{mark ? "OS" : <>OSCAR<br />SHOOTS</>}</span><Bits rows={laurelR} class="lf" /></span>
+  )}
+
+  {id === "trail" && <Bits rows={mark ? trail(oGlyph, 2, 5) : trail(shootsWord, 7, 16)} class="px7" />}
+
+  {id === "double" && <span class="dbl"><span class="a">{mark ? "o" : "oscar"}</span><span class="b">{mark ? "s" : "shoots"}</span></span>}
+
+  {id === "histogram" && <Bits rows={histogram(mark ? osWord : shootsWord)} class={mark ? "hm" : "hg"} />}
+
+  {id === "thirds" && <span class="thr"><i class="pt" />{!mark && <span class="wm sm">oscar shoots</span>}</span>}
+
+  {id === "zoom" && <span class="zm"><span class="wm">{mark ? "o" : "oscar"}</span><Bits rows={glyphOrWord(mark)} class="px7" /></span>}
+
+  {id === "noise" && <span class="ns"><Bits rows={noise(mark ? osWord : shootsWord, 21)} class="px9n" />{!mark && <small>ISO 6400</small>}</span>}
+
+  {id === "raw" && <span class="raw">{mark ? <b>.raw</b> : <>oscar_shoots<b>.RAW</b></>}</span>}
+
+  {id === "crop" && (
+    <span class="crp">
+      <span class="wm">{mark ? "os" : "oscar shoots"}</span>
+      <span class="cf"><i /><i /><i /><i /></span>
     </span>
   )}
 </span>
+
