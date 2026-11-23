@@ -92,9 +92,11 @@ export function burstPx(rows: string[], from: number, lead = 0) {
   const echoes = [[3, 0.2], [2, 0.45], [1, 0.75]].map(([dx, o]) => ({ d: cells((c, x) => c === "#" && x >= from, dx), o }));
   return { w, h, ink: cells((c) => c === "#", 0), echoes };
 }
-const oscarCols = glyphRows("OSCAR")[0].length + 3;
-export const burstWord = burstPx(glyphRows("OSCAR SHOOTS"), oscarCols);
-export const burstO = burstPx(glyphRows("OS"), 5, 0);
+/** words side by side with `gap` empty columns: the echoes need room, or they fill the space between words */
+const join = (a: string[], b: string[], gap: number) => a.map((row, y) => row + ".".repeat(gap) + b[y]);
+const oscar = glyphRows("OSCAR"), shootsG = glyphRows("SHOOTS");
+export const burstWord = burstPx(join(oscar, shootsG, 7), oscar[0].length + 7);
+export const burstO = burstPx(join(glyphRows("O"), glyphRows("S"), 4), 8);
 
 /** laurel branch (left); the right one is the mirror */
 export const laurelL = [

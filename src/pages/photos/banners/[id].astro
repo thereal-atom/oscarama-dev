@@ -1,0 +1,78 @@
+---
+// Social banners + avatars for the "burst, in pixels" Oscar Shoots logo. Each page is exactly the platform's
+// pixel size; design/social/*.png are screenshots of these (see design/social/README.md).
+// Content stays inside each platform's safe area: X and LinkedIn put the profile photo over the bottom-left,
+// and YouTube crops its 2560×1440 art down to 1546×423 in the middle on most screens.
+import { burstWord, burstO } from "@/components/photos/logos/marks";
+import { dissolve } from "@/components/photos/fable/r3/bits";
+
+type Spec = { w: number; h: number; safe: [number, number, number, number]; align: "center" | "end"; kind: "banner" | "avatar"; bg?: "dark" | "accent" };
+const specs: Record<string, Spec> = {
+  x: { w: 1500, h: 500, safe: [380, 60, 1060, 380], align: "end", kind: "banner" },
+  linkedin: { w: 1584, h: 396, safe: [560, 40, 984, 316], align: "end", kind: "banner" },
+  youtube: { w: 2560, h: 1440, safe: [507, 508, 1546, 423], align: "center", kind: "banner" },
+  "avatar-dark": { w: 800, h: 800, safe: [0, 0, 800, 800], align: "center", kind: "avatar", bg: "dark" },
+  "avatar-orange": { w: 800, h: 800, safe: [0, 0, 800, 800], align: "center", kind: "avatar", bg: "accent" },
+};
+export function getStaticPaths() {
+  return ["x", "linkedin", "youtube", "avatar-dark", "avatar-orange"].map((id) => ({ params: { id } }));
+}
+const { id } = Astro.params as { id: string };
+const s = specs[id];
+const ACC = "#FF3B1F", INK = "#111111", PAPER = "#F3F1EA";
+const accentBg = s.bg === "accent";
+const ground = accentBg ? ACC : INK, fg = accentBg ? INK : PAPER, echo = accentBg ? PAPER : ACC;
+const [sx, sy, sw, sh] = s.safe;
+
+// the grid module: banners get 10 rows of module across their height (YouTube: across the safe strip)
+const m = s.kind === "avatar" ? s.w / 8 : id === "youtube" ? sh / 6 : s.h / 8;
+// wordmark: fit the safe width (banners) or ~62% of the avatar
+const b = s.kind === "avatar" ? burstO : burstWord;
+const cell = s.kind === "avatar" ? Math.floor((s.w * 0.5) / b.w) : Math.floor(Math.min((sw * 0.92) / b.w, (sh * 0.5) / b.h));
+const ww = cell * b.w, wh = cell * b.h;
+// bottom dissolve, the F2 footer, in module-sized cells
+const dzCols = Math.ceil(s.w / (m / 2)), dzRows = s.kind === "avatar" ? 0 : 3;
+const dz = dzRows ? dissolve(id.length * 7 + 3, dzCols, dzRows) : [];
+const dzPath = dz.map((row, y) => [...row].map((c, x) => (c === "#" ? `M${x} ${y}h1v1h-1z` : "")).join("")).join("");
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{id}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@500&display=block" rel="stylesheet" />
+    <style is:inline>
+      html,body{margin:0;padding:0}
+      body{overflow:hidden}
+      .c{position:relative;overflow:hidden}
+      .grid{position:absolute;inset:0}
+      .safe{position:absolute;display:flex;flex-direction:column;justify-content:center;gap:0}
+      .tag{font:500 var(--ts)/1.2 "Geist Mono",ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase;display:flex;gap:1.4em;white-space:nowrap}
+      .tag b{font-weight:500}
+      svg{display:block}
+      astro-dev-toolbar{display:none !important}
+    </style>
+  </head>
+  <body>
+    <div class="c" style={`width:${s.w}px;height:${s.h}px;background:${ground};color:${fg}`}>
+      <svg class="grid" width={s.w} height={s.h} aria-hidden="true">
+        <defs><pattern id="g" width={m} height={m} patternUnits="userSpaceOnUse" x={s.kind === "avatar" ? 0 : sx + sw - Math.floor(sw / m) * m} y={0}><path d={`M${m} 0V${m}H0`} fill="none" stroke={accentBg ? INK : ACC} stroke-opacity={accentBg ? 0.14 : 0.2} stroke-width="1" /></pattern></defs>
+        <rect width={s.w} height={s.h} fill="url(#g)" />
+      </svg>
+      {dzRows > 0 && (
+        <svg style={`position:absolute;left:0;bottom:0`} width={dzCols * (m / 2)} height={dzRows * (m / 2)} viewBox={`0 0 ${dzCols} ${dzRows}`} shape-rendering="crispEdges" aria-hidden="true"><path d={dzPath} fill={ACC} /></svg>
+      )}
+      <div class="safe" style={`left:${sx}px;top:${sy}px;width:${sw}px;height:${sh}px;align-items:${s.align === "end" ? "flex-end" : "center"}`}>
+        <svg width={ww} height={wh} viewBox={`0 0 ${b.w} ${b.h}`} shape-rendering="crispEdges" aria-label="Oscar Shoots">
+          {b.echoes.map((e) => <path d={e.d} fill={echo} fill-opacity={e.o} />)}
+          <path d={b.ink} fill={fg} />
+        </svg>
+        {s.kind === "banner" && (
+          <p class="tag" style={`--ts:${Math.round(cell * 2.1)}px;margin:${Math.round(cell * 3.2)}px 0 0;width:${ww}px;justify-content:space-between`}>
+            <span>Photo + video for startups &amp; tech</span><b style={`color:${ACC}`}>London</b>
+          </p>
+        )}
+      </div>
+    </div>
+  </body>
+</html>
